@@ -8,6 +8,6 @@ export default createVuetify({
         messages: { ru },
       },
     theme: {
-      defaultTheme: 'dark',
+      defaultTheme: localStorage.getItem('userTheme') === null ? 'dark':  localStorage.getItem('userTheme'),
     },
   });
