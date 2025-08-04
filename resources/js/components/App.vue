@@ -12,16 +12,12 @@
     </v-layout>
 </template>
 
-<script>
+<script setup>
 import NavigationSidebar from './UI/NavigationSidebar.vue';
 import AppBar from './UI/AppBar.vue';
+import axios from 'axios';
 
-export default {
-    name: "App",
-
-    components: {
-        NavigationSidebar,
-        AppBar
-    }
-};
+axios.get('/api/auth-check').then(response => {
+    localStorage.setItem('auth', response.data.auth);
+})
 </script>

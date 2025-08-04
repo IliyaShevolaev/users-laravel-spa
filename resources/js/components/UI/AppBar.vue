@@ -12,6 +12,12 @@
                 "
             >
             </v-btn>
+
+            <v-btn
+                @click="logout"
+                icon="mdi-logout"
+            >
+            </v-btn>
         </template>
     </v-app-bar>
 </template>
@@ -23,13 +29,27 @@ const theme = useTheme();
 
 const changeTheme = function () {
     theme.toggle();
-    localStorage.setItem('userTheme', theme.global.name.value);
-}
+    localStorage.setItem("userTheme", theme.global.name.value);
+};
 
-const test = function() {
-    console.log('theme - ' + localStorage.getItem('userTheme'));
-    console.log(localStorage.getItem('userTheme') === null ? localStorage.getItem('userTheme'): 'dark1');
-}
+const logout = function () {
+    axios.get("/sanctum/csrf-cookie").then((response) => {
+        axios
+            .post("/logout", {
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                },
+            })
+            .then((response) => {
+                console.log(response);
+                localStorage.setItem('auth', false);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    });
+};
 </script>
 
 <style></style>

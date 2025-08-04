@@ -1,13 +1,5 @@
 <template>
     <v-navigation-drawer expand-on-hover permanent rail>
-        <v-list>
-            <v-list-item
-                subtitle="sandra_a88@gmailcom"
-                title="Sandra Adams"
-            ></v-list-item>
-        </v-list>
-
-        <v-divider></v-divider>
 
         <v-list density="compact" nav>
             <v-list-item

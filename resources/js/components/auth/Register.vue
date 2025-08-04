@@ -13,7 +13,7 @@
                 <v-card-text>
                     <v-form ref="form" class="text-left" lazy-validation>
                         <v-text-field
-                            v-model="username"
+                            v-model="registerFormData.name"
                             :error="error"
                             label="Имя пользователя"
                             density="default"
@@ -25,7 +25,7 @@
                         ></v-text-field>
 
                         <v-text-field
-                            v-model="email"
+                            v-model="registerFormData.email"
                             :error="error"
                             label="Email"
                             density="default"
@@ -37,7 +37,7 @@
                         ></v-text-field>
 
                         <v-text-field
-                            v-model="password"
+                            v-model="registerFormData.password"
                             :append-inner-icon="
                                 showPassword ? 'mdi-eye' : 'mdi-eye-off'
                             "
@@ -54,7 +54,7 @@
                         ></v-text-field>
 
                         <v-text-field
-                            v-model="passwordConfirmation"
+                            v-model="registerFormData.password_confirmation"
                             :append-inner-icon="
                                 showPassword ? 'mdi-eye' : 'mdi-eye-off'
                             "
@@ -80,7 +80,7 @@
                                     ? 'text-body-2'
                                     : 'text-subtitle-1'
                             "
-                            @click="handleSubmit"
+                            @click="registerSubmit"
                         >
                             Зарегистрироваться
                         </v-btn>
@@ -98,20 +98,35 @@
     </v-row>
 </template>
 
-<script>
-export default {
-    data() {
-        return {
-            username: "",
-            email: "",
-            password: "",
-            passwordConfirmation: "",
-            showPassword: false,
-            error: false,
-        };
-    },
-    methods: {
-        handleSubmit() {},
-    },
+<script setup>
+import axios from "axios";
+import { reactive, ref } from "vue";
+
+const registerFormData = reactive({
+    name: "",
+    email: "",
+    password: "",
+    password_confirmation: "",
+});
+
+const showPassword = ref(false);
+const error = ref(false);
+
+const registerSubmit = function () {
+    axios.get("/sanctum/csrf-cookie").then((response) => {
+        axios
+            .post("/register", registerFormData, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                },
+            })
+            .then((response) => {
+                localStorage.setItem('auth', true);
+                router.push({name: 'dashboard'})
+            }).catch(error => {
+                console.log(error)
+            });
+    });
 };
 </script>

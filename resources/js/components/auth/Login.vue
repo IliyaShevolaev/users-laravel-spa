@@ -17,7 +17,7 @@
                 <v-card-text>
                     <v-form ref="form" class="text-left" lazy-validation>
                         <v-text-field
-                            v-model="email"
+                            v-model="loginFormData.email"
                             :error="error"
                             label="Email"
                             density="default"
@@ -29,7 +29,7 @@
                         ></v-text-field>
 
                         <v-text-field
-                            v-model="password"
+                            v-model="loginFormData.password"
                             :append-inner-icon="
                                 showPassword ? 'mdi-eye' : 'mdi-eye-off'
                             "
@@ -51,7 +51,7 @@
                             color="primary"
                             class="mt-2"
                             :class="$vuetify.display.mobile ? 'text-body-2' : 'text-subtitle-1'"
-                            @click="handleLogin"
+                            @click="loginSubmit"
                         >
                             Войти
                         </v-btn>
@@ -72,19 +72,38 @@
     </v-row>
 </template>
 
-<script>
-export default {
-    data() {
-        return {
-            email: "",
-            password: "",
-            showPassword: false,
-            error: false,
-        };
-    },
-    methods: {
-        handleLogin() {
-        },
-    },
+<script setup>
+import axios from "axios";
+import { reactive, ref } from "vue";
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const loginFormData = reactive({
+    email: "",
+    password: "",
+});
+
+const showPassword = ref(false);
+const error = ref(false);
+
+const loginSubmit = function () {
+    axios.get("/sanctum/csrf-cookie").then((response) => {
+        axios
+            .post("/login", loginFormData, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                },
+                withCredentials: true
+            })
+            .then((response) => {
+                localStorage.setItem('auth', true);
+                router.push({name: 'dashboard'})
+            }).catch(error => {
+                console.log(error)
+            });
+    });
 };
 </script>
+
