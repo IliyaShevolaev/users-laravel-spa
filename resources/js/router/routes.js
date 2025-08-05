@@ -1,6 +1,8 @@
 import App from "../components/App.vue";
 import Login from "../components/auth/Login.vue";
 import Register from "../components/auth/Register.vue";
+import Departments from "../components/DataTables/Departments/Departments.vue";
+import Positions from "../components/DataTables/Positions/Positions.vue";
 import Dashboard from "../components/pages/Dashboard.vue";
 import Ping from "../components/Ping.vue";
 
@@ -27,6 +29,18 @@ const routes = [
         path: '/dashboard',
         component: Dashboard,
         name: 'dashboard',
+    },
+
+    {
+        path: '/departments',
+        component: Departments,
+        name: 'departments',
+    },
+
+    {
+        path: '/positions',
+        component: Positions,
+        name: 'positions',
     },
 
     {

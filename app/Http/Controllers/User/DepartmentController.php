@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Http\Controllers\User;
 
 use App\DTO\User\Department\DepartmentDTO;
+use App\Http\Resources\User\DepartmerntResource;
 use App\Models\User\Department;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\DataTables\DepartmentsDataTable;
@@ -39,32 +41,18 @@ class DepartmentController extends Controller
     /**
      * Отображает все отделы через таблицу DepartmentsDataTable
      *
-     * @return JsonResponse|View
-     *
-     * @param DepartmentsDataTable $departmentsDataTable
+     * @return AnonymousResourceCollection
      */
-    public function index(DepartmentsDataTable $departmentsDataTable): JsonResponse|View
+    public function index(): AnonymousResourceCollection
     {
-        return $departmentsDataTable->render('departments.index');
-    }
-
-    /**
-     * Возвращает форму создания нового отдела
-     *
-     * @return JsonResponse
-     */
-    public function create()
-    {
-        return response()->json(view('departments.form')
-            ->with(['route' => route('departments.store')])
-            ->render());
+        return DepartmerntResource::collection($this->repository->all());
     }
 
     /**
      * Сохраняет новый отдел
      *
      * @param DepartmentRequest $departmentRequest
-     * @return JsonResponse 200 - {'message' => 'success'}
+     * @return JsonResponse 200 - {'data' => new department}
      */
     public function store(DepartmentRequest $departmentRequest): JsonResponse
     {
@@ -72,7 +60,7 @@ class DepartmentController extends Controller
 
         $this->service->create($dto);
 
-        return response()->json(['message' => 'success']);
+        return response()->json(['data' => 'success']);
     }
 
     /**

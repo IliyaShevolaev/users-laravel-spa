@@ -14,12 +14,12 @@
                     <v-form ref="form" class="text-left" lazy-validation>
                         <v-text-field
                             v-model="registerFormData.name"
-                            :error="error"
+                            :error="registerErrorFormData.name"
                             label="Имя пользователя"
                             density="default"
                             variant="underlined"
                             color="primary"
-                            name="username"
+                            name="name"
                             outlined
                             validateOn="blur"
                         ></v-text-field>
@@ -33,7 +33,7 @@
 
                         <v-text-field
                             v-model="registerFormData.email"
-                            :error="error"
+                            :error="registerErrorFormData.email"
                             label="Email"
                             density="default"
                             variant="underlined"
@@ -56,7 +56,7 @@
                                 showPassword ? 'mdi-eye' : 'mdi-eye-off'
                             "
                             :type="showPassword ? 'text' : 'password'"
-                            :error="error"
+                            :error="registerErrorFormData.password"
                             label="Пароль"
                             density="default"
                             variant="underlined"
@@ -80,7 +80,7 @@
                                 showPassword ? 'mdi-eye' : 'mdi-eye-off'
                             "
                             :type="showPassword ? 'text' : 'password'"
-                            :error="error"
+                            :error="registerErrorFormData.password"
                             label="Подтвердите пароль"
                             density="default"
                             variant="underlined"

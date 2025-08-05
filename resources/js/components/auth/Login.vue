@@ -14,7 +14,7 @@
                     <v-form ref="form" class="text-left" lazy-validation>
                         <v-text-field
                             v-model="loginFormData.email"
-                            :error="error"
+                            :error="!!loginErrorFormData.email"
                             label="Email"
                             density="default"
                             variant="underlined"
@@ -37,7 +37,7 @@
                                 showPassword ? 'mdi-eye' : 'mdi-eye-off'
                             "
                             :type="showPassword ? 'text' : 'password'"
-                            :error="error"
+                            :error="!!loginErrorFormData.password"
                             label="Пароль"
                             density="default"
                             variant="underlined"
