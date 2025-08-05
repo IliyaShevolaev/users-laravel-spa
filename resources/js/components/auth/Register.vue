@@ -23,6 +23,13 @@
                             outlined
                             validateOn="blur"
                         ></v-text-field>
+                        <v-alert
+                            class="mb-4"
+                            v-if="registerErrorFormData.name"
+                            type="error"
+                        >
+                            {{ registerErrorFormData.name }}
+                        </v-alert>
 
                         <v-text-field
                             v-model="registerFormData.email"
@@ -35,6 +42,13 @@
                             outlined
                             validateOn="blur"
                         ></v-text-field>
+                        <v-alert
+                            class="mb-4"
+                            v-if="registerErrorFormData.email"
+                            type="error"
+                        >
+                            {{ registerErrorFormData.email }}
+                        </v-alert>
 
                         <v-text-field
                             v-model="registerFormData.password"
@@ -52,6 +66,13 @@
                             validateOn="blur"
                             @click:append-inner="showPassword = !showPassword"
                         ></v-text-field>
+                        <v-alert
+                            class="mb-4"
+                            v-if="registerErrorFormData.password"
+                            type="error"
+                        >
+                            {{ registerErrorFormData.password }}
+                        </v-alert>
 
                         <v-text-field
                             v-model="registerFormData.password_confirmation"
@@ -69,6 +90,13 @@
                             validateOn="blur"
                             @click:append-inner="showPassword = !showPassword"
                         ></v-text-field>
+                        <v-alert
+                            class="mb-4"
+                            v-if="registerErrorFormData.password"
+                            type="error"
+                        >
+                            {{ registerErrorFormData.password }}
+                        </v-alert>
 
                         <v-btn
                             block
@@ -114,6 +142,8 @@ const registerFormData = reactive({
     password_confirmation: "",
 });
 
+const registerErrorFormData = reactive({});
+
 const showPassword = ref(false);
 const error = ref(false);
 
@@ -123,15 +153,32 @@ const registerSubmit = function () {
             .post("/register", registerFormData, {
                 headers: {
                     "Content-Type": "application/json",
-                    "Accept": "application/json",
+                    Accept: "application/json",
                 },
             })
             .then((response) => {
-                authStore.authUser(response.data.user)
-                router.push({name: 'dashboard'})
-            }).catch(error => {
-                console.log(error)
+                authStore.authUser(response.data.user);
+                router.push({ name: "dashboard" });
+            })
+            .catch((error) => {
+                clearErrors();
+                if (error.response.status === 422) {
+                    const errors = error.response.data.errors;
+                    console.log(errors);
+                    for (error in errors) {
+                        registerErrorFormData[error] = errors[error][0];
+                    }
+                    console.log(registerErrorFormData);
+                } else {
+                    console.log(error);
+                }
             });
+    });
+};
+
+const clearErrors = function () {
+    Object.keys(registerErrorFormData).forEach((key) => {
+        registerErrorFormData[key] = "";
     });
 };
 </script>
