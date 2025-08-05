@@ -6,13 +6,21 @@ import Ping from "../components/Ping.vue";
 
 const routes = [
     {
+        path: "/",
+        component: Dashboard,
+        name: 'app',
+    },
+
+    {
         path: "/login",
         component: Login,
+        name: 'login',
     },
 
     {
         path: "/register",
         component: Register,
+        name: 'register',
     },
 
     {

@@ -16,8 +16,15 @@
 import NavigationSidebar from './UI/NavigationSidebar.vue';
 import AppBar from './UI/AppBar.vue';
 import axios from 'axios';
+import { useAuthStore } from '../stores/auth';
 
-axios.get('/api/auth-check').then(response => {
-    localStorage.setItem('auth', response.data.auth);
+const authStore = useAuthStore();
+axios.get('/api/user').then(response => {
+    console.log(response.data)
+    if (response.data !== '') {
+        authStore.authUser(response.data);
+        console.log(authStore.isAuth);
+        console.log(authStore.userInfo.name);
+    }
 })
 </script>

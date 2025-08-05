@@ -64,7 +64,7 @@
                             density="default"
                             variant="underlined"
                             color="primary"
-                            name="password"
+                            name="password_confirmation"
                             outlined
                             validateOn="blur"
                             @click:append-inner="showPassword = !showPassword"
@@ -101,6 +101,11 @@
 <script setup>
 import axios from "axios";
 import { reactive, ref } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "../../stores/auth";
+
+const router = useRouter();
+const authStore = useAuthStore();
 
 const registerFormData = reactive({
     name: "",
@@ -122,7 +127,7 @@ const registerSubmit = function () {
                 },
             })
             .then((response) => {
-                localStorage.setItem('auth', true);
+                authStore.authUser(response.data.user)
                 router.push({name: 'dashboard'})
             }).catch(error => {
                 console.log(error)

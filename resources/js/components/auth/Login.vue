@@ -76,6 +76,7 @@
 import axios from "axios";
 import { reactive, ref } from "vue";
 import { useRouter } from 'vue-router'
+import { useAuthStore } from "../../stores/auth";
 
 const router = useRouter()
 
@@ -86,6 +87,8 @@ const loginFormData = reactive({
 
 const showPassword = ref(false);
 const error = ref(false);
+
+const authStore = useAuthStore();
 
 const loginSubmit = function () {
     axios.get("/sanctum/csrf-cookie").then((response) => {
@@ -98,7 +101,7 @@ const loginSubmit = function () {
                 withCredentials: true
             })
             .then((response) => {
-                localStorage.setItem('auth', true);
+                authStore.authUser(response.data.user)
                 router.push({name: 'dashboard'})
             }).catch(error => {
                 console.log(error)

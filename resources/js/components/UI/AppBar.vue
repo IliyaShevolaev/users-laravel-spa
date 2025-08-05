@@ -1,7 +1,5 @@
 <template>
     <v-app-bar>
-        <v-btn @click="test" icon="mdi-magnify"></v-btn>
-
         <template v-slot:append>
             <v-btn
                 @click="changeTheme"
@@ -13,10 +11,9 @@
             >
             </v-btn>
 
-            <v-btn
-                @click="logout"
-                icon="mdi-logout"
-            >
+            <ProfileDropdownMenu v-if="authStore.isAuth"></ProfileDropdownMenu>
+            <v-btn v-else @click="loginRedirect"  prepend-icon="mdi-login">
+                Вход
             </v-btn>
         </template>
     </v-app-bar>
@@ -24,31 +21,21 @@
 
 <script setup>
 import { useTheme } from "vuetify";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "../../stores/auth";
+import ProfileDropdownMenu from "./ProfileDropdownMenu.vue";
 
 const theme = useTheme();
+const router = useRouter();
+const authStore = useAuthStore();
 
-const changeTheme = function () {
+const changeTheme = () => {
     theme.toggle();
     localStorage.setItem("userTheme", theme.global.name.value);
 };
 
-const logout = function () {
-    axios.get("/sanctum/csrf-cookie").then((response) => {
-        axios
-            .post("/logout", {
-                headers: {
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            })
-            .then((response) => {
-                console.log(response);
-                localStorage.setItem('auth', false);
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-    });
+const loginRedirect = () => {
+    router.push({ name: "login" });
 };
 </script>
 
