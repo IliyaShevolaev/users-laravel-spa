@@ -1,14 +1,20 @@
 <template>
     <div v-if="!loadingTable">
         <div class="mb-5">
-            <v-btn @click="openDialog" prepend-icon="mdi-plus" color="green">
+            <v-btn @click="openDialog()" prepend-icon="mdi-plus" color="green">
                 Добавить отдел
             </v-btn>
-            <DepartmentDialog
-                @close-dialog="closeDialog"
-                :isOpen="isDialogOpen"
-            ></DepartmentDialog>
         </div>
+        <DepartmentDialog
+            @close-dialog="closeDialog"
+            :isOpen="isDialogOpen"
+            :edit-id="dialogEditId"
+        ></DepartmentDialog>
+
+        <AlertDialog
+            @close-dialog="showAlertDialog = false"
+            :is-open="showAlertDialog"
+        ></AlertDialog>
 
         <v-data-table
             :headers="headers"
@@ -22,14 +28,15 @@
                     class="me-3"
                     size="small"
                     color="yellow"
-                    @click="showId(item)"
+                    @click="edit(item.id)"
                 >
                 </v-btn>
                 <v-btn
                     icon="mdi-delete"
+                    class="me-3"
                     size="small"
                     color="red"
-                    @click="showId(item)"
+                    @click="deleteRow(item.id)"
                 >
                 </v-btn>
             </template>
@@ -47,6 +54,7 @@
 import axios from "axios";
 import { ref } from "vue";
 import DepartmentDialog from "./DepartmentDialog.vue";
+import AlertDialog from "./AlertDialog.vue";
 
 const departments = ref([]);
 const loadingTable = ref(true);
@@ -57,6 +65,9 @@ const headers = [
     { title: "Действия", key: "actions", sortable: false, align: "center" },
 ];
 
+const isDialogOpen = ref(false);
+const dialogEditId = ref(null);
+
 const requestData = function () {
     axios.get("/api/departments").then((response) => {
         console.log(response.data.data);
@@ -66,21 +77,36 @@ const requestData = function () {
 };
 requestData();
 
-const showId = function (id) {
-    console.log(id);
-};
-
-const isDialogOpen = ref(false);
-
-const openDialog = function () {
+const openDialog = function (id = null) {
     isDialogOpen.value = true;
+    dialogEditId.value = id;
 };
 
 const closeDialog = function (dataChanged) {
     if (dataChanged) {
         requestData();
     }
+
     isDialogOpen.value = false;
+    dialogEditId.value = null;
 };
+
+const edit = function (id) {
+    openDialog(id);
+};
+
+const deleteRow = function (id) {
+    axios
+        .delete(`/api/departments/${id}`)
+        .then((response) => {
+            console.log(response);
+            requestData();
+        })
+        .catch((error) => {
+            showAlertDialog.value = true
+        });
+};
+// @todo: прятать пока запрос идет, alert при 409
+const showAlertDialog = ref(false);
 </script>
 <style></style>

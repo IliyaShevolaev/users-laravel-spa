@@ -27,7 +27,15 @@
             </v-card-text>
             <v-card-actions>
                 <v-btn color="red" @click="close(false)">Закрыть</v-btn>
-                <v-btn color="green" text @click="add"> Добавить </v-btn>
+                <v-btn
+                    v-if="props.editId !== null"
+                    color="green"
+                    text
+                    @click="update(props.editId)"
+                >
+                    Изменить
+                </v-btn>
+                <v-btn v-else color="green" text @click="add"> Добавить </v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -35,9 +43,13 @@
 
 <script setup>
 import axios from "axios";
-import { reactive, ref } from "vue";
+import { reactive, ref, watch } from "vue";
 
 const props = defineProps({
+    editId: {
+        Number,
+        default: null,
+    },
     isOpen: Boolean,
 });
 const emit = defineEmits(["closeDialog"]);
@@ -49,10 +61,7 @@ const formData = reactive({
 const formDataErrors = reactive({});
 
 const close = function (dataChanged) {
-    if (dataChanged) {
-        clearFields(formData);
-    }
-
+    clearFields(formData);
     clearFields(formDataErrors);
     emit("closeDialog", dataChanged);
 };
@@ -77,6 +86,50 @@ const add = function () {
             }
         });
 };
+
+const edit = function () {
+    clearFields(formData);
+    axios
+        .get(`/api/departments/${props.editId}/edit`, formData)
+        .then((response) => {
+            Object.keys(response.data.data).forEach((key) => {
+                formData[key] = response.data.data[key];
+            });
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+};
+
+const update = function (id) {
+    axios
+        .patch(`/api/departments/${id}`, formData)
+        .then((response) => {
+            close(true);
+        })
+        .catch((error) => {
+            clearFields(formDataErrors);
+            if (error.response.status === 422) {
+                const errors = error.response.data.errors;
+                console.log(errors);
+                for (error in errors) {
+                    formDataErrors[error] = errors[error][0];
+                }
+                console.log(formDataErrors);
+            } else {
+                console.log(error);
+            }
+        });
+};
+
+watch(
+    () => props.isOpen,
+    (newValue, oldValue) => {
+        if (newValue === true && oldValue === false && props.editId !== null) {
+            edit();
+        }
+    }
+);
 
 const clearFields = function (obj) {
     Object.keys(obj).forEach((key) => {

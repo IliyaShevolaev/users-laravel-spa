@@ -67,17 +67,13 @@ class DepartmentController extends Controller
      * Возвращает форму редактирования передаваемого отдела
      *
      * @param int $department_id
-     * @return JsonResponse
+     * @return DepartmerntResource
      */
-    public function edit(int $department_id)
+    public function edit(int $department_id): DepartmerntResource
     {
         $departmentToEdit = $this->repository->find($department_id);
 
-        return response()->json(view('departments.form')
-            ->with([
-                'route' => route('departments.update', $departmentToEdit->id),
-                'element' => $departmentToEdit
-            ])->render());
+        return new DepartmerntResource($departmentToEdit);
     }
 
     /**
