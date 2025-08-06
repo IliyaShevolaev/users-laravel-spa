@@ -4,8 +4,6 @@ import Register from "../components/auth/Register.vue";
 import Departments from "../components/DataTables/Departments/Departments.vue";
 import Positions from "../components/DataTables/Positions/Positions.vue";
 import Users from "../components/DataTables/Users/Users.vue";
-import Dashboard from "../components/pages/Dashboard.vue";
-import Ping from "../components/Ping.vue";
 
 const routes = [
     {
@@ -48,11 +46,6 @@ const routes = [
         name: 'users',
         meta: { requiresAuth: true },
     },
-
-    {
-        path: '/ping',
-        component: Ping,
-    }
 ];
 
 export default routes;

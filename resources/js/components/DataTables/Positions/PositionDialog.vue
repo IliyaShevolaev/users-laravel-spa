@@ -8,6 +8,7 @@
                 <v-form @submit.prevent="add">
                     <v-text-field
                         v-model="formData.name"
+                        :error="!!formDataErrors.name"
                         label="Название"
                         density="default"
                         variant="underlined"
