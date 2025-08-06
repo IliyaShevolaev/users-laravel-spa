@@ -2,14 +2,14 @@
     <div v-if="!loadingTable">
         <div class="mb-5">
             <v-btn @click="openDialog()" prepend-icon="mdi-plus" color="green">
-                Добавить должность
+                Добавить пользователя
             </v-btn>
         </div>
-        <PositionDialog
+        <UserDialog
             @close-dialog="closeDialog"
             :isOpen="isDialogOpen"
             :edit-id="dialogEditId"
-        ></PositionDialog>
+        ></UserDialog>
 
         <AlertDialog
             @close-dialog="showAlertDialog = false"
@@ -26,10 +26,17 @@
 
         <v-data-table
             :headers="headers"
-            :items="positions"
+            :items="users"
             :items-per-page="10"
             class="elevation-1"
         >
+            <template #item.department.name="{ item }">
+                {{ item.department?.name || "Нет отдела" }}
+            </template>
+            <template #item.position.name="{ item }">
+                {{ item.position?.name || "Нет должности" }}
+            </template>
+
             <template v-slot:item.actions="{ item }">
                 <v-btn
                     icon="mdi-pen"
@@ -62,16 +69,21 @@
 <script setup>
 import axios from "axios";
 import { ref } from "vue";
-import PositionDialog from "../Positions/PositionDialog.vue";
+import UserDialog from "./UserDialog.vue";
 import AlertDialog from "../../UI/Alerts/AlertDangerDialog.vue";
 import AcceptDialog from "../../UI/Alerts/AcceptDialog.vue";
 
-const positions = ref([]);
+const users = ref([]);
 const loadingTable = ref(true);
 
 const headers = [
     { title: "ID", key: "id" },
-    { title: "Название должности", key: "name" },
+    { title: "Имя", key: "name" },
+    { title: "Почта", key: "email" },
+    { title: "Пол", key: "gender" },
+    { title: "Статус", key: "status" },
+    { title: "Отдел", key: "department.name" },
+    { title: "Должность", key: "position.name" },
     { title: "Создан", key: "created_at" },
     { title: "Обновлен", key: "updated_at" },
     { title: "Действия", key: "actions", sortable: false, align: "center" },
@@ -81,9 +93,9 @@ const isDialogOpen = ref(false);
 const dialogEditId = ref(null);
 
 const requestData = function () {
-    axios.get("/api/positions").then((response) => {
+    axios.get("/api/users").then((response) => {
         console.log(response.data.data);
-        positions.value = response.data.data;
+        users.value = response.data.data;
         loadingTable.value = false;
     });
 };
@@ -111,31 +123,27 @@ const idToDelete = ref(0);
 
 const askToDeleteRow = function (id, name) {
     showAlertAcceptDialog.value = true;
-    alertAcceptText.value = `Удалить должность ${name}?`;
+    alertAcceptText.value = `Удалить пользователя ${name}?`;
     idToDelete.value = id;
 };
 
 const deleteRow = function (id) {
-    let deleteIndex = positions.value.findIndex((item) => item.id === id);
+    let deleteIndex = users.value.findIndex((item) => item.id === id);
     if (deleteIndex !== -1) {
-        positions.value.splice(deleteIndex, 1);
+        users.value.splice(deleteIndex, 1);
     }
 
     axios
-        .delete(`/api/positions/${id}`)
+        .delete(`/api/users/${id}`)
         .then((response) => {
             console.log(response);
             requestData();
         })
         .catch((error) => {
             console.log(error);
-            if (error.response.status === 409) {
+            if (error.response.status === 404) {
                 showAlertDialog.value = true;
-                alertText.value =
-                    "Невозможно удалить должность, пока есть люди с ней";
-            } else if (error.response.status === 404) {
-                showAlertDialog.value = true;
-                alertText.value = "Отдел отсутствует";
+                alertText.value = "Пользователь отсутствует";
             } else {
                 console.log(error);
             }

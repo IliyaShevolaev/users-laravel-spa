@@ -1,5 +1,7 @@
 <template>
     <v-app-bar>
+        <v-btn prepend-icon="$vuetify" color="blue" size="x-lagre" @click="router.push('/')"> Vuetify </v-btn>
+
         <template v-slot:append>
             <v-btn
                 @click="changeTheme"
@@ -12,7 +14,7 @@
             </v-btn>
 
             <ProfileDropdownMenu v-if="authStore.isAuth"></ProfileDropdownMenu>
-            <v-btn v-else @click="loginRedirect"  prepend-icon="mdi-login">
+            <v-btn v-else @click="loginRedirect" prepend-icon="mdi-login">
                 Вход
             </v-btn>
         </template>

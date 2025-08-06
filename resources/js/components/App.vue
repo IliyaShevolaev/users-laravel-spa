@@ -23,8 +23,8 @@ axios.get('/api/user').then(response => {
     console.log(response.data)
     if (response.data !== '') {
         authStore.authUser(response.data);
-        console.log(authStore.isAuth);
-        console.log(authStore.userInfo.name);
+    } else {
+        authStore.logoutUser();
     }
 })
 </script>

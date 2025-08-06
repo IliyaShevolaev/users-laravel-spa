@@ -3,6 +3,11 @@
         <v-list density="compact" nav>
             <!-- <v-list-item type="subheader" prepend-icon="mdi-account" title="Пользователи"></v-list-item> -->
             <v-list-item
+                @click="handleClick('users')"
+                prepend-icon="mdi-account-multiple"
+                title="Пользователи"
+            ></v-list-item>
+            <v-list-item
                 @click="handleClick('departments')"
                 prepend-icon="mdi-office-building"
                 title="Отделы"

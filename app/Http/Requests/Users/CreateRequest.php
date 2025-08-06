@@ -34,7 +34,7 @@ class CreateRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:5|max:255|confirmed',
+            'password' => 'required|string|min:3|max:255|confirmed',
             'department_id' => 'nullable|int|exists:departments,id,deleted_at,NULL',
             'position_id' => 'nullable|int|exists:positions,id,deleted_at,NULL',
             'gender' => ['required', new Enum(GenderEnum::class)],

@@ -19,6 +19,7 @@ export const useAuthStore = defineStore("auth", {
     },
     actions: {
         authUser(userData) {
+            localStorage.setItem('auth', 'true');
             this.auth = true;
             this.userData.id = userData.id;
             this.userData.name = userData.name;
@@ -26,6 +27,7 @@ export const useAuthStore = defineStore("auth", {
         },
 
         logoutUser() {
+            localStorage.removeItem('auth');
             this.auth = false;
             this.userData.id = null;
             this.userData.name = null;

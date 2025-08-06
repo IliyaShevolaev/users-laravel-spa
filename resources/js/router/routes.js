@@ -3,13 +3,14 @@ import Login from "../components/auth/Login.vue";
 import Register from "../components/auth/Register.vue";
 import Departments from "../components/DataTables/Departments/Departments.vue";
 import Positions from "../components/DataTables/Positions/Positions.vue";
+import Users from "../components/DataTables/Users/Users.vue";
 import Dashboard from "../components/pages/Dashboard.vue";
 import Ping from "../components/Ping.vue";
 
 const routes = [
     {
         path: "/",
-        component: Dashboard,
+        component: Users,
         name: 'app',
     },
 
@@ -17,18 +18,14 @@ const routes = [
         path: "/login",
         component: Login,
         name: 'login',
+        meta: { requiresNoAuth: true },
     },
 
     {
         path: "/register",
         component: Register,
         name: 'register',
-    },
-
-    {
-        path: '/dashboard',
-        component: Dashboard,
-        name: 'dashboard',
+        meta: { requiresNoAuth: true },
     },
 
     {
@@ -42,6 +39,13 @@ const routes = [
         path: '/positions',
         component: Positions,
         name: 'positions',
+        meta: { requiresAuth: true },
+    },
+
+    {
+        path: '/users',
+        component: Users,
+        name: 'users',
         meta: { requiresAuth: true },
     },
 

@@ -11,7 +11,7 @@
                 </v-card-title>
 
                 <v-card-text>
-                    <v-form ref="form" class="text-left" lazy-validation>
+                    <v-form @submit.prevent="loginSubmit">
                         <v-text-field
                             v-model="loginFormData.email"
                             :error="!!loginErrorFormData.email"
@@ -102,7 +102,6 @@ const loginFormData = reactive({
 const loginErrorFormData = reactive({});
 
 const showPassword = ref(false);
-const error = ref(false);
 
 const authStore = useAuthStore();
 
@@ -118,10 +117,11 @@ const loginSubmit = function () {
             })
             .then((response) => {
                 authStore.authUser(response.data.user);
-                router.push({ name: "dashboard" });
+                router.push({ name: "users" });
             })
             .catch((error) => {
                 clearErrors();
+                console.log(error);
                 if (error.response.status === 422) {
                     const errors = error.response.data.errors;
                     console.log(errors);

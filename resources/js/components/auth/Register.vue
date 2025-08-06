@@ -11,7 +11,7 @@
                 </v-card-title>
 
                 <v-card-text>
-                    <v-form ref="form" class="text-left" lazy-validation>
+                    <v-form class="text-left" @submit.prevent="registerSubmit">
                         <v-text-field
                             v-model="registerFormData.name"
                             :error="registerErrorFormData.name"
@@ -55,6 +55,7 @@
                             :items="userGenders"
                             :error="registerErrorFormData.gender"
                             item-title="text"
+                            variant="underlined"
                             item-value="value"
                             label="Пол"
                             required
@@ -185,7 +186,7 @@ const registerSubmit = function () {
             })
             .then((response) => {
                 authStore.authUser(response.data.user);
-                router.push({ name: "dashboard" });
+                router.push({ name: "users" });
             })
             .catch((error) => {
                 clearErrors();

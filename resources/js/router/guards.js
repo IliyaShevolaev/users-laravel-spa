@@ -1,9 +1,9 @@
-import { useAuthStore } from "../stores/auth";
-
 export function setUpRouteGuards(router) {
     router.beforeEach((to, from, next) => {
-        if (!useAuthStore().isAuth && to.meta.requiresAuth) {
+        if (localStorage.getItem('auth') === null && to.meta.requiresAuth) {
             next('/login')
+        } else if (localStorage.getItem('auth') !== null && to.meta.requiresNoAuth){
+            next('/')
         } else {
             next();
         }

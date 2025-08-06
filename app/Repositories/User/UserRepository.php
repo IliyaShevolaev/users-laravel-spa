@@ -19,6 +19,13 @@ class UserRepository implements UserRepositoryInterface
         return User::all();
     }
 
+    public function allWithRelations(): Collection
+    {
+        return User::withoutGlobalScope(ActiveUserScope::class)
+            ->with(['department', 'position'])
+            ->get();
+    }
+
     public function allWithUnactive(): Collection
     {
         return User::withoutGlobalScope(ActiveUserScope::class)->get();

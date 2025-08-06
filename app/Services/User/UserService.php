@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Services\User;
 
 use App\DTO\User\UserDTO;
-use App\DTO\User\UserRelatedDTO;
+use App\Enums\User\GenderEnum;
+use App\Enums\User\StatusEnum;
 use ClassTransformer\Hydrator;
+use App\DTO\User\UserRelatedDTO;
 use Illuminate\Support\Facades\Auth;
 use App\Repositories\Interfaces\User\UserRepositoryInterface;
 use App\Repositories\Interfaces\User\Position\PositionRepositoryInterface;
@@ -81,10 +83,28 @@ class UserService
         $departmentsDto = $this->departmentRepository->all();
         $positionsDto = $this->positionRepository->all();
 
+        $genderArray = [];
+        foreach (GenderEnum::cases() as $genderValue) {
+            array_push($genderArray, [
+                'text' => trans('main.users.genders.' . $genderValue->value),
+                'value' => $genderValue->value
+            ]);
+        }
+
+        $statusArray = [];
+        foreach (StatusEnum::cases() as $statusValue) {
+            array_push($statusArray, [
+                'text' => trans('main.users.statuses.' . $statusValue->value),
+                'value' => $statusValue->value
+            ]);
+        }
+
         return UserRelatedDTO::from([
-            'userDTO' => $userDto,
+            'user' => $userDto,
             'departments' => $departmentsDto,
             'positions' => $positionsDto,
+            'genders' => $genderArray,
+            'statuses' => $statusArray
         ]);
     }
 }

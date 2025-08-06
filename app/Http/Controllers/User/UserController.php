@@ -9,11 +9,15 @@ use Illuminate\Http\JsonResponse;
 use App\DataTables\UsersDataTable;
 use App\Services\User\UserService;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\Users\EditRequest;
+use App\Http\Resources\User\UserResource;
+use App\Repositories\User\UserRepository;
 use App\Http\Requests\Users\CreateRequest;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
  * Контроллер пользователей
@@ -26,37 +30,35 @@ class UserController extends Controller
 
     /**
      * Сервис пользователей
-     *
      * @var UserService $service
+     * @var UserRepository $repository
      */
-    public function __construct(protected UserService $service)
-    {
+    public function __construct(
+        protected UserService $service,
+        protected UserRepository $repository
+    ) {
     }
 
     /**
      * Отображает всех пользователей через таблицу UserDataTable
      *
-     * @param UsersDataTable $usersDataTable
-     * @return JsonResponse|View
+     * @return AnonymousResourceCollection
      */
-    public function index(UsersDataTable $usersDataTable): JsonResponse|View
+    public function index(): AnonymousResourceCollection
     {
-        return $usersDataTable->render('users.table-index');
+        return UserResource::collection($this->repository->allWithRelations());
     }
 
     /**
      * Отображает страницу создания нового пользователя
      *
-     * @return View
+     * @return JsonResponse
      */
-    public function create(): View
+    public function create(): JsonResponse
     {
         $data = $this->service->prepareViewData();
 
-        return view('users.change-user-table', [
-            'departments' => $data->departments,
-            'positions' => $data->positions
-        ]);
+        return response()->json($data);
     }
 
     /**
@@ -78,17 +80,14 @@ class UserController extends Controller
      * Отображает страницу редактирования пользователя
      *
      * @param int $user_id
-     * @return View
+     * @return JsonResponse
      */
-    public function edit(int $user_id): View
+    public function edit(int $user_id): JsonResponse
     {
-        $dto = $this->service->prepareViewData($user_id);
+        Log::info('here');
+        $data = $this->service->prepareViewData($user_id);
 
-        return view('users.change-user-table', [
-            'user' => $dto->userDTO,
-            'departments' => $dto->departments,
-            'positions' => $dto->positions
-        ]);
+        return response()->json($data);
     }
 
     /**
@@ -96,15 +95,15 @@ class UserController extends Controller
      *
      * @param EditRequest $editRequest
      * @param int $user_id
-     * @return RedirectResponse
+     * @return JsonResponse
      */
-    public function update(EditRequest $editRequest, int $user_id): RedirectResponse
+    public function update(EditRequest $editRequest, int $user_id): JsonResponse
     {
-        $dto =  UserDTO::from($editRequest->validated());
+        $dto = UserDTO::from($editRequest->validated());
 
         $this->service->update($dto, $user_id);
 
-        return redirect()->route('users.index');
+        return response()->json(['message' => 'success']);
     }
 
     /**

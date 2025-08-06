@@ -32,7 +32,7 @@ class EditRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255',
-            'password' => 'nullable|string|min:5|max:255|confirmed',
+            'password' => 'nullable|string|min:3|max:255|confirmed',
             'department_id' => 'nullable|int|exists:departments,id',
             'position_id' => 'nullable|int|exists:positions,id',
             'gender' => ['required', new Enum(GenderEnum::class)],
