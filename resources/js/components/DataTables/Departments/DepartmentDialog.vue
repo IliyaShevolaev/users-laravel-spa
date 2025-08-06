@@ -2,7 +2,7 @@
     <v-dialog v-model="props.isOpen" persistent max-width="600px">
         <v-card>
             <v-card-title>
-                <span class="headline">Добавить новый отдел</span>
+                <span class="headline">Отдел</span>
             </v-card-title>
             <v-card-text>
                 <v-form @submit.prevent="add">
