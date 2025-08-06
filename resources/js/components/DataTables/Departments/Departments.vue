@@ -72,6 +72,8 @@ const loadingTable = ref(true);
 const headers = [
     { title: "ID", key: "id" },
     { title: "Название отдела", key: "name" },
+    { title: "Создан", key: "created_at" },
+    { title: "Обновлен", key: "updated_at" },
     { title: "Действия", key: "actions", sortable: false, align: "center" },
 ];
 

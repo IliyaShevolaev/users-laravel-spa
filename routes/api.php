@@ -10,6 +10,7 @@ use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/auth/create', '\App\Http\Controllers\Auth\RegisterController@create');
 
 Route::middleware('auth')->group(function () {
     Route::get('/', 'App\Http\Controllers\User\UserController@index');

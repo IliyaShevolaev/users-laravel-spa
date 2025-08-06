@@ -50,6 +50,23 @@
                             {{ registerErrorFormData.email }}
                         </v-alert>
 
+                        <v-select
+                            v-model="registerFormData.gender"
+                            :items="userGenders"
+                            :error="registerErrorFormData.gender"
+                            item-title="text"
+                            item-value="value"
+                            label="Пол"
+                            required
+                        ></v-select>
+                        <v-alert
+                            class="mb-4"
+                            v-if="registerErrorFormData.gender"
+                            type="error"
+                        >
+                            {{ registerErrorFormData.gender }}
+                        </v-alert>
+
                         <v-text-field
                             v-model="registerFormData.password"
                             :append-inner-icon="
@@ -138,6 +155,7 @@ const authStore = useAuthStore();
 const registerFormData = reactive({
     name: "",
     email: "",
+    gender: "",
     password: "",
     password_confirmation: "",
 });
@@ -145,7 +163,16 @@ const registerFormData = reactive({
 const registerErrorFormData = reactive({});
 
 const showPassword = ref(false);
-const error = ref(false);
+
+const userGenders = ref([]);
+const getCreateUserData = function () {
+    axios.get("/api/auth/create").then((response) => {
+        console.log(response);
+        userGenders.value = response.data.genders;
+    });
+};
+
+getCreateUserData();
 
 const registerSubmit = function () {
     axios.get("/sanctum/csrf-cookie").then((response) => {

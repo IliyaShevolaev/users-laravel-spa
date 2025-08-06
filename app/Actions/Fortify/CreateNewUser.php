@@ -3,9 +3,11 @@
 namespace App\Actions\Fortify;
 
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
+use App\Enums\User\GenderEnum;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Enum;
+use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 
 class CreateNewUser implements CreatesNewUsers
@@ -29,6 +31,7 @@ class CreateNewUser implements CreatesNewUsers
                 Rule::unique(User::class),
             ],
             'password' => $this->passwordRules(),
+            'gender' => ['required', new Enum(GenderEnum::class)],
         ])->validate();
 
 
@@ -36,6 +39,7 @@ class CreateNewUser implements CreatesNewUsers
             'name' => $input['name'],
             'email' => $input['email'],
             'password' => $input['password'],
+            'gender' => $input['gender']
         ]);
     }
 }

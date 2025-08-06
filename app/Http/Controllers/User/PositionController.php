@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\User;
 
-use App\DTO\User\Position\PositionDTO;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Contracts\View\View;
 use App\Http\Controllers\Controller;
 use App\DataTables\PositionsDataTable;
+use App\DTO\User\Position\PositionDTO;
+use App\Http\Resources\User\PositionResource;
 use App\Services\User\Position\PositionService;
 use App\Http\Requests\Users\Position\PositionRequest;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use App\Repositories\Interfaces\User\Position\PositionRepositoryInterface;
 
 /**
@@ -36,24 +38,11 @@ class PositionController extends Controller
     /**
      * Отображает все должности через таблицу PositionsDataTable
      *
-     * @param PositionsDataTable $positionsDataTable
-     * @return JsonResponse|View
+     * @return AnonymousResourceCollection
      */
-    public function index(PositionsDataTable $positionsDataTable): JsonResponse|View
+    public function index(): AnonymousResourceCollection
     {
-        return $positionsDataTable->render('positions.index');
-    }
-
-    /**
-     * Возвращает форму создания новой должности
-     *
-     * @return JsonResponse
-     */
-    public function create()
-    {
-        return response()->json(view('positions.form')
-            ->with(['route' => route('positions.store')])
-            ->render());
+        return PositionResource::collection($this->repository->all());
     }
 
     /**
@@ -75,17 +64,13 @@ class PositionController extends Controller
      * Возвращает форму редактирования передаваемой должности
      *
      * @param int $position_id
-     * @return JsonResponse
+     * @return PositionResource
      */
-    public function edit(int $position_id)
+    public function edit(int $position_id): PositionResource
     {
-        $positionmentToEdit = $this->repository->find($position_id);
+        $positionToEdit = $this->repository->find($position_id);
 
-        return response()->json(view('positions.form')
-            ->with([
-                'route' => route('positions.update', $positionmentToEdit->id),
-                'element' => $positionmentToEdit
-            ])->render());
+        return new PositionResource($positionToEdit);
     }
 
     /**

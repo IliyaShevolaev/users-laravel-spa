@@ -35,12 +35,14 @@ const routes = [
         path: '/departments',
         component: Departments,
         name: 'departments',
+        meta: { requiresAuth: true },
     },
 
     {
         path: '/positions',
         component: Positions,
         name: 'positions',
+        meta: { requiresAuth: true },
     },
 
     {

@@ -216,7 +216,7 @@ return [
         'email' => 'почта',
         'enabled' => 'Включено',
         'first_name' => 'Имя',
-        'gender' => 'Пол',
+        'gender' => 'пол',
         'hour' => 'Час',
         'last_name' => 'Фамилия',
         'middle_name' => 'Отчество',
