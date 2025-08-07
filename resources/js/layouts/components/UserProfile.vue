@@ -1,5 +1,31 @@
 <script setup>
 import avatar1 from '@images/avatars/avatar-1.png'
+
+import { useAuthStore } from '../../stores/auth';
+import { useRouter } from "vue-router";
+
+const authStore = useAuthStore();
+
+const router = useRouter();
+
+const logout = function () {
+    axios.get("/sanctum/csrf-cookie").then((response) => {
+        axios
+            .post("/logout", {
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                },
+            })
+            .then((response) => {
+                authStore.logoutUser();
+                router.push('/login')
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    });
+};
 </script>
 
 <template>
@@ -110,7 +136,7 @@ import avatar1 from '@images/avatars/avatar-1.png'
           <VDivider class="my-2" />
 
           <!-- 👉 Logout -->
-          <VListItem to="/login">
+          <VListItem @click="logout">
             <template #prepend>
               <VIcon
                 class="me-2"
