@@ -7,6 +7,7 @@ namespace Database\Seeders;
 use App\Models\Post;
 use App\Models\User;
 use App\Models\Category;
+use App\Models\User\Department;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -24,5 +25,7 @@ class DatabaseSeeder extends Seeder
         // Post::factory(20)->create();
 
         //User::factory(120)->create();
+
+        Department::factory(100)->create();
     }
 }

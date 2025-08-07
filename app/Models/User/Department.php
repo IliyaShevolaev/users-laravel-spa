@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Department extends Model
 {
     use SoftDeletes;
+    use HasFactory;
 
     /**
      * Автозаполняемые атрибуты

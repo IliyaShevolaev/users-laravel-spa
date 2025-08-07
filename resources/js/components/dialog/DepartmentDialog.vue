@@ -1,47 +1,3 @@
-<template>
-    <v-dialog v-model="props.isOpen" persistent max-width="600px">
-        <v-card>
-            <v-card-title>
-                <span class="headline">Отдел</span>
-            </v-card-title>
-            <v-card-text>
-                <v-form @submit.prevent="add">
-                    <v-text-field
-                        v-model="formData.name"
-                        :error="!!formDataErrors.name"
-                        label="Название"
-                        density="default"
-                        variant="underlined"
-                        color="primary"
-                        name="name"
-                        outlined
-                        validateOn="blur"
-                    ></v-text-field>
-                    <v-alert
-                        class="mb-4"
-                        v-if="formDataErrors.name"
-                        type="error"
-                    >
-                        {{ formDataErrors.name }}
-                    </v-alert>
-                </v-form>
-            </v-card-text>
-            <v-card-actions>
-                <v-btn color="red" @click="close(false)">Закрыть</v-btn>
-                <v-btn
-                    v-if="props.editId !== null"
-                    color="green"
-                    text
-                    @click="update(props.editId)"
-                >
-                    Изменить
-                </v-btn>
-                <v-btn v-else color="green" text @click="add"> Добавить </v-btn>
-            </v-card-actions>
-        </v-card>
-    </v-dialog>
-</template>
-
 <script setup>
 import axios from "axios";
 import { reactive, ref, watch } from "vue";
@@ -71,10 +27,12 @@ const add = function () {
     axios
         .post("/api/departments", formData)
         .then((response) => {
+            console.log(11111111111);
             close(true);
         })
         .catch((error) => {
             clearFields(formDataErrors);
+            console.log(error);
             if (error.response.status === 422) {
                 const errors = error.response.data.errors;
                 console.log(errors);
@@ -138,3 +96,41 @@ const clearFields = function (obj) {
     });
 };
 </script>
+
+<template>
+    <v-dialog v-model="props.isOpen" persistent max-width="600px">
+        <v-card>
+            <v-card-title>
+                <span class="headline">Отдел</span>
+            </v-card-title>
+            <v-card-text>
+                <v-form @submit.prevent="add">
+                    <v-text-field
+                        v-model="formData.name"
+                        :error="!!formDataErrors.name"
+                        :error-messages="formDataErrors.name"
+                        label="Название"
+                        density="default"
+                        variant="underlined"
+                        color="primary"
+                        name="name"
+                        outlined
+                        validateOn="blur"
+                    ></v-text-field>
+                </v-form>
+            </v-card-text>
+            <v-card-actions>
+                <v-btn color="red" @click="close(false)">Закрыть</v-btn>
+                <v-btn
+                    v-if="props.editId !== null"
+                    color="green"
+                    text
+                    @click="update(props.editId)"
+                >
+                    Изменить
+                </v-btn>
+                <v-btn v-else color="green" text @click="add"> Добавить </v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
+</template>
