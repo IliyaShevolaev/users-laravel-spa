@@ -3,10 +3,12 @@ import avatar1 from '@images/avatars/avatar-1.png'
 
 import { useAuthStore } from '../../stores/auth';
 import { useRouter } from "vue-router";
+import { storeToRefs } from 'pinia';
 
 const authStore = useAuthStore();
-
 const router = useRouter();
+
+const { userInfo } = storeToRefs(authStore)
 
 const logout = function () {
     axios.get("/sanctum/csrf-cookie").then((response) => {
@@ -74,65 +76,10 @@ const logout = function () {
             </template>
 
             <VListItemTitle class="font-weight-semibold">
-              John Doe
+              {{ userInfo.name }}
             </VListItemTitle>
-            <VListItemSubtitle>Admin</VListItemSubtitle>
+            <VListItemSubtitle>{{userInfo.email}}</VListItemSubtitle>
           </VListItem>
-          <VDivider class="my-2" />
-
-          <!-- 👉 Profile -->
-          <VListItem link>
-            <template #prepend>
-              <VIcon
-                class="me-2"
-                icon="ri-user-line"
-                size="22"
-              />
-            </template>
-
-            <VListItemTitle>Profile</VListItemTitle>
-          </VListItem>
-
-          <!-- 👉 Settings -->
-          <VListItem link>
-            <template #prepend>
-              <VIcon
-                class="me-2"
-                icon="ri-settings-4-line"
-                size="22"
-              />
-            </template>
-
-            <VListItemTitle>Settings</VListItemTitle>
-          </VListItem>
-
-          <!-- 👉 Pricing -->
-          <VListItem link>
-            <template #prepend>
-              <VIcon
-                class="me-2"
-                icon="ri-money-dollar-circle-line"
-                size="22"
-              />
-            </template>
-
-            <VListItemTitle>Pricing</VListItemTitle>
-          </VListItem>
-
-          <!-- 👉 FAQ -->
-          <VListItem link>
-            <template #prepend>
-              <VIcon
-                class="me-2"
-                icon="ri-question-line"
-                size="22"
-              />
-            </template>
-
-            <VListItemTitle>FAQ</VListItemTitle>
-          </VListItem>
-
-          <!-- Divider -->
           <VDivider class="my-2" />
 
           <!-- 👉 Logout -->
