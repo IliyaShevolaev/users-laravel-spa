@@ -5,6 +5,7 @@ import DepartmentDialog from "../components/dialog/DepartmentDialog.vue";
 import AcceptDialog from "../components/alerts/AcceptDialog.vue";
 import AlertDangerDialog from "../components/alerts/AlertDangerDialog.vue";
 import { useDisplay } from "vuetify";
+import { debounce } from "vuetify/lib/util/helpers.mjs";
 
 const { mobile } = useDisplay();
 
@@ -64,18 +65,24 @@ const requestData = function ({ page, itemsPerPage, sortBy }) {
         });
 };
 
+const debouncedSearch = debounce((newValue) => {
+    if (newValue === "" || newValue.length >= 3) {
+        requestData({
+            page: 1,
+            itemsPerPage: itemsPerPage.value,
+            sortBy: currentSortBy.value,
+        });
+    }
+}, 1000);
+
 watch(
-    () => search,
-    (newValue, oldValue) => {
-        if (newValue === "") {
-            requestData({
-                page: currentPage.value,
-                itemsPerPage: itemsPerPage.value,
-                sortBy: currentSortBy.value,
-            });
-        }
+    () => search.value,
+    (newValue) => {
+        debouncedSearch(newValue);
     }
 );
+
+
 
 const isDialogOpen = ref(false);
 const dialogEditId = ref(null);
@@ -180,7 +187,7 @@ const alertAcceptText = ref("");
             <div class="flex flex-row-reverse">
                 <div :class="mobile ? 'w-full' : 'w-25'">
                     <v-text-field
-                        v-model="search"
+                        v-model.lazy="search"
                         class="ma-2"
                         density="compact"
                         placeholder="Поиск"
