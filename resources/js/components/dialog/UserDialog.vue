@@ -1,149 +1,9 @@
-<template>
-    <v-dialog v-model="props.isOpen" persistent max-width="600px">
-        <v-card>
-            <v-card-title>
-                <span class="headline">Пользователь</span>
-            </v-card-title>
-            <v-card-text>
-                <v-form @submit.prevent="add">
-                    <v-text-field
-                        v-model="formData.name"
-                        :error="!!formDataErrors.name"
-                        :error-messages="formDataErrors.name"
-                        label="Имя"
-                        class="mt-2"
-                        density="default"
-                        variant="underlined"
-                        color="primary"
-                        name="name"
-                        outlined
-                        validateOn="blur"
-                    ></v-text-field>
-
-                    <v-text-field
-                        v-model="formData.email"
-                        :error="!!formDataErrors.email"
-                        :error-messages="formDataErrors.email"
-                        class="mt-2"
-                        label="Почта"
-                        density="default"
-                        variant="underlined"
-                        color="primary"
-                        name="email"
-                        outlined
-                        validateOn="blur"
-                    ></v-text-field>
-
-                    <v-text-field
-                        v-model="formData.password"
-                        :append-inner-icon="
-                            showPassword ? 'mdi-eye' : 'mdi-eye-off'
-                        "
-                        :type="showPassword ? 'text' : 'password'"
-                        :error="!!formDataErrors.password"
-                        :error-messages="formDataErrors.password"
-                        class="mt-2"
-                        label="Пароль"
-                        density="default"
-                        variant="underlined"
-                        color="primary"
-                        name="password"
-                        outlined
-                        validateOn="blur"
-                        @click:append-inner="showPassword = !showPassword"
-                    ></v-text-field>
-
-                    <v-text-field
-                        v-model="formData.password_confirmation"
-                        :append-inner-icon="
-                            showPassword ? 'mdi-eye' : 'mdi-eye-off'
-                        "
-                        :type="showPassword ? 'text' : 'password'"
-                        :error="!!formDataErrors.password"
-                        :error-messages="formDataErrors.password"
-                        class="mt-2"
-                        label="Подтвердите пароль"
-                        density="default"
-                        variant="underlined"
-                        color="primary"
-                        name="password_confirmation"
-                        outlined
-                        validateOn="blur"
-                        @click:append-inner="showPassword = !showPassword"
-                    ></v-text-field>
-
-                    <v-select
-                        v-model="formData.gender"
-                        :items="userGenders"
-                        :error="!!formDataErrors.gender"
-                        :error-messages="formDataErrors.gender"
-                        class="mt-2"
-                        item-title="text"
-                        variant="underlined"
-                        item-value="value"
-                        label="Пол"
-                        required
-                    ></v-select>
-
-                    <v-select
-                        v-model="formData.status"
-                        :items="userStatuses"
-                        :error="!!formDataErrors.status"
-                        :error-messages="formDataErrors.status"
-                        class="mt-2"
-                        item-title="text"
-                        variant="underlined"
-                        item-value="value"
-                        label="Статус"
-                        required
-                    ></v-select>
-
-                    <v-select
-                        v-model="formData.department_id"
-                        :items="userDepartmentsComputed"
-                        :error="!!formDataErrors.department_id"
-                        :error-messages="formDataErrors.department_id"
-                        class="mt-2"
-                        item-title="text"
-                        variant="underlined"
-                        item-value="value"
-                        label="Отдел"
-                        clearable
-                    ></v-select>
-
-                    <v-select
-                        v-model="formData.position_id"
-                        :items="userPositionsComputed"
-                        item-title="text"
-                        item-value="value"
-                        :error="!!formDataErrors.position_id"
-                        :error-messages="formDataErrors.position_id"
-                        class="mt-2"
-                        variant="underlined"
-                        label="Должность"
-                        clearable
-                    ></v-select>
-                </v-form>
-            </v-card-text>
-            <v-card-actions>
-                <v-btn color="red" @click="close(false)">Закрыть</v-btn>
-                <v-btn
-                    v-if="props.editId !== null"
-                    color="green"
-                    text
-                    @click="update(props.editId)"
-                >
-                    Изменить
-                </v-btn>
-                <v-btn v-else color="green" text @click="add"> Добавить </v-btn>
-            </v-card-actions>
-        </v-card>
-    </v-dialog>
-</template>
-
 <script setup>
 import axios from "axios";
 import { computed, reactive, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const showPassword = ref(false);
 
@@ -273,8 +133,11 @@ const update = function (id) {
 watch(
     () => props.isOpen,
     (newValue, oldValue) => {
-        if (newValue === true && oldValue === false && props.editId !== null) {
-            edit();
+        if (newValue === true && oldValue === false) {
+            clearFields(formData);
+            if (props.editId !== null) {
+                edit();
+            }
         }
     }
 );
@@ -285,3 +148,161 @@ const clearFields = function (obj) {
     });
 };
 </script>
+
+<template>
+    <v-dialog v-model="props.isOpen" persistent max-width="600px">
+        <v-card>
+            <v-card-title>
+                <span class="headline">{{
+                    props.editId
+                        ? t("users.edit_button")
+                        : t("users.add_button")
+                }}</span>
+            </v-card-title>
+            <v-card-text>
+                <v-form @submit.prevent="add">
+                    <v-text-field
+                        v-model="formData.name"
+                        :error="!!formDataErrors.name"
+                        :error-messages="formDataErrors.name"
+                        :label="t('users.name')"
+                        class="mt-2"
+                        density="default"
+                        variant="underlined"
+                        color="primary"
+                        name="name"
+                        outlined
+                        validateOn="blur"
+                    ></v-text-field>
+
+                    <v-text-field
+                        v-model="formData.email"
+                        :error="!!formDataErrors.email"
+                        :error-messages="formDataErrors.email"
+                        class="mt-2"
+                        :label="t('users.email')"
+                        density="default"
+                        variant="underlined"
+                        color="primary"
+                        name="email"
+                        outlined
+                        validateOn="blur"
+                    ></v-text-field>
+
+                    <v-text-field
+                        v-model="formData.password"
+                        :append-inner-icon="
+                            showPassword ? 'mdi-eye' : 'mdi-eye-off'
+                        "
+                        :type="showPassword ? 'text' : 'password'"
+                        :error="!!formDataErrors.password"
+                        :error-messages="formDataErrors.password"
+                        class="mt-2"
+                        :label="t('users.password')"
+                        density="default"
+                        variant="underlined"
+                        color="primary"
+                        name="password"
+                        outlined
+                        validateOn="blur"
+                        @click:append-inner="showPassword = !showPassword"
+                    ></v-text-field>
+
+                    <v-text-field
+                        v-model="formData.password_confirmation"
+                        :append-inner-icon="
+                            showPassword ? 'mdi-eye' : 'mdi-eye-off'
+                        "
+                        :type="showPassword ? 'text' : 'password'"
+                        :error="!!formDataErrors.password"
+                        :error-messages="formDataErrors.password"
+                        class="mt-2"
+                        :label="t('users.password')"
+                        density="default"
+                        variant="underlined"
+                        color="primary"
+                        name="password_confirmation"
+                        outlined
+                        validateOn="blur"
+                        @click:append-inner="showPassword = !showPassword"
+                    ></v-text-field>
+
+                    <v-select
+                        v-model="formData.gender"
+                        :items="userGenders"
+                        :error="!!formDataErrors.gender"
+                        :error-messages="formDataErrors.gender"
+                        class="mt-2"
+                        item-title="text"
+                        variant="underlined"
+                        item-value="value"
+                        :label="t('users.gender')"
+                        required
+                    ></v-select>
+
+                    <v-select
+                        v-model="formData.status"
+                        :items="userStatuses"
+                        :error="!!formDataErrors.status"
+                        :error-messages="formDataErrors.status"
+                        class="mt-2"
+                        item-title="text"
+                        variant="underlined"
+                        item-value="value"
+                        :label="t('users.status')"
+                        required
+                    ></v-select>
+
+                    <v-select
+                        v-model="formData.department_id"
+                        :items="userDepartmentsComputed"
+                        :error="!!formDataErrors.department_id"
+                        :error-messages="formDataErrors.department_id"
+                        class="mt-2"
+                        item-title="text"
+                        variant="underlined"
+                        item-value="value"
+                        :label="t('users.department')"
+                        clearable
+                    ></v-select>
+
+                    <v-select
+                        v-model="formData.position_id"
+                        :items="userPositionsComputed"
+                        item-title="text"
+                        item-value="value"
+                        :error="!!formDataErrors.position_id"
+                        :error-messages="formDataErrors.position_id"
+                        class="mt-2"
+                        variant="underlined"
+                        :label="t('users.position')"
+                        clearable
+                    ></v-select>
+                </v-form>
+            </v-card-text>
+            <v-card-actions>
+                <v-btn color="error" variant="elevated" @click="close(false)">
+                    {{ t("main.close_button") }}
+                </v-btn>
+                <v-btn
+                    v-if="props.editId !== null"
+                    variant="elevated"
+                    color="warning"
+                    text
+                    @click="update(props.editId)"
+                >
+                    {{ t("main.edit_button") }}
+                </v-btn>
+                <v-btn
+                    v-else
+                    variant="elevated"
+                    color="success"
+                    text
+                    @click="add"
+                >
+                    {{ t("main.append_button") }}
+                </v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
+</template>

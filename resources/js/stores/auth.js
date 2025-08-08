@@ -36,5 +36,3 @@ export const useAuthStore = defineStore("auth", {
     },
 });
 
-// const auth = useAuthStore()
-// const { isAuth } = storeToRefs(auth) перобразовать все свойства в ref

@@ -6,6 +6,9 @@ import AcceptDialog from "../components/alerts/AcceptDialog.vue";
 import AlertDangerDialog from "../components/alerts/AlertDangerDialog.vue";
 import { useDisplay } from "vuetify";
 import { debounce } from "vuetify/lib/util/helpers.mjs";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const { mobile } = useDisplay();
 
@@ -13,10 +16,15 @@ const positions = ref([]);
 
 const headers = [
     { title: "ID", key: "id" },
-    { title: "Название должности", key: "name" },
-    { title: "Создан", key: "created_at" },
-    { title: "Обновлен", key: "updated_at" },
-    { title: "Действия", key: "actions", sortable: false, align: "center" },
+    { title: t("main.title"), key: "name" },
+    { title: t("main.created"), key: "created_at" },
+    { title: t("main.updated"), key: "updated_at" },
+    {
+        title: t("main.actions"),
+        key: "actions",
+        sortable: false,
+        align: "center",
+    },
 ];
 
 const itemsPerPage = ref(10);
@@ -81,8 +89,6 @@ watch(
     }
 );
 
-
-
 const isDialogOpen = ref(false);
 const dialogEditId = ref(null);
 
@@ -112,7 +118,7 @@ const idToDelete = ref(0);
 
 const askToDeleteRow = function (id, name) {
     showAlertAcceptDialog.value = true;
-    alertAcceptText.value = `Удалить должность ${name}?`;
+    alertAcceptText.value = `${t('users.positions.delete')} ${name}?`;
     idToDelete.value = id;
 };
 
@@ -130,11 +136,10 @@ const deleteRow = function (id) {
             console.log(error);
             if (error.response.status === 409) {
                 showAlertDialog.value = true;
-                alertText.value =
-                    "Невозможно удалить должность, пока есть люди с этой должностью";
+                alertText.value = t('users.positions.unable_to_delete');
             } else if (error.response.status === 404) {
                 showAlertDialog.value = true;
-                alertText.value = "Отдел отсутствует";
+                alertText.value = t('users.positions.no_selected');
             }
         });
     showAlertAcceptDialog.value = false;
@@ -149,8 +154,8 @@ const alertAcceptText = ref("");
 
 <template>
     <div class="mb-5">
-        <v-btn @click="openDialog()" prepend-icon="ri-add-line" color="green">
-            Добавить отдел
+        <v-btn @click="openDialog()" prepend-icon="ri-add-line" color="success">
+            {{ $t("main.append_button") }}
         </v-btn>
     </div>
     <PositionDialog
@@ -189,7 +194,7 @@ const alertAcceptText = ref("");
                         v-model.lazy="search"
                         class="ma-2"
                         density="compact"
-                        placeholder="Поиск"
+                        :placeholder="$t('main.search')"
                         hide-details
                         clearable
                     ></v-text-field>
@@ -200,12 +205,14 @@ const alertAcceptText = ref("");
         <template v-slot:item.actions="{ item }">
             <v-btn
                 icon="ri-edit-line"
+                color="warning"
                 class="me-3"
                 size="small"
                 @click="edit(item.id)"
             ></v-btn>
             <v-btn
                 icon="ri-delete-bin-fill"
+                color="error"
                 class="me-3"
                 size="small"
                 @click="askToDeleteRow(item.id, item.name)"

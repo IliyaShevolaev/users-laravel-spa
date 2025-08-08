@@ -4,6 +4,9 @@ import avatar1 from '@images/avatars/avatar-1.png'
 import { useAuthStore } from '../../stores/auth';
 import { useRouter } from "vue-router";
 import { storeToRefs } from 'pinia';
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const authStore = useAuthStore();
 const router = useRouter();
@@ -92,7 +95,7 @@ const logout = function () {
               />
             </template>
 
-            <VListItemTitle>Logout</VListItemTitle>
+            <VListItemTitle>{{t('auth.logout')}}</VListItemTitle>
           </VListItem>
         </VList>
       </VMenu>

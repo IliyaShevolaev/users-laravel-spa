@@ -4,6 +4,9 @@ import misc404 from '@images/pages/404.png'
 import miscMaskDark from '@images/pages/misc-mask-dark.png'
 import miscMaskLight from '@images/pages/misc-mask-light.png'
 import tree from '@images/pages/tree.png'
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const vuetifyTheme = useTheme()
 
@@ -16,8 +19,7 @@ const authThemeMask = computed(() => {
   <div class="misc-wrapper">
     <ErrorHeader
       status-code="404"
-      title="Page Not Found ⚠️"
-      description="We couldn't find the page you are looking for."
+      :title="t('main.page-not-found')"
     />
 
     <!-- 👉 Image -->
@@ -32,7 +34,7 @@ const authThemeMask = computed(() => {
         to="/"
         class="mt-10"
       >
-        Back to Home
+        {{t('main.back')}}
       </VBtn>
     </div>
 

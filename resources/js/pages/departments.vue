@@ -6,6 +6,9 @@ import AcceptDialog from "../components/alerts/AcceptDialog.vue";
 import AlertDangerDialog from "../components/alerts/AlertDangerDialog.vue";
 import { useDisplay } from "vuetify";
 import { debounce } from "vuetify/lib/util/helpers.mjs";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const { mobile } = useDisplay();
 
@@ -13,10 +16,15 @@ const departments = ref([]);
 
 const headers = [
     { title: "ID", key: "id" },
-    { title: "Название отдела", key: "name" },
-    { title: "Создан", key: "created_at" },
-    { title: "Обновлен", key: "updated_at" },
-    { title: "Действия", key: "actions", sortable: false, align: "center" },
+    { title: t("main.title"), key: "name" },
+    { title: t("main.created"), key: "created_at" },
+    { title: t("main.updated"), key: "updated_at" },
+    {
+        title: t("main.actions"),
+        key: "actions",
+        sortable: false,
+        align: "center",
+    },
 ];
 
 const itemsPerPage = ref(10);
@@ -56,7 +64,6 @@ const requestData = function ({ page, itemsPerPage, sortBy }) {
         })
         .catch((error) => {
             console.error(error);
-            console.error("!!!!!!!!!!!!!");
             departments.value = [];
             totalItems.value = 0;
         })
@@ -81,8 +88,6 @@ watch(
         debouncedSearch(newValue);
     }
 );
-
-
 
 const isDialogOpen = ref(false);
 const dialogEditId = ref(null);
@@ -113,7 +118,7 @@ const idToDelete = ref(0);
 
 const askToDeleteRow = function (id, name) {
     showAlertAcceptDialog.value = true;
-    alertAcceptText.value = `Удалить отдел ${name}?`;
+    alertAcceptText.value = `${t('users.departments.delete')} ${name}?`;
     idToDelete.value = id;
 };
 
@@ -131,11 +136,10 @@ const deleteRow = function (id) {
             console.log(error);
             if (error.response.status === 409) {
                 showAlertDialog.value = true;
-                alertText.value =
-                    "Невозможно удалить отдел, пока есть люди прикрепленные к нему";
+                alertText.value = t('users.departments.unable_to_delete');
             } else if (error.response.status === 404) {
                 showAlertDialog.value = true;
-                alertText.value = "Отдел отсутствует";
+                alertText.value = t('users.departments.no_selected');
             }
         });
     showAlertAcceptDialog.value = false;
@@ -150,8 +154,8 @@ const alertAcceptText = ref("");
 
 <template>
     <div class="mb-5">
-        <v-btn @click="openDialog()" prepend-icon="ri-add-line" color="green">
-            Добавить отдел
+        <v-btn @click="openDialog()" prepend-icon="ri-add-line" color="success">
+            {{ $t("main.append_button") }}
         </v-btn>
     </div>
     <DepartmentDialog
@@ -190,7 +194,7 @@ const alertAcceptText = ref("");
                         v-model.lazy="search"
                         class="ma-2"
                         density="compact"
-                        placeholder="Поиск"
+                        :placeholder="$t('main.search')"
                         hide-details
                         clearable
                     ></v-text-field>
@@ -203,12 +207,14 @@ const alertAcceptText = ref("");
                 icon="ri-edit-line"
                 class="me-3"
                 size="small"
+                color="warning"
                 @click="edit(item.id)"
             ></v-btn>
             <v-btn
                 icon="ri-delete-bin-fill"
                 class="me-3"
                 size="small"
+                color="error"
                 @click="askToDeleteRow(item.id, item.name)"
             ></v-btn>
         </template>

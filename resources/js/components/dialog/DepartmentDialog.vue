@@ -1,6 +1,9 @@
 <script setup>
 import axios from "axios";
 import { reactive, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const props = defineProps({
     editId: {
@@ -27,7 +30,7 @@ const add = function () {
     axios
         .post("/api/departments", formData)
         .then((response) => {
-            close(true, 'add');
+            close(true, "add");
         })
         .catch((error) => {
             clearFields(formDataErrors);
@@ -83,8 +86,11 @@ const update = function (id) {
 watch(
     () => props.isOpen,
     (newValue, oldValue) => {
-        if (newValue === true && oldValue === false && props.editId !== null) {
-            edit();
+        if (newValue === true && oldValue === false) {
+            clearFields(formData);
+            if (props.editId !== null) {
+                edit();
+            }
         }
     }
 );
@@ -100,7 +106,11 @@ const clearFields = function (obj) {
     <v-dialog v-model="props.isOpen" persistent max-width="600px">
         <v-card>
             <v-card-title>
-                <span class="headline">Отдел</span>
+                <span class="headline">{{
+                    props.editId
+                        ? t("users.departments.edit_button")
+                        : t("users.departments.add_button")
+                }}</span>
             </v-card-title>
             <v-card-text>
                 <v-form @submit.prevent="add">
@@ -108,7 +118,7 @@ const clearFields = function (obj) {
                         v-model="formData.name"
                         :error="!!formDataErrors.name"
                         :error-messages="formDataErrors.name"
-                        label="Название"
+                        :label="t('main.title')"
                         density="default"
                         variant="underlined"
                         color="primary"
@@ -119,16 +129,27 @@ const clearFields = function (obj) {
                 </v-form>
             </v-card-text>
             <v-card-actions>
-                <v-btn color="red" @click="close(false)">Закрыть</v-btn>
+                <v-btn color="error" variant="elevated" @click="close(false)">{{
+                    t("main.close_button")
+                }}</v-btn>
                 <v-btn
                     v-if="props.editId !== null"
-                    color="green"
+                    variant="elevated"
+                    color="warning"
                     text
                     @click="update(props.editId)"
                 >
-                    Изменить
+                    {{ t("main.edit_button") }}
                 </v-btn>
-                <v-btn v-else color="green" text @click="add"> Добавить </v-btn>
+                <v-btn
+                    v-else
+                    variant="elevated"
+                    color="success"
+                    text
+                    @click="add"
+                >
+                    {{ t("main.append_button") }}
+                </v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>

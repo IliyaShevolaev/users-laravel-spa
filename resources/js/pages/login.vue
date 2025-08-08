@@ -7,6 +7,9 @@ import authV1Tree2 from "@images/pages/auth-v1-tree-2.png";
 import authV1Tree from "@images/pages/auth-v1-tree.png";
 import { useAuthStore } from "../stores/auth";
 import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const vuetifyTheme = useTheme();
 
@@ -39,7 +42,7 @@ const loginSubmit = function () {
             })
             .then((response) => {
                 authStore.authUser(response.data.user);
-                router.push('/');
+                router.push("/");
             })
             .catch((error) => {
                 clearErrors();
@@ -88,7 +91,7 @@ const clearErrors = function () {
                                 v-model="loginFormData.email"
                                 :error="!!loginErrorFormData.email"
                                 :error-messages="loginErrorFormData.email"
-                                label="Почта"
+                                :label="t('users.email')"
                                 type="email"
                             />
                         </VCol>
@@ -99,7 +102,7 @@ const clearErrors = function () {
                                 v-model="loginFormData.password"
                                 :error="!!loginErrorFormData.password"
                                 :error-messages="loginErrorFormData.password"
-                                label="Пароль"
+                                :label="t('users.password')"
                                 :type="isPasswordVisible ? 'text' : 'password'"
                                 autocomplete="password"
                                 :append-inner-icon="
@@ -114,18 +117,18 @@ const clearErrors = function () {
 
                             <!-- login button -->
                             <VBtn class="mt-5" block @click="loginSubmit">
-                                Войти
+                                {{ t("auth.login") }}
                             </VBtn>
                         </VCol>
 
                         <!-- create account -->
                         <VCol cols="12" class="text-center text-base">
-                            <span>Нет аккаунта?</span>
+                            <span>{{ t("auth.not_register_yet") }}</span>
                             <RouterLink
                                 class="text-primary ms-2"
                                 to="/register"
                             >
-                                Зарегистрироваться
+                                {{ t("auth.register") }}
                             </RouterLink>
                         </VCol>
                     </VRow>

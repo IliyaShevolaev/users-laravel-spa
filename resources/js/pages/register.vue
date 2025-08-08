@@ -7,6 +7,9 @@ import authV1Tree2 from "@images/pages/auth-v1-tree-2.png";
 import authV1Tree from "@images/pages/auth-v1-tree.png";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../stores/auth";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const vuetifyTheme = useTheme();
 
@@ -101,7 +104,7 @@ const clearErrors = function () {
                                 v-model="registerFormData.name"
                                 :error="!!registerErrorFormData.name"
                                 :error-messages="registerErrorFormData.name"
-                                label="Имя"
+                                :label="t('users.name')"
                             />
                         </VCol>
                         <!-- email -->
@@ -110,7 +113,7 @@ const clearErrors = function () {
                                 v-model="registerFormData.email"
                                 :error="!!registerErrorFormData.email"
                                 :error-messages="registerErrorFormData.email"
-                                label="Почта"
+                                :label="t('users.email')"
                                 type="email"
                             />
                         </VCol>
@@ -124,7 +127,7 @@ const clearErrors = function () {
                                 :error-messages="registerErrorFormData.gender"
                                 item-title="text"
                                 item-value="value"
-                                label="Пол"
+                                :label="t('users.gender')"
                                 required
                             ></VSelect>
                         </VCol>
@@ -135,7 +138,7 @@ const clearErrors = function () {
                                 v-model="registerFormData.password"
                                 :error="!!registerErrorFormData.password"
                                 :error-messages="registerErrorFormData.password"
-                                label="Пароль"
+                                :label="t('users.password')"
                                 :type="isPasswordVisible ? 'text' : 'password'"
                                 autocomplete="password"
                                 :append-inner-icon="
@@ -154,7 +157,7 @@ const clearErrors = function () {
                                 v-model="registerFormData.password_confirmation"
                                 :error="!!registerErrorFormData.password"
                                 :error-messages="registerErrorFormData.password"
-                                label="Подтверждение пароля"
+                                :label="t('users.password_confirmation')"
                                 :type="isPasswordVisible ? 'text' : 'password'"
                                 autocomplete="password"
                                 :append-inner-icon="
@@ -170,15 +173,15 @@ const clearErrors = function () {
 
                         <VCol cols="12">
                             <VBtn block @click="registerSubmit">
-                                Зарегистрироваться
+                                {{ t('auth.register') }}
                             </VBtn>
                         </VCol>
 
                         <!-- login instead -->
                         <VCol cols="12" class="text-center text-base">
-                            <span>Уже есть аккаунт?</span>
+                            <span>{{ t('auth.already_register') }}</span>
                             <RouterLink class="text-primary ms-2" to="login">
-                                Войти
+                                {{ t('auth.login') }}
                             </RouterLink>
                         </VCol>
                     </VRow>

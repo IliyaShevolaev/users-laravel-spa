@@ -2,6 +2,9 @@
 import VerticalNavSectionTitle from '@/@layouts/components/VerticalNavSectionTitle.vue'
 import VerticalNavGroup from '@layouts/components/VerticalNavGroup.vue'
 import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 </script>
 
 <template>
@@ -9,26 +12,26 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
   <!-- 👉 User Interface -->
   <VerticalNavSectionTitle
     :item="{
-      heading: 'Пользователи',
+      heading: t('nav.users'),
     }"
   />
   <VerticalNavLink
     :item="{
-      title: 'Пользователи',
+      title: t('nav.users'),
       icon: 'ri-group-line',
       to: '/users',
     }"
   />
   <VerticalNavLink
     :item="{
-      title: 'Отделы',
+      title: t('nav.departments'),
       icon: 'ri-building-line',
       to: '/departments',
     }"
   />
   <VerticalNavLink
     :item="{
-      title: 'Должности',
+      title: t('nav.positions'),
       icon: 'ri-briefcase-line',
       to: '/positions',
     }"

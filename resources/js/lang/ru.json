@@ -1,0 +1,63 @@
+{
+    "users": {
+        "name": "Имя",
+        "email": "Почта",
+        "password": "Пароль",
+        "password_confirmation": "Подтвердите пароль",
+        "status": "Статус",
+        "gender": "Пол",
+        "department": "Отдел",
+        "position": "Должность",
+        "delete": "Удалить пользователя",
+        "no_selected": "Пользователь отсутствует",
+        "add_button": "Добавить пользователя",
+        "edit_button": "Изменить пользователя",
+
+        "departments": {
+            "delete": "Удалить отдел",
+            "unable_to_delete": "Невозможно удалить отдел, пока есть люди прикрепленные к нему",
+            "no_selected": "Отдел отсутствует",
+            "add_button": "Добавить отдел",
+            "edit_button": "Изменить отдел"
+        },
+        "positions": {
+            "delete": "Удалить должность",
+            "unable_to_delete": "Невозможно удалить отдел, пока есть люди прикрепленные к нему",
+            "no_selected": "Отдел отсутствует",
+            "add_button": "Добавить должность",
+            "edit_button": "Изменить должность"
+        }
+    },
+
+    "nav": {
+        "users": "Пользователи",
+        "departments": "Отделы",
+        "positions": "Должности"
+    },
+
+    "auth": {
+        "register": "Зарегистрироваться",
+        "login": "Войти",
+        "already_register": "Уже есть аккаунт?",
+        "not_register_yet": "Нет аккаунта?",
+        "logout": "Выход"
+    },
+
+    "main": {
+        "append_button": "Добавить",
+        "edit_button": "Изменить",
+        "close_button": "Закрыть",
+        "search": "Поиск",
+        "created": "Создан",
+        "updated": "Обновлен",
+        "actions": "Действия",
+        "title": "Название",
+        "open": "Открыть",
+        "page-not-found": "Страница не найдена⚠️",
+        "back": "Назад",
+        "yes": "Да",
+        "no": "Нет",
+        "ok": "Ок",
+        "error": "Ошибка!"
+    }
+}

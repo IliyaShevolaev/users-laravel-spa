@@ -5,6 +5,9 @@ import UserDialog from "../components/dialog/UserDialog.vue";
 import AcceptDialog from "../components/alerts/AcceptDialog.vue";
 import { useDisplay } from "vuetify";
 import { debounce } from "vuetify/lib/util/helpers.mjs";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const { mobile } = useDisplay();
 
@@ -12,15 +15,15 @@ const users = ref([]);
 
 const headers = [
     { title: "ID", key: "id" },
-    { title: "Имя", key: "name" },
-    { title: "Почта", key: "email" },
-    { title: "Пол", key: "gender" },
-    { title: "Статус", key: "status" },
-    { title: "Отдел", key: "department_id" },
-    { title: "Должность", key: "position_id" },
-    { title: "Создан", key: "created_at" },
-    { title: "Обновлен", key: "updated_at" },
-    { title: "Действия", key: "actions", sortable: false, align: "center" },
+    { title: t('users.name'), key: "name" },
+    { title: t('users.email'), key: "email" },
+    { title: t('users.gender'), key: "gender" },
+    { title: t('users.status'), key: "status" },
+    { title: t('users.department'), key: "department_id" },
+    { title: t('users.position'), key: "position_id" },
+    { title: t('main.created'), key: "created_at" },
+    { title: t('main.updated'), key: "updated_at" },
+    { title: t('main.actions'), key: "actions", sortable: false, align: "center" },
 ];
 
 const itemsPerPage = ref(10);
@@ -114,7 +117,7 @@ const idToDelete = ref(0);
 
 const askToDeleteRow = function (id, name) {
     showAlertAcceptDialog.value = true;
-    alertAcceptText.value = `Удалить должность ${name}?`;
+    alertAcceptText.value = `${t('users.delete')} ${name}?`;
     idToDelete.value = id;
 };
 
@@ -132,7 +135,7 @@ const deleteRow = function (id) {
             console.log(error);
             if (error.response.status === 404) {
                 showAlertDialog.value = true;
-                alertText.value = "Отдел отсутствует";
+                alertText.value = t('users.no_selected');
             }
         });
     showAlertAcceptDialog.value = false;
@@ -147,8 +150,8 @@ const alertAcceptText = ref("");
 
 <template>
     <div class="mb-5">
-        <v-btn @click="openDialog()" prepend-icon="ri-add-line" color="green">
-            Добавить пользователя
+        <v-btn @click="openDialog()" prepend-icon="ri-add-line" color="success">
+            {{ t('main.append_button') }}
         </v-btn>
     </div>
     <UserDialog
@@ -181,7 +184,7 @@ const alertAcceptText = ref("");
                         v-model.lazy="search"
                         class="ma-2"
                         density="compact"
-                        placeholder="Поиск"
+                        :placeholder="t('main.search')"
                         hide-details
                         clearable
                     ></v-text-field>
@@ -193,12 +196,14 @@ const alertAcceptText = ref("");
             <v-btn
                 icon="ri-edit-line"
                 class="me-3"
+                color="warning"
                 size="small"
                 @click="edit(item.id)"
             ></v-btn>
             <v-btn
                 icon="ri-delete-bin-fill"
                 class="me-3"
+                color="error"
                 size="small"
                 @click="askToDeleteRow(item.id, item.name)"
             ></v-btn>
