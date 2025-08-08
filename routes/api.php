@@ -6,6 +6,7 @@ declare(strict_types=1);
 // php vendor/bin/phpcs
 
 use App\Http\Controllers\User\PositionController;
+use App\Http\Controllers\User\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Auth;
@@ -17,13 +18,14 @@ Route::get('/auth/create', '\App\Http\Controllers\Auth\RegisterController@create
 Route::middleware('auth')->group(function () {
     Route::get('/', 'App\Http\Controllers\User\UserController@index');
 
-    Route::resource('users', \App\Http\Controllers\User\UserController::class);
+    Route::get('/users/datatable', [UserController::class, 'datatable']);
+    Route::resource('users', UserController::class);
 
-    Route::get('/departments/datatable', [DepartmentController::class, 'getDatatable'])->name('departments.datatable');
-    Route::resource('departments', \App\Http\Controllers\User\DepartmentController::class);
+    Route::get('/departments/datatable', [DepartmentController::class, 'datatable']);
+    Route::resource('departments', DepartmentController::class);
 
-    Route::get('/positions/datatable', [PositionController::class, 'datatable'])->name('position.datatable');
-    Route::resource('positions', \App\Http\Controllers\User\PositionController::class);
+    Route::get('/positions/datatable', [PositionController::class, 'datatable']);
+    Route::resource('positions', PositionController::class);
 });
 Route::get('/user', function (Request $request) {
     return Auth::user();

@@ -47,12 +47,7 @@ class PositionController extends Controller
 
     public function dataTable(PositionsDataTable $positionsDataTable)
     {
-        $dataTable = $positionsDataTable->dataTable($positionsDataTable->query())->toArray();
-
-        return response()->json([
-            'items' => $dataTable['data'],
-            'total' => $dataTable['recordsFiltered']
-        ]);
+        return $positionsDataTable->ajax();
     }
 
     /**

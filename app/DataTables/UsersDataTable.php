@@ -53,16 +53,34 @@ class UsersDataTable extends DataTable
                 return trans('main.users.statuses.' . $user->status->value);
             })
             ->editColumn('created_at', function ($user) {
-                return $user->created_at->format('d.m.Y H:i');
+                return $user->created_at->format('H:i d.m.Y');
             })
             ->editColumn('updated_at', function ($user) {
-                return $user->updated_at->format('d.m.Y H:i');
-            })
-            ->addColumn('actions', function ($user) {
-                return view('users.actions', compact('user'))->render();
-            })
-            ->rawColumns(['department_name', 'position_name', 'actions'])
-            ->setRowId('id');
+                return $user->updated_at->format('H:i d.m.Y');
+            });
+    }
+
+    public function ajax(): \Illuminate\Http\JsonResponse
+    {
+        $query = $this->query();
+
+        $totalRecords = User::count();
+
+        $filteredRecords = $query->count();
+
+        if ($this->request()->has('page') && $this->request()->has('per_page')) {
+            $perPage = $this->request()->input('per_page');
+            $offset = ($this->request()->input('page') - 1) * $perPage;
+            $paginateQuery = $query->skip($offset)->take($perPage);
+        }
+
+        return response()->json([
+            'data' => $this->dataTable($paginateQuery)->toJson(),
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $filteredRecords,
+            'draw' => $this->request()->input('draw', 0),
+            'input' => $this->request()->all()
+        ]);
     }
 
     /**
@@ -72,9 +90,18 @@ class UsersDataTable extends DataTable
      */
     public function query(): QueryBuilder
     {
-        return User::query()->withoutGlobalScope(ActiveUserScope::class);
-    }
+        $query = User::with(['department', 'position'])->select('users.*');
 
+        if ($this->request()->has('sort_by') && $this->request()->has('sort_order')) {
+            $query->orderBy($this->request()->input('sort_by'), $this->request()->input('sort_order'));
+        }
+
+        if ($this->request()->has('search') && !empty($this->request()->input('search'))) {
+            $query->where('name', 'like', '%' . $this->request()->input('search') . '%');
+        }
+
+        return $query;
+    }
     /**
      * Optional method if you want to use the html builder.
      */
@@ -123,15 +150,6 @@ class UsersDataTable extends DataTable
             Column::make('updated_at')->title(
                 is_array(__('main.users.updated')) ? '' : (string) Str::of(__('main.users.updated'))->ucfirst()
             ),
-            Column::computed('actions')
-                ->title(
-                    is_array(__('main.users.actions_buttons')) ?
-                    '' :
-                    (string) Str::of(__('main.users.actions_buttons'))->ucfirst()
-                )
-                ->printable(false)
-                ->width(120)
-                ->addClass('text-center'),
         ];
     }
 }

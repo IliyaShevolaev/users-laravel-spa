@@ -15,10 +15,12 @@ declare module 'vue' {
     DepartmentDialog: typeof import('./resources/js/components/dialog/DepartmentDialog.vue')['default']
     ErrorHeader: typeof import('./resources/js/components/ErrorHeader.vue')['default']
     MoreBtn: typeof import('./resources/js/@core/components/MoreBtn.vue')['default']
+    PositionDialog: typeof import('./resources/js/components/dialog/PositionDialog.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     ThemeSwitcher: typeof import('./resources/js/@core/components/ThemeSwitcher.vue')['default']
     UpgradeToPro: typeof import('./resources/js/components/UpgradeToPro.vue')['default']
+    UserDialog: typeof import('./resources/js/components/dialog/UserDialog.vue')['default']
     VueApexCharts: typeof import('vue3-apexcharts')['default']
   }
 }

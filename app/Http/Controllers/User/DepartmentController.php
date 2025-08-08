@@ -48,7 +48,7 @@ class DepartmentController extends Controller
         return DepartmerntResource::collection($this->repository->all());
     }
 
-    public function getDatatable(DepartmentsDataTable $departmentsDataTable)
+    public function datatable(DepartmentsDataTable $departmentsDataTable)
     {
         return $departmentsDataTable->ajax();
     }

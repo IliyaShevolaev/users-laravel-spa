@@ -49,6 +49,11 @@ class UserController extends Controller
         return UserResource::collection($this->repository->allWithRelations());
     }
 
+    public function datatable(UsersDataTable $usersDataTable): JsonResponse
+    {
+        return $usersDataTable->ajax();
+    }
+
     /**
      * Отображает страницу создания нового пользователя
      *
