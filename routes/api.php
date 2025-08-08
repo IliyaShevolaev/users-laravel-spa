@@ -5,6 +5,7 @@ declare(strict_types=1);
 // php vendor/bin/phpstan analyse -c phpstan.neon
 // php vendor/bin/phpcs
 
+use App\Http\Controllers\User\PositionController;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Auth;
@@ -21,6 +22,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/departments/datatable', [DepartmentController::class, 'getDatatable'])->name('departments.datatable');
     Route::resource('departments', \App\Http\Controllers\User\DepartmentController::class);
 
+    Route::get('/positions/datatable', [PositionController::class, 'datatable'])->name('position.datatable');
     Route::resource('positions', \App\Http\Controllers\User\PositionController::class);
 });
 Route::get('/user', function (Request $request) {

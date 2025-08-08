@@ -17,18 +17,17 @@ const formData = reactive({
 
 const formDataErrors = reactive({});
 
-const close = function (dataChanged) {
+const close = function (dataChanged, method) {
     clearFields(formData);
     clearFields(formDataErrors);
-    emit("closeDialog", dataChanged);
+    emit("closeDialog", dataChanged, method);
 };
 
 const add = function () {
     axios
         .post("/api/departments", formData)
         .then((response) => {
-            console.log(11111111111);
-            close(true);
+            close(true, 'add');
         })
         .catch((error) => {
             clearFields(formDataErrors);

@@ -4,6 +4,9 @@ import { onMounted, ref } from "vue";
 import DepartmentDialog from "../components/dialog/DepartmentDialog.vue";
 // import AlertDialog from "../../UI/Alerts/AlertDangerDialog.vue";
 // import AcceptDialog from "../../UI/Alerts/AcceptDialog.vue";
+import { useDisplay } from "vuetify";
+
+const { mobile } = useDisplay();
 
 const departments = ref([]);
 
@@ -17,17 +20,22 @@ const headers = [
 
 const itemsPerPage = ref(10);
 const currentPage = ref(1);
-const totalItems = ref(0);
+const currentSortBy = ref([]);
+const totalItems = ref(-1);
 const search = ref("");
 
 const loadingTable = ref(false);
 
 const requestData = function ({ page, itemsPerPage, sortBy }) {
-    if (loadingTable.value) return;
+    if (loadingTable.value) {
+        return;
+    }
+
     loadingTable.value = true;
+    currentSortBy.value = sortBy;
 
     const params = {
-        page: currentPage.value,
+        page: page,
         per_page: itemsPerPage,
         sort_by: sortBy.length ? sortBy[0].key : null,
         sort_order: sortBy.length ? sortBy[0].order : null,
@@ -39,16 +47,15 @@ const requestData = function ({ page, itemsPerPage, sortBy }) {
     axios
         .get("/api/departments/datatable", { params })
         .then((response) => {
-            console.log(response.data.recordsTotal) // на 2 раз с бэка 0
+            console.log(response.data.recordsTotal);
             departments.value = response.data.data;
-            currentPage.value = response.data.input.page
-            totalItems.value = response.data.recordsTotal === 0 ? totalItems.value : response.data.recordsTotal;
-            //totalItems.value = response.data.recordsTotal;
+            currentPage.value = response.data.input.page;
+            totalItems.value = response.data.recordsFiltered;
             console.log("Response:", response.data);
         })
         .catch((error) => {
             console.error(error);
-            console.error('!!!!!!!!!!!!!');
+            console.error("!!!!!!!!!!!!!");
             departments.value = [];
             totalItems.value = 0;
         })
@@ -56,6 +63,19 @@ const requestData = function ({ page, itemsPerPage, sortBy }) {
             loadingTable.value = false;
         });
 };
+
+watch(
+    () => search,
+    (newValue, oldValue) => {
+        if (newValue === "") {
+            requestData({
+                page: currentPage.value,
+                itemsPerPage: itemsPerPage.value,
+                sortBy: currentSortBy.value,
+            });
+        }
+    }
+);
 
 const isDialogOpen = ref(false);
 const dialogEditId = ref(null);
@@ -65,10 +85,19 @@ const openDialog = function (id = null) {
     dialogEditId.value = id;
 };
 
-const closeDialog = function (dataChanged) {
+const closeDialog = function (dataChanged, method) {
     if (dataChanged) {
-        requestData({ page: page.value, itemsPerPage: itemsPerPage.value, sortBy: []});
+        requestData({
+            page: currentPage.value,
+            itemsPerPage: itemsPerPage.value,
+            sortBy: currentSortBy.value,
+        });
     }
+
+    // if (method === "add") {
+    //     console.log("ADD");
+    //     totalItems.value += 1;
+    // }
 
     isDialogOpen.value = false;
     dialogEditId.value = null;
@@ -111,7 +140,6 @@ const alertText = ref("");
 
 const showAlertAcceptDialog = ref(false);
 const alertAcceptText = ref("");
-
 </script>
 
 <template>
@@ -136,6 +164,20 @@ const alertAcceptText = ref("");
         :search="search"
         @update:options="requestData"
     >
+        <template v-slot:top>
+            <div class="flex flex-row-reverse">
+                <div :class="mobile ? 'w-full' : 'w-25'">
+                    <v-text-field
+                        v-model="search"
+                        class="ma-2"
+                        density="compact"
+                        placeholder="Search name..."
+                        hide-details
+                    ></v-text-field>
+                </div>
+            </div>
+        </template>
+
         <template v-slot:item.actions="{ item }">
             <v-btn
                 icon="mdi-pen"

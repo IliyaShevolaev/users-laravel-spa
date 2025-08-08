@@ -40,14 +40,33 @@ class DepartmentsDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->editColumn('created_at', function ($department) {
-                return $department->created_at->format('d.m.Y H:i');
+                return $department->created_at->format('H:i d.m.Y ');
             })
             ->editColumn('updated_at', function ($department) {
-                return $department->updated_at->format('d.m.Y H:i');
+                return $department->updated_at->format('H:i d.m.Y');
             })
             ->setRowId('id');
     }
 
+    public function ajax(): \Illuminate\Http\JsonResponse
+    {
+        $query = $this->query();
+        $totalRecords = $query->count();
+
+        if ($this->request()->has('page') && $this->request()->has('per_page')) {
+            $perPage = $this->request()->input('per_page');
+            $offset = ($this->request()->input('page') - 1) * $perPage;
+            $query->skip($offset)->take($perPage);
+        }
+
+        return response()->json([
+            'data' => $query->get(),
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $totalRecords,
+            'draw' => $this->request()->input('draw', 0),
+            'input' => ['page' => $this->request()->input('page')],
+        ]);
+    }
 
     /**
      * Get the query source of dataTable.

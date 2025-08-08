@@ -45,10 +45,6 @@ class PositionsDataTable extends DataTable
             ->editColumn('updated_at', function ($position) {
                 return $position->updated_at->format('d.m.Y H:i');
             })
-            ->addColumn('actions', function ($position) {
-                return view('positions.actions', compact('position'))->render();
-            })
-            ->rawColumns(['actions'])
             ->setRowId('id');
     }
 
@@ -96,15 +92,6 @@ class PositionsDataTable extends DataTable
             Column::make('updated_at')->title(
                 is_array(__('main.users.updated')) ? '' : (string) Str::of(__('main.users.updated'))->ucfirst()
             ),
-            Column::computed('actions')
-                ->title(
-                    is_array(__('main.users.actions_buttons')) ?
-                    '' :
-                    (string) Str::of(__('main.users.actions_buttons'))->ucfirst()
-                )
-                ->printable(false)
-                ->width(120)
-                ->addClass('text-center'),
         ];
     }
 }

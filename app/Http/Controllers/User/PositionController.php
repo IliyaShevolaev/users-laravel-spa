@@ -45,6 +45,16 @@ class PositionController extends Controller
         return PositionResource::collection($this->repository->all());
     }
 
+    public function dataTable(PositionsDataTable $positionsDataTable)
+    {
+        $dataTable = $positionsDataTable->dataTable($positionsDataTable->query())->toArray();
+
+        return response()->json([
+            'items' => $dataTable['data'],
+            'total' => $dataTable['recordsFiltered']
+        ]);
+    }
+
     /**
      * Сохраняет новую должность
      *
