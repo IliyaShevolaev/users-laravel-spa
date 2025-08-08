@@ -51,20 +51,24 @@ class DepartmentsDataTable extends DataTable
     public function ajax(): \Illuminate\Http\JsonResponse
     {
         $query = $this->query();
-        $totalRecords = $query->count();
+
+        $totalRecords = Department::count();
+
+        $filteredRecords = $query->count();
 
         if ($this->request()->has('page') && $this->request()->has('per_page')) {
             $perPage = $this->request()->input('per_page');
             $offset = ($this->request()->input('page') - 1) * $perPage;
-            $query->skip($offset)->take($perPage);
+            $paginateQuery = $query->skip($offset)->take($perPage);
         }
 
         return response()->json([
-            'data' => $query->get(),
+            //'data' => $paginateQuery->get(),
+            'data' => $this->dataTable($paginateQuery)->toJson(),
             'recordsTotal' => $totalRecords,
-            'recordsFiltered' => $totalRecords,
+            'recordsFiltered' => $filteredRecords,
             'draw' => $this->request()->input('draw', 0),
-            'input' => ['page' => $this->request()->input('page')],
+            'input' => $this->request()->all()
         ]);
     }
 
@@ -77,18 +81,12 @@ class DepartmentsDataTable extends DataTable
     {
         $query = Department::query();
 
-        if (request()->has('sort_by') && request()->has('sort_order')) {
-            $query->orderBy(request('sort_by'), request('sort_order'));
+        if ($this->request()->has('sort_by') && $this->request()->has('sort_order')) {
+            $query->orderBy($this->request()->input('sort_by'), $this->request()->input('sort_order'));
         }
 
-        if (request()->has('search') && !empty(request('search'))) {
-            $query->where('name', 'like', '%' . request('search') . '%');
-        }
-
-        if ($this->request()->has('page') && $this->request()->has('per_page')) {
-            $perPage = $this->request()->get('per_page');
-            $offset = ($this->request()->get('page') - 1) * $perPage;
-            $query->skip($offset)->take($perPage);
+        if ($this->request()->has('search') && !empty($this->request()->input('search'))) {
+            $query->where('name', 'like', '%' . $this->request()->input('search') . '%');
         }
 
         return $query;

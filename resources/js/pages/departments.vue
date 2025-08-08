@@ -21,7 +21,7 @@ const headers = [
 const itemsPerPage = ref(10);
 const currentPage = ref(1);
 const currentSortBy = ref([]);
-const totalItems = ref(-1);
+const totalItems = ref(0);
 const search = ref("");
 
 const loadingTable = ref(false);
@@ -47,8 +47,8 @@ const requestData = function ({ page, itemsPerPage, sortBy }) {
     axios
         .get("/api/departments/datatable", { params })
         .then((response) => {
-            console.log(response.data.recordsTotal);
-            departments.value = response.data.data;
+            console.log(response);
+            departments.value = response.data.data.original.data;
             currentPage.value = response.data.input.page;
             totalItems.value = response.data.recordsFiltered;
             console.log("Response:", response.data);
@@ -173,6 +173,7 @@ const alertAcceptText = ref("");
                         density="compact"
                         placeholder="Search name..."
                         hide-details
+                        clearable
                     ></v-text-field>
                 </div>
             </div>
