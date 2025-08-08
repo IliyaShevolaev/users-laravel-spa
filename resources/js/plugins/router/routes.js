@@ -3,6 +3,7 @@ export const routes = [
     {
         path: "/",
         component: () => import("@/layouts/default.vue"),
+        meta: { requiresAuth: true },
         children: [
             {
                 path: "ping",
@@ -29,10 +30,12 @@ export const routes = [
             {
                 path: "login",
                 component: () => import("@/pages/login.vue"),
+                meta: { requiresNoAuth: true },
             },
             {
                 path: "register",
                 component: () => import("@/pages/register.vue"),
+                meta: { requiresNoAuth: true },
             },
             {
                 path: "/:pathMatch(.*)*",
