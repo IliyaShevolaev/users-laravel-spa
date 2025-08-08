@@ -2,8 +2,8 @@
 import axios from "axios";
 import { onMounted, ref } from "vue";
 import DepartmentDialog from "../components/dialog/DepartmentDialog.vue";
-// import AlertDialog from "../../UI/Alerts/AlertDangerDialog.vue";
-// import AcceptDialog from "../../UI/Alerts/AcceptDialog.vue";
+import AcceptDialog from "../components/alerts/AcceptDialog.vue";
+import AlertDangerDialog from "../components/alerts/AlertDangerDialog.vue";
 import { useDisplay } from "vuetify";
 
 const { mobile } = useDisplay();
@@ -94,11 +94,6 @@ const closeDialog = function (dataChanged, method) {
         });
     }
 
-    // if (method === "add") {
-    //     console.log("ADD");
-    //     totalItems.value += 1;
-    // }
-
     isDialogOpen.value = false;
     dialogEditId.value = null;
 };
@@ -119,7 +114,11 @@ const deleteRow = function (id) {
     axios
         .delete(`/api/departments/${id}`)
         .then(() => {
-            requestData({ page: page.value, itemsPerPage: itemsPerPage.value });
+            requestData({
+                page: currentPage.value,
+                itemsPerPage: itemsPerPage.value,
+                sortBy: currentSortBy.value,
+            });
         })
         .catch((error) => {
             console.log(error);
@@ -144,7 +143,7 @@ const alertAcceptText = ref("");
 
 <template>
     <div class="mb-5">
-        <v-btn @click="openDialog()" prepend-icon="mdi-plus" color="green">
+        <v-btn @click="openDialog()" prepend-icon="ri-add-line" color="green">
             Добавить отдел
         </v-btn>
     </div>
@@ -153,6 +152,19 @@ const alertAcceptText = ref("");
         :isOpen="isDialogOpen"
         :edit-id="dialogEditId"
     ></DepartmentDialog>
+
+    <AlertDangerDialog
+        @close-dialog="showAlertDialog = false"
+        :is-open="showAlertDialog"
+        :message="alertText"
+    ></AlertDangerDialog>
+
+    <AcceptDialog
+        @close-dialog="showAlertAcceptDialog = false"
+        @accept-action="deleteRow(idToDelete)"
+        :is-open="showAlertAcceptDialog"
+        :message="alertAcceptText"
+    ></AcceptDialog>
 
     <v-data-table-server
         v-model:items-per-page="itemsPerPage"
@@ -171,7 +183,7 @@ const alertAcceptText = ref("");
                         v-model="search"
                         class="ma-2"
                         density="compact"
-                        placeholder="Search name..."
+                        placeholder="Поиск"
                         hide-details
                         clearable
                     ></v-text-field>
@@ -181,21 +193,17 @@ const alertAcceptText = ref("");
 
         <template v-slot:item.actions="{ item }">
             <v-btn
-                icon="mdi-pen"
+                icon="ri-edit-line"
                 class="me-3"
                 size="small"
-                color="yellow"
                 @click="edit(item.id)"
-                >EDIT</v-btn
-            >
+            ></v-btn>
             <v-btn
-                icon="mdi-delete"
+                icon="ri-delete-bin-fill"
                 class="me-3"
                 size="small"
-                color="red"
                 @click="askToDeleteRow(item.id, item.name)"
-                >DEL</v-btn
-            >
+            ></v-btn>
         </template>
     </v-data-table-server>
 </template>

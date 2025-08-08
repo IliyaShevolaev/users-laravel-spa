@@ -63,7 +63,6 @@ class DepartmentsDataTable extends DataTable
         }
 
         return response()->json([
-            //'data' => $paginateQuery->get(),
             'data' => $this->dataTable($paginateQuery)->toJson(),
             'recordsTotal' => $totalRecords,
             'recordsFiltered' => $filteredRecords,

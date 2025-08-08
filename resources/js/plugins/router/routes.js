@@ -1,5 +1,5 @@
 export const routes = [
-    { path: "/", redirect: "/dashboard" },
+    { path: "/", redirect: "/users" },
     {
         path: "/",
         component: () => import("@/layouts/default.vue"),
@@ -7,10 +7,6 @@ export const routes = [
             {
                 path: "ping",
                 component: () => import("@/pages/Ping.vue"),
-            },
-            {
-                path: "dashboard",
-                component: () => import("@/pages/dashboard.vue"),
             },
             {
                 path: "users",
