@@ -24,8 +24,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  * Модель пользователя системы
  *
  * @property int $id
- * @property string $status статус активен/неактивен
  * @property string $password пароль
+ * @property GenderEnum $gender пол
+ * @property StatusEnum $status статус
  * @method static User create(array<int|string, mixed> $attributes = [])
  * @method static User withoutScopeFind(int $id)
  * @method static Builder<User> where(mixed $operator = null, mixed $value = null, string $boolean = 'and')

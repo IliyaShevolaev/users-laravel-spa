@@ -5,12 +5,9 @@ declare(strict_types=1);
 namespace App\DataTables;
 
 use App\Repositories\Interfaces\User\Department\DepartmentRepositoryInterface;
-use Illuminate\Support\Str;
 use App\Models\User\Department;
-use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Services\DataTable;
-use Yajra\DataTables\Html\Builder as HtmlBuilder;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 
 /**
@@ -39,10 +36,10 @@ class DepartmentsDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->editColumn('created_at', function ($department) {
+            ->editColumn('created_at', function (Department $department) {
                 return $department->created_at->format('H:i d.m.Y ');
             })
-            ->editColumn('updated_at', function ($department) {
+            ->editColumn('updated_at', function (Department $department) {
                 return $department->updated_at->format('H:i d.m.Y');
             })
             ->setRowId('id');

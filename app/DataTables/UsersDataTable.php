@@ -36,22 +36,22 @@ class UsersDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->editColumn('department_id', function ($user) {
+            ->editColumn('department_id', function (User $user) {
                 return $user->department->name ?? trans('main.users.without_department');
             })
-            ->editColumn('position_id', function ($user) {
+            ->editColumn('position_id', function (User $user) {
                 return $user->position->name ?? trans('main.users.without_position');
             })
-            ->editColumn('gender', function ($user) {
+            ->editColumn('gender', function (User $user) {
                 return trans('main.users.genders.' . $user->gender->value);
             })
-            ->editColumn('status', function ($user) {
+            ->editColumn('status', function (User $user) {
                 return trans('main.users.statuses.' . $user->status->value);
             })
-            ->editColumn('created_at', function ($user) {
+            ->editColumn('created_at', function (User $user) {
                 return $user->created_at->format('H:i d.m.Y');
             })
-            ->editColumn('updated_at', function ($user) {
+            ->editColumn('updated_at', function (User $user) {
                 return $user->updated_at->format('H:i d.m.Y');
             });
     }

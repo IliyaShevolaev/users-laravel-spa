@@ -39,10 +39,10 @@ class PositionsDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->editColumn('created_at', function ($position) {
+            ->editColumn('created_at', function (Position $position) {
                 return $position->created_at->format('d.m.Y H:i');
             })
-            ->editColumn('updated_at', function ($position) {
+            ->editColumn('updated_at', function (Position $position) {
                 return $position->updated_at->format('d.m.Y H:i');
             })
             ->setRowId('id');
