@@ -2,6 +2,9 @@
 import axios from "axios";
 import { computed, reactive, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { useModelChangesStore } from "../../stores/modelChanges";
+
+const modelChangesStore = useModelChangesStore();
 
 const { t } = useI18n();
 
@@ -59,19 +62,19 @@ const userPositionsComputed = computed(() => {
     }));
 });
 
-const close = function (dataChanged) {
+const close = function (dataChanged, method) {
     clearFields(formData);
     clearFields(formDataErrors);
     console.log(formDataErrors);
-    emit("closeDialog", dataChanged);
+    emit("closeDialog", dataChanged, method);
 };
 
 const add = function () {
     axios
         .post("/api/users", formData)
         .then((response) => {
-            console.log(response);
-            close(true);
+            modelChangesStore.addUser(formData.name);
+            close(true, "add");
         })
         .catch((error) => {
             console.log(error);
@@ -106,13 +109,11 @@ const edit = function () {
 };
 
 const update = function (id) {
-    console.log(formData);
-    console.log(id);
-    console.log(`/api/users/${id}`);
     axios
         .patch(`/api/users/${id}`, formData)
         .then((response) => {
-            close(true);
+            modelChangesStore.editUser(formData.name);
+            close(true, "edit");
         })
         .catch((error) => {
             clearFields(formDataErrors);
@@ -146,8 +147,6 @@ const clearFields = function (obj) {
         obj[key] = null;
     });
 };
-
-
 </script>
 
 <template>

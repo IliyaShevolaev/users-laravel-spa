@@ -2,10 +2,14 @@
 import axios from "axios";
 import { onMounted, ref } from "vue";
 import UserDialog from "../components/dialog/UserDialog.vue";
+import Snackbar from "../components/toaster/Snackbar.vue";
 import AcceptDialog from "../components/alerts/AcceptDialog.vue";
 import { useDisplay } from "vuetify";
 import { debounce } from "vuetify/lib/util/helpers.mjs";
 import { useI18n } from "vue-i18n";
+import { useModelChangesStore } from "../stores/modelChanges";
+
+const modelChangesStore = useModelChangesStore();
 
 const { t } = useI18n();
 
@@ -15,15 +19,20 @@ const users = ref([]);
 
 const headers = [
     { title: "ID", key: "id" },
-    { title: t('users.name'), key: "name" },
-    { title: t('users.email'), key: "email" },
-    { title: t('users.gender'), key: "gender" },
-    { title: t('users.status'), key: "status" },
-    { title: t('users.department'), key: "department_id" },
-    { title: t('users.position'), key: "position_id" },
-    { title: t('main.created'), key: "created_at" },
-    { title: t('main.updated'), key: "updated_at" },
-    { title: t('main.actions'), key: "actions", sortable: false, align: "center" },
+    { title: t("users.name"), key: "name" },
+    { title: t("users.email"), key: "email" },
+    { title: t("users.gender"), key: "gender" },
+    { title: t("users.status"), key: "status" },
+    { title: t("users.department"), key: "department_id" },
+    { title: t("users.position"), key: "position_id" },
+    { title: t("main.created"), key: "created_at" },
+    { title: t("main.updated"), key: "updated_at" },
+    {
+        title: t("main.actions"),
+        key: "actions",
+        sortable: false,
+        align: "center",
+    },
 ];
 
 const itemsPerPage = ref(10);
@@ -105,6 +114,31 @@ const closeDialog = function (dataChanged, method) {
         });
     }
 
+    console.log('here')
+    console.log(method)
+    if (method === "add") {
+        console.log('add');
+        showSnackBar(
+            t("users.user") +
+                " " +
+                modelChangesStore.getUser.lastAdd +
+                " " +
+                t("users.was_append"),
+            "success"
+        );
+    } else if (method === "edit") {
+        console.log('edit');
+
+        showSnackBar(
+            t("users.user") +
+                " " +
+                modelChangesStore.getUser.lastEdit +
+                " " +
+                t("users.was_edited"),
+            "warning"
+        );
+    }
+
     isDialogOpen.value = false;
     dialogEditId.value = null;
 };
@@ -117,8 +151,9 @@ const idToDelete = ref(0);
 
 const askToDeleteRow = function (id, name) {
     showAlertAcceptDialog.value = true;
-    alertAcceptText.value = `${t('users.delete')} ${name}?`;
+    alertAcceptText.value = `${t("users.delete")} ${name}?`;
     idToDelete.value = id;
+    modelChangesStore.deleteUser(name);
 };
 
 const deleteRow = function (id) {
@@ -130,15 +165,36 @@ const deleteRow = function (id) {
                 itemsPerPage: itemsPerPage.value,
                 sortBy: currentSortBy.value,
             });
+            showSnackBar(
+                t("users.user") +
+                    " " +
+                    modelChangesStore.getUser.lastDelete +
+                    " " +
+                    t("users.was_deleted"),
+                "error"
+            );
         })
         .catch((error) => {
             console.log(error);
             if (error.response.status === 404) {
                 showAlertDialog.value = true;
-                alertText.value = t('users.no_selected');
+                alertText.value = t("users.no_selected");
             }
         });
     showAlertAcceptDialog.value = false;
+};
+
+const isSnackbarOpen = ref(false);
+const snackbarMessage = ref("");
+const snackbarColor = ref("");
+
+const showSnackBar = function (message, color) {
+    isSnackbarOpen.value = false;
+    setTimeout(() => {
+        snackbarMessage.value = message;
+        snackbarColor.value = color;
+        isSnackbarOpen.value = true;
+    }, 10);
 };
 
 const showAlertDialog = ref(false);
@@ -151,7 +207,7 @@ const alertAcceptText = ref("");
 <template>
     <div class="mb-5">
         <v-btn @click="openDialog()" prepend-icon="ri-add-line" color="success">
-            {{ t('main.append_button') }}
+            {{ t("main.append_button") }}
         </v-btn>
     </div>
     <UserDialog
@@ -166,6 +222,13 @@ const alertAcceptText = ref("");
         :is-open="showAlertAcceptDialog"
         :message="alertAcceptText"
     ></AcceptDialog>
+
+    <Snackbar
+        :color="snackbarColor"
+        :message="snackbarMessage"
+        :is-open="isSnackbarOpen"
+        @close-snackbar="isSnackbarOpen = false"
+    ></Snackbar>
 
     <v-data-table-server
         v-model:items-per-page="itemsPerPage"

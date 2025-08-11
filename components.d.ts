@@ -18,6 +18,7 @@ declare module 'vue' {
     PositionDialog: typeof import('./resources/js/components/dialog/PositionDialog.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Snackbar: typeof import('./resources/js/components/toaster/Snackbar.vue')['default']
     ThemeSwitcher: typeof import('./resources/js/@core/components/ThemeSwitcher.vue')['default']
     UpgradeToPro: typeof import('./resources/js/components/UpgradeToPro.vue')['default']
     UserDialog: typeof import('./resources/js/components/dialog/UserDialog.vue')['default']

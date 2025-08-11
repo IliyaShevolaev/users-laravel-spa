@@ -4,9 +4,13 @@ import { onMounted, ref } from "vue";
 import DepartmentDialog from "../components/dialog/DepartmentDialog.vue";
 import AcceptDialog from "../components/alerts/AcceptDialog.vue";
 import AlertDangerDialog from "../components/alerts/AlertDangerDialog.vue";
+import Snackbar from "../components/toaster/Snackbar.vue";
 import { useDisplay } from "vuetify";
 import { debounce } from "vuetify/lib/util/helpers.mjs";
 import { useI18n } from "vue-i18n";
+import { useModelChangesStore } from "../stores/modelChanges";
+
+const modelChangesStore = useModelChangesStore();
 
 const { t } = useI18n();
 
@@ -106,6 +110,26 @@ const closeDialog = function (dataChanged, method) {
         });
     }
 
+    if (method === "add") {
+        showSnackBar(
+            t("users.department") +
+                " " +
+                modelChangesStore.getDepartment.lastAdd +
+                " " +
+                t("users.departments.was_append"),
+            "success"
+        );
+    } else if (method === "edit") {
+        showSnackBar(
+            t("users.department") +
+                " " +
+                modelChangesStore.getDepartment.lastEdit +
+                " " +
+                t("users.departments.was_edited"),
+            "warning"
+        );
+    }
+
     isDialogOpen.value = false;
     dialogEditId.value = null;
 };
@@ -118,8 +142,9 @@ const idToDelete = ref(0);
 
 const askToDeleteRow = function (id, name) {
     showAlertAcceptDialog.value = true;
-    alertAcceptText.value = `${t('users.departments.delete')} ${name}?`;
+    alertAcceptText.value = `${t("users.departments.delete")} ${name}?`;
     idToDelete.value = id;
+    modelChangesStore.deleteDepartment(name);
 };
 
 const deleteRow = function (id) {
@@ -131,18 +156,39 @@ const deleteRow = function (id) {
                 itemsPerPage: itemsPerPage.value,
                 sortBy: currentSortBy.value,
             });
+            showSnackBar(
+                t("users.department") +
+                    " " +
+                    modelChangesStore.getDepartment.lastDelete +
+                    " " +
+                    t("users.departments.was_deleted"),
+                "error"
+            );
         })
         .catch((error) => {
             console.log(error);
             if (error.response.status === 409) {
                 showAlertDialog.value = true;
-                alertText.value = t('users.departments.unable_to_delete');
+                alertText.value = t("users.departments.unable_to_delete");
             } else if (error.response.status === 404) {
                 showAlertDialog.value = true;
-                alertText.value = t('users.departments.no_selected');
+                alertText.value = t("users.departments.no_selected");
             }
         });
     showAlertAcceptDialog.value = false;
+};
+
+const isSnackbarOpen = ref(false);
+const snackbarMessage = ref("");
+const snackbarColor = ref("");
+
+const showSnackBar = function (message, color) {
+    isSnackbarOpen.value = false;
+    setTimeout(() => {
+        snackbarMessage.value = message;
+        snackbarColor.value = color;
+        isSnackbarOpen.value = true;
+    }, 10);
 };
 
 const showAlertDialog = ref(false);
@@ -176,6 +222,13 @@ const alertAcceptText = ref("");
         :is-open="showAlertAcceptDialog"
         :message="alertAcceptText"
     ></AcceptDialog>
+
+    <Snackbar
+        :color="snackbarColor"
+        :message="snackbarMessage"
+        :is-open="isSnackbarOpen"
+        @close-snackbar="isSnackbarOpen = false"
+    ></Snackbar>
 
     <v-data-table-server
         v-model:items-per-page="itemsPerPage"

@@ -2,6 +2,9 @@
 import axios from "axios";
 import { reactive, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { useModelChangesStore } from "../../stores/modelChanges";
+
+const modelChangesStore = useModelChangesStore();
 
 const { t } = useI18n();
 
@@ -30,6 +33,7 @@ const add = function () {
     axios
         .post("/api/positions", formData)
         .then((response) => {
+            modelChangesStore.addPosition(formData.name)
             close(true, "add");
         })
         .catch((error) => {
@@ -66,7 +70,8 @@ const update = function (id) {
     axios
         .patch(`/api/positions/${id}`, formData)
         .then((response) => {
-            close(true);
+            modelChangesStore.editPosition(formData.name)
+            close(true, 'edit');
         })
         .catch((error) => {
             clearFields(formDataErrors);
