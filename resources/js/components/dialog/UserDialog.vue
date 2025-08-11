@@ -143,7 +143,7 @@ watch(
 
 const clearFields = function (obj) {
     Object.keys(obj).forEach((key) => {
-        obj[key] = "";
+        obj[key] = null;
     });
 };
 
