@@ -5,7 +5,9 @@ namespace App\Repositories\Interfaces\User\Position;
 use App\DTO\User\UserDTO;
 use App\Models\User\Position;
 use App\DTO\User\Position\PositionDTO;
+use App\DTO\User\Position\CreatePositionDTO;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Builder;
 
 interface PositionRepositoryInterface
 {
@@ -19,41 +21,57 @@ interface PositionRepositoryInterface
     /**
      * Создать запись
      *
-     * @param PositionDTO $data
+     * @param CreatePositionDTO $data
      * @return void
      */
-    public function create(PositionDTO $data): void;
+    public function create(CreatePositionDTO $data): void;
 
     /**
      * Обновить должность
      *
-     * @param int $position_id
-     * @param PositionDTO $data
+     * @param int $positionId
+     * @param CreatePositionDTO $data
      * @return void
      */
-    public function update(int $position_id, PositionDTO $data): void;
+    public function update(int $positionId, CreatePositionDTO $data): void;
 
     /**
      * Удалить должность
      *
-     * @param int $position_id
+     * @param int $positionId
      * @return void
      */
-    public function delete(int $position_id): void;
+    public function delete(int $positionId): void;
 
     /**
      * Найти должность по id
      *
-     * @param int $position_id
+     * @param int $positionId
      * @return PositionDTO
      */
-    public function find(int $position_id): PositionDTO;
+    public function find(int $positionId): PositionDTO;
 
     /**
      * Найти пользователей по должности
      *
-     * @param int $position_id
+     * @param int $positionId
      * @return Collection
      */
-    public function findRelatedUsers(int $position_id): Collection;
+    public function findRelatedUsers(int $positionId): Collection;
+
+
+    /**
+     * Возвращает query builder
+     *
+     * @return Builder<Position>
+     */
+    public function getQuery(): Builder;
+
+
+    /**
+     * Возвращает количество записей
+     *
+     * @return int
+     */
+    public function count(): int;
 }

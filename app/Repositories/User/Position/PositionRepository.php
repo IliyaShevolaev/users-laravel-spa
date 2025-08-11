@@ -7,7 +7,9 @@ namespace App\Repositories\User\Position;
 use App\DTO\User\UserDTO;
 use App\Models\User\Position;
 use App\DTO\User\Position\PositionDTO;
+use App\DTO\User\Position\CreatePositionDTO;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Builder;
 use App\Repositories\Interfaces\User\Position\PositionRepositoryInterface;
 
 class PositionRepository implements PositionRepositoryInterface
@@ -18,32 +20,43 @@ class PositionRepository implements PositionRepositoryInterface
         return PositionDTO::collect(Position::all());
     }
 
-    public function create(PositionDTO $dto): void
+    public function create(CreatePositionDTO $dto): void
     {
         Position::create($dto->all());
     }
 
-    public function update(int $position_id, PositionDTO $dto): void
+    public function update(int $positionId, CreatePositionDTO $dto): void
     {
-        $position = Position::findOrFail($position_id);
+        $position = Position::findOrFail($positionId);
         $position->update($dto->all());
     }
 
-    public function delete(int $position_id): void
+    public function delete(int $positionId): void
     {
-        $position = Position::findOrFail($position_id);
+        $position = Position::findOrFail($positionId);
         $position->delete();
     }
 
-    public function find(int $position_id): PositionDTO
+    public function find(int $positionId): PositionDTO
     {
-        return PositionDTO::from(Position::findOrFail($position_id));
+        return PositionDTO::from(Position::findOrFail($positionId));
     }
 
-    public function findRelatedUsers(int $position_id): Collection
+    public function findRelatedUsers(int $positionId): Collection
     {
-        $users = Position::findOrFail($position_id)->users()->get();
+        $users = Position::findOrFail($positionId)->users()->get();
 
         return UserDTO::collect($users);
+    }
+
+    public function getQuery(): Builder
+    {
+        return Position::query();
+    }
+
+
+    public function count(): int
+    {
+        return Position::count();
     }
 }

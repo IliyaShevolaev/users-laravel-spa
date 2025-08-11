@@ -8,13 +8,12 @@ use App\Enums\User\GenderEnum;
 use App\Enums\User\StatusEnum;
 use Spatie\LaravelData\Data;
 
-class UserDTO extends Data
+class CreateUserDTO extends Data
 {
     public function __construct(
-        public int $id,
-
         public string $name,
         public string $email,
+        public ?string $password = null,
 
         public ?int $departmentId = null,
         public ?int $positionId = null,

@@ -6,13 +6,10 @@ namespace App\DTO\User\Position;
 
 use Spatie\LaravelData\Data;
 
-class PositionDTO extends Data
+class CreatePositionDTO extends Data
 {
     public function __construct(
-        public int $id,
         public string $name,
-        public string $createdAt,
-        public string $updatedAt
     ) {
     }
 }

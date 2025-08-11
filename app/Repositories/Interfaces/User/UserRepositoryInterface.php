@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Interfaces\User;
 
+use App\DTO\User\CreateUserDTO;
 use App\Models\User;
 use App\DTO\User\UserDTO;
 use Illuminate\Database\Eloquent\Builder;
@@ -26,42 +27,57 @@ interface UserRepositoryInterface
     /**
      * Создать запись
      *
-     * @param UserDTO $dto
+     * @param CreateUserDTO $dto
      * @return User
      */
-    public function create(UserDTO $dto): User;
+    public function create(CreateUserDTO $dto): User;
 
     /**
      * Обновить должность
      *
-     * @param int $user_id
-     * @param UserDTO $dto
+     * @param int $userId
+     * @param CreateUserDTO $dto
      * @return void
      */
-    public function update(int $user_id, UserDTO $dto): void;
+    public function update(int $userId, CreateUserDTO $dto): void;
 
     /**
      * Удалить должность
      *
-     * @param int $user_id
+     * @param int $userId
      * @return void
      */
-    public function delete(int $user_id): void;
+    public function delete(int $userId): void;
 
     /**
      * Найти должность по id
      *
-     * @param int $user_id
+     * @param int $userId
      * @return User
      */
-    public function find(int $user_id): User;
+    public function find(int $userId): User;
 
 
     /**
      * Поиск без scope
      *
-     * @param int $user_id
+     * @param int $userId
      * @return UserDTO
      */
-    public function withoutScopeFind(int $user_id): UserDTO;
+    public function withoutScopeFind(int $userId): UserDTO;
+
+    /**
+     * Получить Builder с отношениями и без scope
+     *
+     * @return Builder<User>
+     */
+    public function getQueryWithRelations(): Builder;
+
+    /**
+     * Получить количество записей
+     *
+     * @return int
+     */
+    public function count(): int;
+
 }

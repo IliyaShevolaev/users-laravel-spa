@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\User;
 
+use App\DTO\User\Position\CreatePositionDTO;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Contracts\View\View;
 use App\Http\Controllers\Controller;
@@ -58,7 +59,7 @@ class PositionController extends Controller
      */
     public function store(PositionRequest $positionRequest): JsonResponse
     {
-        $dto = PositionDTO::from($positionRequest->validated());
+        $dto = CreatePositionDTO::from($positionRequest->validated());
 
         $this->service->create($dto);
 
@@ -68,12 +69,12 @@ class PositionController extends Controller
     /**
      * Возвращает форму редактирования передаваемой должности
      *
-     * @param int $position_id
+     * @param int $positionId
      * @return PositionResource
      */
-    public function edit(int $position_id): PositionResource
+    public function edit(int $positionId): PositionResource
     {
-        $positionToEdit = $this->repository->find($position_id);
+        $positionToEdit = $this->repository->find($positionId);
 
         return new PositionResource($positionToEdit);
     }
@@ -82,14 +83,14 @@ class PositionController extends Controller
      * Обновляет должность
      *
      * @param PositionRequest $positionRequest
-     * @param int $position_id
+     * @param int $positionId
      * @return JsonResponse 200 - {'message' => 'success'}
      */
-    public function update(PositionRequest $positionRequest, int $position_id): JsonResponse
+    public function update(PositionRequest $positionRequest, int $positionId): JsonResponse
     {
-        $dto = PositionDTO::from($positionRequest->validated());
+        $dto = CreatePositionDTO::from($positionRequest->validated());
 
-        $this->service->update($position_id, $dto);
+        $this->service->update($positionId, $dto);
 
         return response()->json(['message' => 'success']);
     }
@@ -97,12 +98,12 @@ class PositionController extends Controller
     /**
      * Удаляет должность при отсутствии связей
      *
-     * @param int $position_id
+     * @param int $positionId
      * @return JsonResponse 200 - {'message' => 'success'} | 409 - {'message' => 'delete not allowed'}
      */
-    public function destroy(int $position_id): JsonResponse
+    public function destroy(int $positionId): JsonResponse
     {
-        $deleteResult = $this->service->delete($position_id);
+        $deleteResult = $this->service->delete($positionId);
 
         return response()->json(['message' => $deleteResult->message], $deleteResult->code);
     }

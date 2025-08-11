@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\User;
 
+use App\DTO\User\Department\CreateDepartmentDTO;
 use App\DTO\User\Department\DepartmentDTO;
 use App\Http\Resources\User\DepartmerntResource;
-use App\Models\User\Department;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Contracts\View\View;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\DataTables\DepartmentsDataTable;
 use App\Services\User\Department\DepartmentService;
@@ -39,7 +37,7 @@ class DepartmentController extends Controller
     }
 
     /**
-     * Отображает все отделы через таблицу DepartmentsDataTable
+     * Возвращает коллекцию ресурсов
      *
      * @return AnonymousResourceCollection
      */
@@ -48,7 +46,13 @@ class DepartmentController extends Controller
         return DepartmerntResource::collection($this->repository->all());
     }
 
-    public function datatable(DepartmentsDataTable $departmentsDataTable)
+    /**
+     * Возвращает Json ответ таблицы
+     *
+     * @param DepartmentsDataTable $departmentsDataTable
+     * @return JsonResponse
+     */
+    public function datatable(DepartmentsDataTable $departmentsDataTable): JsonResponse
     {
         return $departmentsDataTable->ajax();
     }
@@ -61,7 +65,7 @@ class DepartmentController extends Controller
      */
     public function store(DepartmentRequest $departmentRequest): JsonResponse
     {
-        $dto = DepartmentDTO::from($departmentRequest->validated());
+        $dto = CreateDepartmentDTO::from($departmentRequest->validated());
 
         $this->service->create($dto);
 
@@ -69,14 +73,14 @@ class DepartmentController extends Controller
     }
 
     /**
-     * Возвращает форму редактирования передаваемого отдела
+     * Возвращает редактируемый отдел
      *
-     * @param int $department_id
+     * @param int $departmentId
      * @return DepartmerntResource
      */
-    public function edit(int $department_id): DepartmerntResource
+    public function edit(int $departmentId): DepartmerntResource
     {
-        $departmentToEdit = $this->repository->find($department_id);
+        $departmentToEdit = $this->repository->find($departmentId);
 
         return new DepartmerntResource($departmentToEdit);
     }
@@ -85,14 +89,14 @@ class DepartmentController extends Controller
      * Обновляет отдел
      *
      * @param DepartmentRequest $departmentRequest
-     * @param int $department_id
+     * @param int $departmentId
      * @return JsonResponse 200 - {'message' => 'success'}
      */
-    public function update(DepartmentRequest $departmentRequest, int $department_id): JsonResponse
+    public function update(DepartmentRequest $departmentRequest, int $departmentId): JsonResponse
     {
-        $dto = DepartmentDTO::from($departmentRequest->validated());
+        $dto = CreateDepartmentDTO::from($departmentRequest->validated());
 
-        $this->service->update($department_id, $dto);
+        $this->service->update($departmentId, $dto);
 
         return response()->json(['message' => 'success']);
     }
@@ -100,12 +104,12 @@ class DepartmentController extends Controller
     /**
      * Удаляет отдел при отсутствии связей
      *
-     * @param int $department_id
+     * @param int $departmentId
      * @return JsonResponse 200 - {'message' => 'success'} | 409 - {'message' => 'delete not allowed'}
      */
-    public function destroy(int $department_id): JsonResponse
+    public function destroy(int $departmentId): JsonResponse
     {
-        $deleteResult = $this->service->delete($department_id);
+        $deleteResult = $this->service->delete($departmentId);
 
         return response()->json(['message' => $deleteResult->message], $deleteResult->code);
     }

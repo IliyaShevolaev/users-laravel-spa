@@ -90,41 +90,4 @@ class PositionsDataTable extends DataTable
 
         return $query;
     }
-
-    /**
-     * Optional method if you want to use the html builder.
-     */
-    public function html(): HtmlBuilder
-    {
-        $this->builder()->language(['url' => 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/ru.json']);
-
-        return $this->builder()
-            ->setTableId('positions-table')
-            ->columns($this->getColumns())
-            ->minifiedAjax()
-            ->orderBy(1)
-            ->selectStyleSingle();
-    }
-
-
-    /**
-     * Get the dataTable columns definition.
-     *
-     * @return Column[]
-     */
-    public function getColumns(): array
-    {
-        return [
-            Column::make('id')->title('ID'),
-            Column::make('name')->title(
-                is_array(__('main.title')) ? '' : (string) Str::of(__('main.title'))->ucfirst()
-            ),
-            Column::make('created_at')->title(
-                is_array(__('main.users.created')) ? '' : (string) Str::of(__('main.users.created'))->ucfirst()
-            ),
-            Column::make('updated_at')->title(
-                is_array(__('main.users.updated')) ? '' : (string) Str::of(__('main.users.updated'))->ucfirst()
-            ),
-        ];
-    }
 }

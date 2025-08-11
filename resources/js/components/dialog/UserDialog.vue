@@ -94,7 +94,6 @@ const edit = function () {
     axios
         .get(`/api/users/${props.editId}/edit`, formData)
         .then((response) => {
-            console.log("111res");
             console.log(response.data);
             Object.keys(response.data.user).forEach((key) => {
                 formData[key] = response.data.user[key];
@@ -147,6 +146,8 @@ const clearFields = function (obj) {
         obj[key] = "";
     });
 };
+
+
 </script>
 
 <template>

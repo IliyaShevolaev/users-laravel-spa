@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\User;
 
+use App\DTO\User\CreateUserDTO;
 use App\DTO\User\UserDTO;
 use Illuminate\Http\JsonResponse;
 use App\DataTables\UsersDataTable;
@@ -55,7 +56,7 @@ class UserController extends Controller
     }
 
     /**
-     * Отображает страницу создания нового пользователя
+     * Возвращает json данных, необходимых для создания пользователя
      *
      * @return JsonResponse
      */
@@ -70,27 +71,28 @@ class UserController extends Controller
      * Сохраняет нового пользователя и редиректит на таблицу с пользователями
      *
      * @param CreateRequest $createRequest
-     * @return RedirectResponse
+     *
+     * @return JsonResponse
      */
-    public function store(CreateRequest $createRequest): RedirectResponse
+    public function store(CreateRequest $createRequest): JsonResponse
     {
-        $dto = UserDTO::from($createRequest->validated());
+        $dto = CreateUserDTO::from($createRequest->validated());
 
         $this->service->create($dto);
 
-        return redirect()->route('users.index');
+        return response()->json(['message' => 'success']);
     }
 
     /**
-     * Отображает страницу редактирования пользователя
+     * Возвращает json данных, необходимых для обновления пользователя
      *
-     * @param int $user_id
+     * @param int $userId
      * @return JsonResponse
      */
-    public function edit(int $user_id): JsonResponse
+    public function edit(int $userId): JsonResponse
     {
         Log::info('here');
-        $data = $this->service->prepareViewData($user_id);
+        $data = $this->service->prepareViewData($userId);
 
         return response()->json($data);
     }
@@ -99,14 +101,14 @@ class UserController extends Controller
      * Обновляет данные о пользователе
      *
      * @param EditRequest $editRequest
-     * @param int $user_id
+     * @param int $userId
      * @return JsonResponse
      */
-    public function update(EditRequest $editRequest, int $user_id): JsonResponse
+    public function update(EditRequest $editRequest, int $userId): JsonResponse
     {
-        $dto = UserDTO::from($editRequest->validated());
+        $dto = CreateUserDTO::from($editRequest->validated());
 
-        $this->service->update($dto, $user_id);
+        $this->service->update($dto, $userId);
 
         return response()->json(['message' => 'success']);
     }
@@ -114,12 +116,12 @@ class UserController extends Controller
     /**
      * Удаляет пользователя
      *
-     * @param int $user_id
+     * @param int $userId
      * @return JsonResponse
      */
-    public function destroy(int $user_id): JsonResponse
+    public function destroy(int $userId): JsonResponse
     {
-        $this->service->delete($user_id);
+        $this->service->delete($userId);
 
         return response()->json([
             'message' => 'success',

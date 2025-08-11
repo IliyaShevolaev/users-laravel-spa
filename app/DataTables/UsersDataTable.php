@@ -5,12 +5,8 @@ declare(strict_types=1);
 namespace App\DataTables;
 
 use App\Models\User;
-use Illuminate\Support\Str;
-use Yajra\DataTables\Html\Column;
-use App\Models\Scopes\ActiveUserScope;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Services\DataTable;
-use Yajra\DataTables\Html\Builder as HtmlBuilder;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use App\Repositories\Interfaces\User\UserRepositoryInterface;
 
@@ -64,7 +60,7 @@ class UsersDataTable extends DataTable
     {
         $query = $this->query();
 
-        $totalRecords = User::count();
+        $totalRecords = $this->repository->count();
 
         $filteredRecords = $query->count();
 
@@ -90,7 +86,7 @@ class UsersDataTable extends DataTable
      */
     public function query(): QueryBuilder
     {
-        $query = User::with(['department', 'position'])->select('users.*');
+        $query = $this->repository->getQueryWithRelations();
 
         if ($this->request()->has('sort_by') && $this->request()->has('sort_order')) {
             $query->orderBy($this->request()->input('sort_by'), $this->request()->input('sort_order'));
@@ -101,55 +97,5 @@ class UsersDataTable extends DataTable
         }
 
         return $query;
-    }
-    /**
-     * Optional method if you want to use the html builder.
-     */
-    public function html(): HtmlBuilder
-    {
-        $this->builder()->language(['url' => 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/ru.json']);
-
-        return $this->builder()
-            ->setTableId('users-table')
-            ->columns($this->getColumns())
-            ->minifiedAjax()
-            ->orderBy(1)
-            ->selectStyleSingle();
-    }
-
-    /**
-     * Get the dataTable columns definition.
-     *
-     * @return Column[]
-     */
-    public function getColumns(): array
-    {
-        return [
-            Column::make('id')->title('ID'),
-            Column::make('name')->title(
-                is_array(__('main.users.name')) ? '' : (string) Str::of(__('main.users.name'))->ucfirst()
-            ),
-            Column::make('email')->title(
-                is_array(__('main.users.email')) ? '' : (string) Str::of(__('main.users.email'))->ucfirst()
-            ),
-            Column::make('department_id')->title(
-                is_array(__('main.users.department')) ? '' : (string) Str::of(__('main.users.department'))->ucfirst()
-            ),
-            Column::make('position_id')->title(
-                is_array(__('main.users.position')) ? '' : (string) Str::of(__('main.users.position'))->ucfirst()
-            ),
-            Column::make('gender')->title(
-                is_array(__('main.users.gender')) ? '' : (string) Str::of(__('main.users.gender'))->ucfirst()
-            ),
-            Column::make('status')->title(
-                is_array(__('main.users.status')) ? '' : (string) Str::of(__('main.users.status'))->ucfirst()
-            ),
-            Column::make('created_at')->title(
-                is_array(__('main.users.created')) ? '' : (string) Str::of(__('main.users.created'))->ucfirst()
-            ),
-            Column::make('updated_at')->title(
-                is_array(__('main.users.updated')) ? '' : (string) Str::of(__('main.users.updated'))->ucfirst()
-            ),
-        ];
     }
 }

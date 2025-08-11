@@ -6,8 +6,9 @@ namespace App\Repositories\User;
 
 use App\Models\User;
 use App\DTO\User\UserDTO;
-use ClassTransformer\Hydrator;
+use App\DTO\User\CreateUserDTO;
 use App\Models\Scopes\ActiveUserScope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use App\Repositories\Interfaces\User\UserRepositoryInterface;
 
@@ -31,30 +32,43 @@ class UserRepository implements UserRepositoryInterface
         return User::withoutGlobalScope(ActiveUserScope::class)->get();
     }
 
-    public function create(UserDTO $dto): User
+    public function create(CreateUserDTO $dto): User
     {
         return User::create($dto->all());
     }
 
-    public function update(int $user_id, UserDTO $dto): void
+    public function update(int $userId, CreateUserDTO $dto): void
     {
-        $user = User::withoutScopeFind($user_id);
+        $user = User::withoutScopeFind($userId);
         $user->update($dto->all());
     }
 
-    public function delete(int $user_id): void
+    public function delete(int $userId): void
     {
-        $user = User::withoutScopeFind($user_id);
+        $user = User::withoutScopeFind($userId);
         $user->delete();
     }
 
-    public function find(int $user_id): User
+    public function find(int $userId): User
     {
-        return User::findOrFail($user_id);
+        return User::findOrFail($userId);
     }
 
-    public function withoutScopeFind(int $user_id): UserDTO
+    public function withoutScopeFind(int $userId): UserDTO
     {
-        return UserDTO::from(User::withoutScopeFind($user_id)->toArray());
+        return UserDTO::from(User::withoutScopeFind($userId)->toArray());
+    }
+
+
+    public function getQueryWithRelations(): Builder
+    {
+        return User::withoutGlobalScope(ActiveUserScope::class)
+        ->with(['department', 'position'])
+        ->select('users.*');
+    }
+
+    public function count(): int
+    {
+        return User::count();
     }
 }

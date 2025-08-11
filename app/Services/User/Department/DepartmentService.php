@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace App\Services\User\Department;
 
 use App\DTO\MessageDTO;
-use ClassTransformer\Hydrator;
-use App\Models\User\Department;
-use App\DTO\User\Department\DepartmentDTO;
+use App\DTO\User\Department\CreateDepartmentDTO;
 use App\Repositories\Interfaces\User\Department\DepartmentRepositoryInterface;
 
 /**
@@ -27,10 +25,10 @@ class DepartmentService
     /**
      * Создать отдел
      *
-     * @param DepartmentDTO $dto
+     * @param CreateDepartmentDTO $dto
      * @return void
      */
-    public function create(DepartmentDTO $dto): void
+    public function create(CreateDepartmentDTO $dto): void
     {
         $this->repository->create($dto);
     }
@@ -38,27 +36,27 @@ class DepartmentService
     /**
      * Обновить отдел
      *
-     * @param int $department_id
-     * @param DepartmentDTO $dto
+     * @param int $departmentId
+     * @param CreateDepartmentDTO $dto
      * @return void
      */
-    public function update(int $department_id, DepartmentDTO $dto): void
+    public function update(int $departmentId, CreateDepartmentDTO $dto): void
     {
-        $this->repository->update($department_id, $dto);
+        $this->repository->update($departmentId, $dto);
     }
 
     /**
      *  Удалить отдел
      *
-     * @param int $department_id
+     * @param int $departmentId
      * @return MessageDTO
      */
-    public function delete(int $department_id): MessageDTO
+    public function delete(int $departmentId): MessageDTO
     {
         $result = [];
 
-        if ($this->repository->findRelatedUsers($department_id)->isEmpty()) {
-            $this->repository->delete($department_id);
+        if ($this->repository->findRelatedUsers($departmentId)->isEmpty()) {
+            $this->repository->delete($departmentId);
 
             $result['message'] = 'success';
             $result['code'] = 200;

@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Repositories\User\Department;
 
 use App\DTO\User\UserDTO;
-use ClassTransformer\Hydrator;
 use App\Models\User\Department;
 use App\DTO\User\Department\DepartmentDTO;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use App\DTO\User\Department\CreateDepartmentDTO;
 use App\Repositories\Interfaces\User\Department\DepartmentRepositoryInterface;
 
 class DepartmentRepository implements DepartmentRepositoryInterface
@@ -19,32 +20,43 @@ class DepartmentRepository implements DepartmentRepositoryInterface
         return DepartmentDTO::collect(Department::all());
     }
 
-    public function create(DepartmentDTO $dto): void
+    public function create(CreateDepartmentDTO $dto): void
     {
         Department::create($dto->all());
     }
 
-    public function update(int $department_id, DepartmentDTO $dto): void
+    public function update(int $departmentId, CreateDepartmentDTO $dto): void
     {
-        $department = Department::findOrFail($department_id);
+        $department = Department::findOrFail($departmentId);
         $department->update($dto->all());
     }
 
-    public function delete(int $department_id): void
+    public function delete(int $departmentId): void
     {
-        $department = Department::findOrFail($department_id);
+        $department = Department::findOrFail($departmentId);
         $department->delete();
     }
 
-    public function find(int $department_id): DepartmentDTO
+    public function find(int $departmentId): DepartmentDTO
     {
-        return DepartmentDTO::from(Department::findOrFail($department_id));
+        return DepartmentDTO::from(Department::findOrFail($departmentId));
     }
 
-    public function findRelatedUsers(int $department_id): Collection
+    public function findRelatedUsers(int $departmentId): Collection
     {
-        $users = Department::findOrFail($department_id)->users()->get();
+        $users = Department::findOrFail($departmentId)->users()->get();
 
         return UserDTO::collect($users);
+    }
+
+    public function getQuery(): Builder
+    {
+        return Department::query();
+    }
+
+
+    public function count(): int
+    {
+        return Department::count();
     }
 }

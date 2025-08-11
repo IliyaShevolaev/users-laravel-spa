@@ -8,6 +8,7 @@ use App\DTO\User\UserDTO;
 use App\Enums\User\GenderEnum;
 use App\Enums\User\StatusEnum;
 use ClassTransformer\Hydrator;
+use App\DTO\User\CreateUserDTO;
 use App\DTO\User\UserRelatedDTO;
 use Illuminate\Support\Facades\Auth;
 use App\Repositories\Interfaces\User\UserRepositoryInterface;
@@ -37,10 +38,10 @@ class UserService
     /**
      * Создает нового пользователя
      *
-     * @param UserDTO $dto
+     * @param CreateUserDTO $dto
      * @return void
      */
-    public function create(UserDTO $dto): void
+    public function create(CreateUserDTO $dto): void
     {
         $this->repository->create($dto);
     }
@@ -48,37 +49,37 @@ class UserService
     /**
      * Обновляет данные о пользователе
      *
-     * @param UserDTO $editedData
-     * @param int $user_id
+     * @param CreateUserDTO $editedData
+     * @param int $userId
      * @return void
      */
-    public function update(UserDTO $dto, int $user_id): void
+    public function update(CreateUserDTO $dto, int $userId): void
     {
-        $this->repository->update($user_id, $dto);
+        $this->repository->update($userId, $dto);
     }
 
     /**
      * Удаляет данные о пользователе
      *
-     * @param int $user_id
+     * @param int $userId
      * @return void
      */
-    public function delete(int $user_id): void
+    public function delete(int $userId): void
     {
-        if (Auth::id() !== $user_id) {
-            $this->repository->delete($user_id);
+        if (Auth::id() !== $userId) {
+            $this->repository->delete($userId);
         }
     }
 
     /**
      * Подготавливает данные перед отображением формы создания/редактирования пользователя
      *
-     * @param int|null $user_id
+     * @param int|null $userId
      * @return UserRelatedDTO
      */
-    public function prepareViewData(int $user_id = null): UserRelatedDTO
+    public function prepareViewData(int $userId = null): UserRelatedDTO
     {
-        $userDto = isset($user_id) ? $this->repository->withoutScopeFind($user_id) : null;
+        $userDto = isset($userId) ? $this->repository->withoutScopeFind($userId) : null;
 
         $departmentsDto = $this->departmentRepository->all();
         $positionsDto = $this->positionRepository->all();

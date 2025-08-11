@@ -6,13 +6,10 @@ namespace App\DTO\User\Department;
 
 use Spatie\LaravelData\Data;
 
-class DepartmentDTO extends Data
+class CreateDepartmentDTO extends Data
 {
     public function __construct(
-        public int $id,
         public string $name,
-        public string $createdAt,
-        public string $updatedAt
     ) {
     }
 }
