@@ -15,9 +15,12 @@ class UserRelatedDTO extends Data
         /** @var \App\DTO\User\Position\PositionDTO[] */
         public array $positions,
 
+        /** @var \App\DTO\Roles\RoleDTO[] */
+        public ?array $roles = null,
+
         public array $genders,
 
         public array $statuses,
-        ){
+    ) {
     }
 }

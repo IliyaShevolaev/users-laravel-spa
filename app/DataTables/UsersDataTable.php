@@ -53,6 +53,10 @@ class UsersDataTable extends DataTable
             })
             ->editColumn('updated_at', function (User $user) {
                 return $user->updated_at->format('H:i d.m.Y');
+            })->editColumn('roles', function (User $user) {
+                return $user->roles->isNotEmpty()
+                    ? $user->roles->first()->name
+                    : trans('main.users.empty_role');
             });
     }
 

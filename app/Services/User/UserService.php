@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\User;
 
-use App\DTO\User\UserDTO;
 use App\Enums\User\GenderEnum;
 use App\Enums\User\StatusEnum;
-use ClassTransformer\Hydrator;
+use App\Repositories\Interfaces\Roles\RoleRepositoryInterface;
 use App\DTO\User\CreateUserDTO;
 use App\DTO\User\UserRelatedDTO;
 use Illuminate\Support\Facades\Auth;
@@ -27,11 +26,14 @@ class UserService
      * @var DepartmentRepositoryInterface
      * Репозиторий для представления данных для должностей
      * @var PositionRepositoryInterface
+     * Репозиторий для представления данных для должностей
+     * @var RoleRepositoryInterface
      */
     public function __construct(
         private UserRepositoryInterface $repository,
         private DepartmentRepositoryInterface $departmentRepository,
-        private PositionRepositoryInterface $positionRepository
+        private PositionRepositoryInterface $positionRepository,
+        private RoleRepositoryInterface $roleRepository
     ) {
     }
 
@@ -43,7 +45,8 @@ class UserService
      */
     public function create(CreateUserDTO $dto): void
     {
-        $this->repository->create($dto);
+        $createdUser = $this->repository->create($dto);
+        $createdUser->addRole($this->roleRepository->find($dto->role));
     }
 
     /**
@@ -55,7 +58,8 @@ class UserService
      */
     public function update(CreateUserDTO $dto, int $userId): void
     {
-        $this->repository->update($userId, $dto);
+        $updatedUser = $this->repository->update($userId, $dto);
+        $updatedUser->addRole($this->roleRepository->find($dto->role));
     }
 
     /**
@@ -83,6 +87,7 @@ class UserService
 
         $departmentsDto = $this->departmentRepository->all();
         $positionsDto = $this->positionRepository->all();
+        $rolesDto = $this->roleRepository->all();
 
         $genderArray = [];
         foreach (GenderEnum::cases() as $genderValue) {
@@ -104,6 +109,7 @@ class UserService
             'user' => $userDto,
             'departments' => $departmentsDto,
             'positions' => $positionsDto,
+            'roles' => $rolesDto,
             'genders' => $genderArray,
             'statuses' => $statusArray
         ]);

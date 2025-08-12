@@ -38,7 +38,8 @@ class CreateRequest extends FormRequest
             'department_id' => 'nullable|int|exists:departments,id,deleted_at,NULL',
             'position_id' => 'nullable|int|exists:positions,id,deleted_at,NULL',
             'gender' => ['required', new Enum(GenderEnum::class)],
-            'status' => ['required', new Enum(StatusEnum::class)]
+            'status' => ['required', new Enum(StatusEnum::class)],
+            'role' => 'nullable|int'
         ];
     }
 

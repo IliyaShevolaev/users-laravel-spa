@@ -36,7 +36,8 @@ class EditRequest extends FormRequest
             'department_id' => 'nullable|int|exists:departments,id',
             'position_id' => 'nullable|int|exists:positions,id',
             'gender' => ['required', new Enum(GenderEnum::class)],
-            'status' => ['required', new Enum(StatusEnum::class)]
+            'status' => ['required', new Enum(StatusEnum::class)],
+            'role' => 'nullable|int'
         ];
     }
 

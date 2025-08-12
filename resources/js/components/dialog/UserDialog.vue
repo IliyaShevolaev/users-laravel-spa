@@ -24,6 +24,7 @@ const formData = reactive({
     email: null,
     password: null,
     password_confirmation: null,
+    role: null,
     gender: null,
     status: null,
     department_id: null,
@@ -36,6 +37,7 @@ const userGenders = ref([]);
 const userStatuses = ref([]);
 const userDepartments = ref([]);
 const userPositions = ref([]);
+const userRoles = ref([]);
 
 const requestCreateUserData = function () {
     axios.get("/api/users/create").then((response) => {
@@ -44,6 +46,7 @@ const requestCreateUserData = function () {
         userStatuses.value = response.data.statuses;
         userDepartments.value = response.data.departments;
         userPositions.value = response.data.positions;
+        userRoles.value = response.data.roles;
     });
 };
 requestCreateUserData();
@@ -101,9 +104,17 @@ const edit = function () {
             Object.keys(response.data.user).forEach((key) => {
                 formData[key] = response.data.user[key];
             });
+
+            axios
+                .get(`/api/users/role/${response.data.user.id}`)
+                .then((res) => {
+                    console.log(res.data);
+                    if (res.data != null) {
+                        formData.role = res.data.id
+                    }
+                });
         })
         .catch((error) => {
-            console.log("error");
             console.log(error);
         });
 };
@@ -226,6 +237,19 @@ const clearFields = function (obj) {
                         validateOn="blur"
                         @click:append-inner="showPassword = !showPassword"
                     ></v-text-field>
+
+                    <v-select
+                        v-model="formData.role"
+                        :items="userRoles"
+                        :error="!!formDataErrors.role"
+                        :error-messages="formDataErrors.role"
+                        class="mt-2"
+                        item-title="name"
+                        variant="underlined"
+                        item-value="id"
+                        :label="t('users.role')"
+                        clearable
+                    ></v-select>
 
                     <v-select
                         v-model="formData.gender"

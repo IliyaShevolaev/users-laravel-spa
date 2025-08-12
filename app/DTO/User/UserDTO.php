@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\DTO\User;
 
+use App\DTO\Roles\RoleDTO;
+use Spatie\LaravelData\Data;
 use App\Enums\User\GenderEnum;
 use App\Enums\User\StatusEnum;
-use Spatie\LaravelData\Data;
 
 class UserDTO extends Data
 {

@@ -37,6 +37,7 @@ return [
         'delete_position_alert' => 'Удалить должность',
         'without_position' => 'Без должности',
         'not_allowed_to_delete_position_alert' => 'Невозможно удалить должность, пока есть люди с этой должностью.',
+        'empty_role' => 'Роль не назначена',
         'gender' => 'Пол',
         'genders' => [
             'male' => 'Мужчина',

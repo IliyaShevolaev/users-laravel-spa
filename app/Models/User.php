@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laratrust\Traits\HasRolesAndPermissions;
 
 /**
  * Модель пользователя системы
@@ -34,13 +35,13 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  * @use HasFactory<UserFactory>
  */
 #[ScopedBy([ActiveUserScope::class])]
-//class User extends Authenticatable implements LaratrustUser
-class User extends Authenticatable
+class User extends Authenticatable implements LaratrustUser
 {
     //@phpstan-ignore-next-line
     use HasFactory;
     use Notifiable;
     use SoftDeletes;
+    use HasRolesAndPermissions;
 
     /**
      * The attributes that are mass assignable.

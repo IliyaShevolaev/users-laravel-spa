@@ -20,6 +20,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/', 'App\Http\Controllers\User\UserController@index');
 
     Route::get('/users/datatable', [UserController::class, 'datatable']);
+    Route::get('/users/role/{user}', [UserController::class, 'getUserRole']);
     Route::resource('users', UserController::class);
 
     Route::get('/departments/datatable', [DepartmentController::class, 'datatable']);

@@ -37,9 +37,9 @@ interface UserRepositoryInterface
      *
      * @param int $userId
      * @param CreateUserDTO $dto
-     * @return void
+     * @return User
      */
-    public function update(int $userId, CreateUserDTO $dto): void;
+    public function update(int $userId, CreateUserDTO $dto): User;
 
     /**
      * Удалить должность
@@ -80,4 +80,5 @@ interface UserRepositoryInterface
      */
     public function count(): int;
 
+    public function getRelatedRole(int $userId);
 }

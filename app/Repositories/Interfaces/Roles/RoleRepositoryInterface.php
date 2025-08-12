@@ -6,10 +6,18 @@ namespace App\Repositories\Interfaces\Roles;
 
 use App\DTO\Roles\CreateRoleDTO;
 use App\Models\Roles\Role;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Builder;
 
 interface RoleRepositoryInterface
 {
+
+    /**
+     * Получить дто всех записей
+     *
+     * @return Collection
+     */
+    public function all(): Collection;
     /**
      * Создать запись о роли
      *

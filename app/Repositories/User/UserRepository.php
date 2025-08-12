@@ -37,10 +37,12 @@ class UserRepository implements UserRepositoryInterface
         return User::create($dto->all());
     }
 
-    public function update(int $userId, CreateUserDTO $dto): void
+    public function update(int $userId, CreateUserDTO $dto): User
     {
         $user = User::withoutScopeFind($userId);
         $user->update($dto->all());
+
+        return $user;
     }
 
     public function delete(int $userId): void
@@ -63,12 +65,19 @@ class UserRepository implements UserRepositoryInterface
     public function getQueryWithRelations(): Builder
     {
         return User::withoutGlobalScope(ActiveUserScope::class)
-        ->with(['department', 'position'])
+        ->with(['department', 'position', 'roles'])
         ->select('users.*');
     }
 
     public function count(): int
     {
         return User::count();
+    }
+
+    public function getRelatedRole(int $userId)
+    {
+       $user = User::withoutScopeFind($userId);
+
+       return $user->roles->first() ?? null;
     }
 }

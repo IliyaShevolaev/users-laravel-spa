@@ -21,6 +21,7 @@ const headers = [
     { title: "ID", key: "id" },
     { title: t("users.name"), key: "name" },
     { title: t("users.email"), key: "email" },
+    { title: t("users.role"), key: "roles" },
     { title: t("users.gender"), key: "gender" },
     { title: t("users.status"), key: "status" },
     { title: t("users.department"), key: "department_id" },

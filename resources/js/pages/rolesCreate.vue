@@ -172,7 +172,7 @@ const updateRole = function () {
 };
 
 const cancel = function () {
-    router.back();
+    router.push('/roles');
 };
 </script>
 <template>

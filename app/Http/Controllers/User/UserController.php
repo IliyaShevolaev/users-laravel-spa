@@ -91,7 +91,6 @@ class UserController extends Controller
      */
     public function edit(int $userId): JsonResponse
     {
-        Log::info('here');
         $data = $this->service->prepareViewData($userId);
 
         return response()->json($data);
@@ -126,5 +125,10 @@ class UserController extends Controller
         return response()->json([
             'message' => 'success',
         ]);
+    }
+
+    public function getUserRole(int $userId)
+    {
+        return $this->repository->getRelatedRole($userId);
     }
 }
