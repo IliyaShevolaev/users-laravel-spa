@@ -4,10 +4,19 @@ import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { useDisplay } from "vuetify";
+import { useModelChangesStore } from "../stores/modelChanges";
 
 const { mobile } = useDisplay();
 const router = useRouter();
 const { t } = useI18n();
+const modelChangesStore = useModelChangesStore();
+
+const props = defineProps({
+    id: {
+        type: Number,
+        default: null,
+    },
+});
 
 const formData = reactive({
     name: null,
@@ -19,26 +28,73 @@ const permissionGroups = ref([
     {
         key: "users",
         name: t("users.roles.entities.users"),
-        permissions: { read: false, create: false, update: false, delete: false },
+        permissions: {
+            read: false,
+            create: false,
+            update: false,
+            delete: false,
+        },
     },
     {
         key: "departments",
         name: t("users.roles.entities.departments"),
-        permissions: { read: false, create: false, update: false, delete: false },
+        permissions: {
+            read: false,
+            create: false,
+            update: false,
+            delete: false,
+        },
     },
     {
         key: "positions",
         name: t("users.roles.entities.positions"),
-        permissions: { read: false, create: false, update: false, delete: false },
+        permissions: {
+            read: false,
+            create: false,
+            update: false,
+            delete: false,
+        },
     },
     {
         key: "roles",
         name: t("users.roles.entities.roles"),
-        permissions: { read: false, create: false, update: false, delete: false },
+        permissions: {
+            read: false,
+            create: false,
+            update: false,
+            delete: false,
+        },
     },
 ]);
 
-function addRole() {
+const editRequest = function (id) {
+    axios.get(`/api/roles/${id}/edit`).then((response) => {
+        formData.name = response.data.data.name;
+
+        permissionGroups.value.forEach((group) => {
+            for (let perm in group.permissions) {
+                group.permissions[perm] = false;
+            }
+        });
+
+        response.data.data.permissions.forEach((permission) => {
+            const [entity, action] = permission.name.split("-");
+            const group = permissionGroups.value.find(
+                (group) => group.key === entity
+            );
+            if (group && action in group.permissions) {
+                group.permissions[action] = true;
+            }
+        });
+    });
+};
+
+if (props.id !== null) {
+    console.log("edit mode");
+    editRequest(props.id);
+}
+
+const processPermissionsBeforeRequest = function () {
     const permissionsArray = [];
 
     for (let group of permissionGroups.value) {
@@ -49,9 +105,13 @@ function addRole() {
         }
     }
 
+    return permissionsArray;
+};
+
+const addRole = function () {
     const bodyData = {
         name: formData.name,
-        permissions: permissionsArray,
+        permissions: processPermissionsBeforeRequest(),
     };
 
     console.log(bodyData);
@@ -60,7 +120,11 @@ function addRole() {
         .post("/api/roles", bodyData)
         .then((response) => {
             console.log(response);
-            router.push("/roles");
+            modelChangesStore.addRole(formData.name);
+            router.push({
+                path: "/roles",
+                state: { created: true },
+            });
         })
         .catch((error) => {
             console.log(error);
@@ -73,7 +137,39 @@ function addRole() {
                 console.log(formDataErrors);
             }
         });
-}
+};
+
+const updateRole = function () {
+    const bodyData = {
+        name: formData.name,
+        permissions: processPermissionsBeforeRequest(),
+    };
+
+    console.log(bodyData);
+    console.log(`/api/roles/${props.id}`);
+
+    axios
+        .patch(`/api/roles/${props.id}`, bodyData)
+        .then((response) => {
+            modelChangesStore.editRole(formData.name);
+            console.log(response);
+            router.push({
+                path: "/roles",
+                state: { updated: true },
+            });
+        })
+        .catch((error) => {
+            console.log(error);
+            if (error.response.status === 422) {
+                const errors = error.response.data.errors;
+                console.log(errors);
+                for (error in errors) {
+                    formDataErrors[error] = errors[error][0];
+                }
+                console.log(formDataErrors);
+            }
+        });
+};
 
 const cancel = function () {
     router.back();
@@ -151,6 +247,16 @@ const cancel = function () {
                     </v-btn>
 
                     <v-btn
+                        v-if="props.id"
+                        color="warning"
+                        :size="mobile ? 'small' : 'default'"
+                        @click="updateRole"
+                    >
+                        {{ t("main.edit_button") }}
+                    </v-btn>
+
+                    <v-btn
+                        v-else
                         color="success"
                         :size="mobile ? 'small' : 'default'"
                         @click="addRole"

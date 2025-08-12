@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Roles;
 
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Foundation\Http\FormRequest;
 
 class RoleRequest extends FormRequest
@@ -21,8 +23,14 @@ class RoleRequest extends FormRequest
      */
     public function rules(): array
     {
+        Log::info($this);
         return [
-            'name' => ['required', 'string', 'max:255', 'unique:roles,name'],
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('roles')->ignore($this->role)
+            ],
             'permissions' => ['nullable', 'array'],
         ];
     }

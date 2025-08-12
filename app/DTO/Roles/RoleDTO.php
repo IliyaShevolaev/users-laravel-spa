@@ -9,8 +9,9 @@ use Spatie\LaravelData\Data;
 class RoleDTO extends Data
 {
     public function __construct(
-        public int $code,
-        public string $message
+        public int $id,
+        public string $name,
+        public array $permissions,
     ) {
     }
 }

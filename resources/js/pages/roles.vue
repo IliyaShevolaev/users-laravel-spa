@@ -88,6 +88,10 @@ watch(
     }
 );
 
+const edit = function (id) {
+    router.push(`/roles/edit/${id}`);
+};
+
 const showAlertAcceptDialog = ref(false);
 const alertAcceptText = ref("");
 const idToDelete = ref(0);
@@ -142,6 +146,33 @@ const showSnackBar = function (message, color) {
         isSnackbarOpen.value = true;
     }, 10);
 };
+
+const checkHistoryStateToNotify = function () {
+    if (history.state?.created) {
+        showSnackBar(
+            t("users.role") +
+                " " +
+                modelChangesStore.getRole.lastAdd +
+                " " +
+                t("users.roles.was_append"),
+            "success"
+        );
+    } else if (history.state?.updated) {
+        showSnackBar(
+            t("users.role") +
+                " " +
+                modelChangesStore.getRole.lastEdit +
+                " " +
+                t("users.roles.was_edited"),
+            "warning"
+        );
+    }
+    const newState = { ...history.state };
+    delete newState.created;
+    delete newState.updated;
+    history.replaceState(newState, document.title, window.location.href);
+};
+checkHistoryStateToNotify();
 
 </script>
 <template>

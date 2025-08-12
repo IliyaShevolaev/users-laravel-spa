@@ -29,6 +29,11 @@ export const routes = [
                 path: "roles/create",
                 component: () => import("@/pages/rolesCreate.vue"),
             },
+            {
+                path: "roles/edit/:id",
+                component: () => import("@/pages/rolesCreate.vue"),
+                props: true
+            },
         ],
     },
     {
