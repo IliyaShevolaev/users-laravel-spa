@@ -33,4 +33,20 @@ class RoleService
             $createdRole->syncPermissions($createRoleDTO->permissions);
         }
     }
+
+    /**
+     * Удаляет роль при отсутсвии связей
+     *
+     * @param int $roleId
+     * @return void
+     */
+    public function delete(int $roleId): void
+    {
+        $role = $this->repository->find($roleId);
+        if (isset($role)) {
+            $role->syncPermissions([]);
+            $this->repository->delete($role); // Добавить проверку
+        }
+
+    }
 }

@@ -19,6 +19,22 @@ interface RoleRepositoryInterface
     public function create(CreateRoleDTO $createRoleDTO): Role;
 
     /**
+     * Найти роль
+     *
+     * @param int $roleId
+     * @return Builder<Role>|Role
+     */
+    public function find(int $roleId): Role;
+
+    /**
+     * Удалить роль
+     *
+     * @param Role $role
+     * @return void
+     */
+    public function delete(Role $role): void;
+
+    /**
      * Получить запрос
      *
      * @return Builder<Role>

@@ -16,6 +16,17 @@ class RoleRepository implements RoleRepositoryInterface
         return Role::create($createRoleDTO->all());
     }
 
+    public function delete(Role $role): void
+    {
+        $role->delete();
+    }
+
+    public function find(int $roleId): Role
+    {
+        return Role::find($roleId);
+    }
+
+
     public function getQuery(): Builder
     {
         return Role::query();

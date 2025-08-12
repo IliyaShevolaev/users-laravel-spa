@@ -4,6 +4,8 @@ import { useModelChangesStore } from "../stores/modelChanges";
 import { useRouter } from "vue-router";
 import { debounce } from "vuetify/lib/util/helpers.mjs";
 import { useDisplay } from "vuetify";
+import AcceptDialog from "../components/alerts/AcceptDialog.vue";
+import Snackbar from "../components/toaster/Snackbar.vue";
 
 const { mobile } = useDisplay();
 const router = useRouter();
@@ -17,12 +19,12 @@ const headers = [
     { title: t("main.title"), key: "name" },
     { title: t("main.created"), key: "created_at" },
     { title: t("main.updated"), key: "updated_at" },
-    // {
-    //     title: t("main.actions"),
-    //     key: "actions",
-    //     sortable: false,
-    //     align: "center",
-    // },
+    {
+        title: t("main.actions"),
+        key: "actions",
+        sortable: false,
+        align: "center",
+    },
 ];
 
 const itemsPerPage = ref(10);
@@ -86,8 +88,77 @@ watch(
     }
 );
 
+const showAlertAcceptDialog = ref(false);
+const alertAcceptText = ref("");
+const idToDelete = ref(0);
+
+const askToDeleteRow = function (id, name) {
+    showAlertAcceptDialog.value = true;
+    alertAcceptText.value = `${t("users.roles.delete_role")} ${name}?`;
+    idToDelete.value = id;
+    modelChangesStore.deleteRole(name);
+};
+
+const deleteRow = function (id) {
+    axios
+        .delete(`/api/roles/${id}`)
+        .then(() => {
+            requestData({
+                page: currentPage.value,
+                itemsPerPage: itemsPerPage.value,
+                sortBy: currentSortBy.value,
+            });
+            showSnackBar(
+                t("users.role") +
+                    " " +
+                    modelChangesStore.getRole.lastDelete +
+                    " " +
+                    t("users.roles.was_deleted"),
+                "error"
+            );
+        })
+        .catch((error) => {
+            console.log(error);
+            if (error.response.status === 409) {
+                showAlertDialog.value = true;
+                alertText.value = t("users.positions.unable_to_delete");
+            } else if (error.response.status === 404) {
+                showAlertDialog.value = true;
+                alertText.value = t("users.positions.no_selected");
+            }
+        });
+    showAlertAcceptDialog.value = false;
+};
+
+const isSnackbarOpen = ref(false);
+const snackbarMessage = ref("");
+const snackbarColor = ref("");
+
+const showSnackBar = function (message, color) {
+    isSnackbarOpen.value = false;
+    setTimeout(() => {
+        snackbarMessage.value = message;
+        snackbarColor.value = color;
+        isSnackbarOpen.value = true;
+    }, 10);
+};
+
 </script>
 <template>
+    <AcceptDialog
+        @close-dialog="showAlertAcceptDialog = false"
+        @accept-action="deleteRow(idToDelete)"
+        :is-open="showAlertAcceptDialog"
+        :message="alertAcceptText"
+    ></AcceptDialog>
+
+    <Snackbar
+        :color="snackbarColor"
+        :message="snackbarMessage"
+        :is-open="isSnackbarOpen"
+        @close-snackbar="isSnackbarOpen = false"
+    ></Snackbar>
+
     <div class="mb-5">
         <v-btn
             @click="router.push('/roles/create')"
@@ -121,6 +192,23 @@ watch(
                     ></v-text-field>
                 </div>
             </div>
+        </template>
+
+        <template v-slot:item.actions="{ item }">
+            <v-btn
+                icon="ri-edit-line"
+                color="warning"
+                class="me-3"
+                size="small"
+                @click="edit(item.id)"
+            ></v-btn>
+            <v-btn
+                icon="ri-delete-bin-fill"
+                color="error"
+                class="me-3"
+                size="small"
+                @click="askToDeleteRow(item.id, item.name)"
+            ></v-btn>
         </template>
     </v-data-table-server>
 </template>

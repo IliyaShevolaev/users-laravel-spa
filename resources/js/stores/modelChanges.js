@@ -19,6 +19,12 @@ export const useModelChangesStore = defineStore("modelChanges", {
             lastEdit: null,
             lastDelete: null
         },
+
+        role: {
+            lastAdd: null,
+            lastEdit: null,
+            lastDelete: null
+        },
     }),
     getters: {
         getUser() {
@@ -31,6 +37,9 @@ export const useModelChangesStore = defineStore("modelChanges", {
 
         getDepartment() {
             return this.department;
+        },
+        getRole() {
+            return this.role;
         },
     },
     actions: {
@@ -62,6 +71,16 @@ export const useModelChangesStore = defineStore("modelChanges", {
         },
         deleteDepartment(name) {
             this.department.lastDelete = name;
+        },
+
+        addRole(name) {
+            this.role.lastAdd = name;
+        },
+        editRole(name) {
+            this.role.lastEdit = name;
+        },
+        deleteRole(name) {
+            this.role.lastDelete = name;
         }
     },
 });
