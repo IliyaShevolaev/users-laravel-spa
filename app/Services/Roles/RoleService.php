@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Roles;
 
 use App\DTO\Roles\CreateRoleDTO;
+use Illuminate\Support\Facades\Log;
 use App\Repositories\Interfaces\Roles\RoleRepositoryInterface;
 
 class RoleService
@@ -26,6 +27,10 @@ class RoleService
      */
     public function store(CreateRoleDTO $createRoleDTO): void
     {
-        $this->repository->create($createRoleDTO);
+        $createdRole = $this->repository->create($createRoleDTO);
+
+        if (!empty($createRoleDTO->permissions)) {
+            $createdRole->syncPermissions($createRoleDTO->permissions);
+        }
     }
 }

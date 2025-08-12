@@ -19,39 +19,39 @@ const permissionGroups = ref([
     {
         key: "users",
         name: t("users.roles.entities.users"),
-        permissions: { view: false, create: false, edit: false, delete: false },
+        permissions: { read: false, create: false, update: false, delete: false },
     },
     {
         key: "departments",
         name: t("users.roles.entities.departments"),
-        permissions: { view: false, create: false, edit: false, delete: false },
+        permissions: { read: false, create: false, update: false, delete: false },
     },
     {
         key: "positions",
         name: t("users.roles.entities.positions"),
-        permissions: { view: false, create: false, edit: false, delete: false },
+        permissions: { read: false, create: false, update: false, delete: false },
     },
     {
         key: "roles",
         name: t("users.roles.entities.roles"),
-        permissions: { view: false, create: false, edit: false, delete: false },
+        permissions: { read: false, create: false, update: false, delete: false },
     },
 ]);
 
 function addRole() {
+    const permissionsArray = [];
+
+    for (let group of permissionGroups.value) {
+        for (let permission in group.permissions) {
+            if (group.permissions[permission]) {
+                permissionsArray.push(`${group.key}-${permission}`);
+            }
+        }
+    }
+
     const bodyData = {
         name: formData.name,
-        ...Object.fromEntries(
-            permissionGroups.value.map((group) => [
-                `${group.key}_permissions`,
-                [
-                    group.permissions.view,
-                    group.permissions.create,
-                    group.permissions.edit,
-                    group.permissions.delete,
-                ],
-            ])
-        ),
+        permissions: permissionsArray,
     };
 
     console.log(bodyData);
@@ -78,7 +78,6 @@ function addRole() {
 const cancel = function () {
     router.back();
 };
-
 </script>
 <template>
     <v-row>
@@ -109,7 +108,7 @@ const cancel = function () {
                     <v-row>
                         <v-col cols="6" sm="3">
                             <v-checkbox
-                                v-model="group.permissions.view"
+                                v-model="group.permissions.read"
                                 label="Смотреть"
                                 density="compact"
                                 hide-details
@@ -117,7 +116,7 @@ const cancel = function () {
                         </v-col>
                         <v-col cols="6" sm="3">
                             <v-checkbox
-                                v-model="group.permissions.edit"
+                                v-model="group.permissions.update"
                                 label="Редактировать"
                                 density="compact"
                                 hide-details

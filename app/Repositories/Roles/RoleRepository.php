@@ -11,9 +11,9 @@ use App\Repositories\Interfaces\Roles\RoleRepositoryInterface;
 
 class RoleRepository implements RoleRepositoryInterface
 {
-    public function create(CreateRoleDTO $createRoleDTO): void
+    public function create(CreateRoleDTO $createRoleDTO): Role
     {
-        Role::create($createRoleDTO->all());
+        return Role::create($createRoleDTO->all());
     }
 
     public function getQuery(): Builder

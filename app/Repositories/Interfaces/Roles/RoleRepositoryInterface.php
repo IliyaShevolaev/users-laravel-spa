@@ -16,7 +16,7 @@ interface RoleRepositoryInterface
      * @param CreateRoleDTO $createRoleDTO
      * @return void
      */
-    public function create(CreateRoleDTO $createRoleDTO): void;
+    public function create(CreateRoleDTO $createRoleDTO): Role;
 
     /**
      * Получить запрос
