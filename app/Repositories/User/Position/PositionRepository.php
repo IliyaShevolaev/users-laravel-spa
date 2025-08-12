@@ -54,7 +54,6 @@ class PositionRepository implements PositionRepositoryInterface
         return Position::query();
     }
 
-
     public function count(): int
     {
         return Position::count();

@@ -5,6 +5,7 @@ declare(strict_types=1);
 // php vendor/bin/phpstan analyse -c phpstan.neon
 // php vendor/bin/phpcs
 
+use App\Http\Controllers\Role\RoleController;
 use App\Http\Controllers\User\PositionController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Http\Request;
@@ -26,6 +27,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/positions/datatable', [PositionController::class, 'datatable']);
     Route::resource('positions', PositionController::class);
+
+    Route::get('/roles/datatable', [RoleController::class, 'datatable']);
+    Route::resource('roles', RoleController::class);
 });
 Route::get('/user', function (Request $request) {
     return Auth::user();

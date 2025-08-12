@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace App\DataTables;
 
-use Illuminate\Support\Str;
 use App\Models\User\Position;
-use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Services\DataTable;
-use Yajra\DataTables\Html\Builder as HtmlBuilder;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use App\Repositories\Interfaces\User\Position\PositionRepositoryInterface;
 

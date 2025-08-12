@@ -36,13 +36,30 @@
             "was_append": "была успешно добавлена",
             "was_edited": "была успешно изменена",
             "was_deleted": "была успешно удалена"
+        },
+        "roles": {
+            "roles": "Роли",
+            "create": "Создавать",
+            "view": "Смотреть",
+            "update": "Обновлять",
+            "delete": "Удалять",
+            "entities": {
+                "users": "Пользователи",
+                "departments": "Отделы",
+                "positions": "Должности",
+                "roles": "Роли"
+            },
+            "add": "Создать роль",
+            "edit": "Редактировать роль",
+            "name_placeholder": "Название роли"
         }
     },
 
     "nav": {
         "users": "Пользователи",
         "departments": "Отделы",
-        "positions": "Должности"
+        "positions": "Должности",
+        "roles": "Роли"
     },
 
     "auth": {
@@ -55,6 +72,7 @@
 
     "main": {
         "append_button": "Добавить",
+        "cancel_button": "Отмена",
         "edit_button": "Изменить",
         "close_button": "Закрыть",
         "search": "Поиск",

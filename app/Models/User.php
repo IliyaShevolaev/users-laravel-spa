@@ -11,6 +11,7 @@ use App\Models\User\Department;
 use Database\Factories\UserFactory;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Scopes\ActiveUserScope;
+use Laratrust\Contracts\LaratrustUser;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -33,6 +34,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  * @use HasFactory<UserFactory>
  */
 #[ScopedBy([ActiveUserScope::class])]
+//class User extends Authenticatable implements LaratrustUser
 class User extends Authenticatable
 {
     //@phpstan-ignore-next-line

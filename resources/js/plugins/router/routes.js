@@ -21,6 +21,14 @@ export const routes = [
                 path: "positions",
                 component: () => import("@/pages/positions.vue"),
             },
+            {
+                path: "roles",
+                component: () => import("@/pages/roles.vue"),
+            },
+            {
+                path: "roles/create",
+                component: () => import("@/pages/rolesCreate.vue"),
+            },
         ],
     },
     {

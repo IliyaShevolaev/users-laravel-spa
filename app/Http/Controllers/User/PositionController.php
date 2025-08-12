@@ -46,7 +46,13 @@ class PositionController extends Controller
         return PositionResource::collection($this->repository->all());
     }
 
-    public function dataTable(PositionsDataTable $positionsDataTable)
+    /**
+     * Возвращает таблицу должностей
+     * 
+     * @param PositionsDataTable $positionsDataTable
+     * @return JsonResponse
+     */
+    public function dataTable(PositionsDataTable $positionsDataTable): JsonResponse
     {
         return $positionsDataTable->ajax();
     }
