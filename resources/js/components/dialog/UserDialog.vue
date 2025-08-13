@@ -3,9 +3,11 @@ import axios from "axios";
 import { computed, reactive, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useModelChangesStore } from "../../stores/modelChanges";
+import { useAuthStore } from "../../stores/auth";
+
+const authStore = useAuthStore();
 
 const modelChangesStore = useModelChangesStore();
-
 const { t } = useI18n();
 
 const showPassword = ref(false);
@@ -46,7 +48,9 @@ const requestCreateUserData = function () {
         userStatuses.value = response.data.statuses;
         userDepartments.value = response.data.departments;
         userPositions.value = response.data.positions;
-        userRoles.value = response.data.roles;
+        if (authStore.checkPermission('roles-update')) {
+            userRoles.value = response.data.roles;
+        }
     });
 };
 requestCreateUserData();
@@ -239,6 +243,7 @@ const clearFields = function (obj) {
                     ></v-text-field>
 
                     <v-select
+                        v-if="authStore.checkPermission('roles-update')"
                         v-model="formData.role"
                         :items="userRoles"
                         :error="!!formDataErrors.role"

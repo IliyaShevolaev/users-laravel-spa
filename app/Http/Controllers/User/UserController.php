@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\User;
 
+use App\Models\User;
 use App\DTO\User\CreateUserDTO;
-use App\DTO\User\UserDTO;
 use Illuminate\Http\JsonResponse;
 use App\DataTables\UsersDataTable;
 use App\Services\User\UserService;
-use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\Users\EditRequest;
 use App\Http\Resources\User\UserResource;
 use App\Repositories\User\UserRepository;
@@ -47,11 +44,15 @@ class UserController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
+        $this->authorize('viewAny', User::class);
+
         return UserResource::collection($this->repository->allWithRelations());
     }
 
     public function datatable(UsersDataTable $usersDataTable): JsonResponse
     {
+        $this->authorize('viewAny', User::class);
+
         return $usersDataTable->ajax();
     }
 
@@ -62,6 +63,8 @@ class UserController extends Controller
      */
     public function create(): JsonResponse
     {
+        $this->authorize('create', User::class);
+
         $data = $this->service->prepareViewData();
 
         return response()->json($data);
@@ -76,6 +79,8 @@ class UserController extends Controller
      */
     public function store(CreateRequest $createRequest): JsonResponse
     {
+        $this->authorize('create', User::class);
+
         $dto = CreateUserDTO::from($createRequest->validated());
 
         $this->service->create($dto);
@@ -91,6 +96,8 @@ class UserController extends Controller
      */
     public function edit(int $userId): JsonResponse
     {
+        $this->authorize('update', User::class);
+
         $data = $this->service->prepareViewData($userId);
 
         return response()->json($data);
@@ -105,6 +112,8 @@ class UserController extends Controller
      */
     public function update(EditRequest $editRequest, int $userId): JsonResponse
     {
+        $this->authorize('update', User::class);
+
         $dto = CreateUserDTO::from($editRequest->validated());
 
         $this->service->update($dto, $userId);
@@ -120,6 +129,8 @@ class UserController extends Controller
      */
     public function destroy(int $userId): JsonResponse
     {
+        $this->authorize('delete', User::class);
+
         $this->service->delete($userId);
 
         return response()->json([

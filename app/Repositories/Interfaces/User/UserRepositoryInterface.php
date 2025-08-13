@@ -69,9 +69,10 @@ interface UserRepositoryInterface
     /**
      * Получить Builder с отношениями и без scope
      *
+     * @param array $relations
      * @return Builder<User>
      */
-    public function getQueryWithRelations(): Builder;
+    public function getQueryWithRelations(array $relations): Builder;
 
     /**
      * Получить количество записей

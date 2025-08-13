@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\User;
 
+use App\DTO\Roles\RoleDTO;
 use App\Enums\User\GenderEnum;
 use App\Enums\User\StatusEnum;
 use App\Repositories\Interfaces\Roles\RoleRepositoryInterface;
@@ -46,7 +47,10 @@ class UserService
     public function create(CreateUserDTO $dto): void
     {
         $createdUser = $this->repository->create($dto);
-        $createdUser->addRole($this->roleRepository->find($dto->role));
+
+        if (isset($dto->role)) {
+            $createdUser->addRole($this->roleRepository->find($dto->role));
+        }
     }
 
     /**
@@ -59,7 +63,14 @@ class UserService
     public function update(CreateUserDTO $dto, int $userId): void
     {
         $updatedUser = $this->repository->update($userId, $dto);
-        $updatedUser->syncRoles([$this->roleRepository->find($dto->role)]);
+
+        if (Auth::user()->getUserRolePermissionsCollection()->contains('roles-update')) {
+            if (isset($dto->role)) {
+                $updatedUser->syncRoles([$this->roleRepository->find($dto->role)]);
+            } else {
+                $updatedUser->syncRoles([]);
+            }
+        }
     }
 
     /**
@@ -83,11 +94,18 @@ class UserService
      */
     public function prepareViewData(int $userId = null): UserRelatedDTO
     {
-        $userDto = isset($userId) ? $this->repository->withoutScopeFind($userId) : null;
+        $userRelatedDtoArray = [];
 
-        $departmentsDto = $this->departmentRepository->all();
-        $positionsDto = $this->positionRepository->all();
-        $rolesDto = $this->roleRepository->all();
+        $userRelatedDtoArray['user'] = isset($userId) ? $this->repository->withoutScopeFind($userId) : null;
+
+        $userRelatedDtoArray['departments'] = $this->departmentRepository->all();
+        $userRelatedDtoArray['positions'] = $this->positionRepository->all();
+
+        $permissions = Auth::user()->getUserRolePermissionsCollection();
+        if ($permissions->contains('roles-update')) {
+            $userRelatedDtoArray['roles'] = $this->roleRepository->all();
+        }
+
 
         $genderArray = [];
         foreach (GenderEnum::cases() as $genderValue) {
@@ -96,6 +114,7 @@ class UserService
                 'value' => $genderValue->value
             ]);
         }
+        $userRelatedDtoArray['genders'] = $genderArray;
 
         $statusArray = [];
         foreach (StatusEnum::cases() as $statusValue) {
@@ -104,14 +123,9 @@ class UserService
                 'value' => $statusValue->value
             ]);
         }
+        $userRelatedDtoArray['statuses'] = $statusArray;
 
-        return UserRelatedDTO::from([
-            'user' => $userDto,
-            'departments' => $departmentsDto,
-            'positions' => $positionsDto,
-            'roles' => $rolesDto,
-            'genders' => $genderArray,
-            'statuses' => $statusArray
-        ]);
+
+        return UserRelatedDTO::from($userRelatedDtoArray);
     }
 }

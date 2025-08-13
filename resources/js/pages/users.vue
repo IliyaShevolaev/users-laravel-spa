@@ -1,6 +1,6 @@
 <script setup>
 import axios from "axios";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import UserDialog from "../components/dialog/UserDialog.vue";
 import Snackbar from "../components/toaster/Snackbar.vue";
 import AcceptDialog from "../components/alerts/AcceptDialog.vue";
@@ -8,33 +8,49 @@ import { useDisplay } from "vuetify";
 import { debounce } from "vuetify/lib/util/helpers.mjs";
 import { useI18n } from "vue-i18n";
 import { useModelChangesStore } from "../stores/modelChanges";
+import { useAuthStore } from "../stores/auth";
 
+const authStore = useAuthStore();
 const modelChangesStore = useModelChangesStore();
-
 const { t } = useI18n();
-
 const { mobile } = useDisplay();
 
 const users = ref([]);
 
-const headers = [
-    { title: "ID", key: "id" },
-    { title: t("users.name"), key: "name" },
-    { title: t("users.email"), key: "email" },
-    { title: t("users.role"), key: "roles" },
-    { title: t("users.gender"), key: "gender" },
-    { title: t("users.status"), key: "status" },
-    { title: t("users.department"), key: "department_id" },
-    { title: t("users.position"), key: "position_id" },
-    { title: t("main.created"), key: "created_at" },
-    { title: t("main.updated"), key: "updated_at" },
-    {
-        title: t("main.actions"),
-        key: "actions",
-        sortable: false,
-        align: "center",
-    },
-];
+const headers = computed(() => {
+    const baseHeaders = [
+        { title: "ID", key: "id" },
+        { title: t("users.name"), key: "name" },
+        { title: t("users.email"), key: "email" },
+        { title: t("users.gender"), key: "gender" },
+        { title: t("users.status"), key: "status" },
+    ];
+
+    if (authStore.checkPermission("roles-update")) {
+        baseHeaders.push({ title: t("users.role"), key: "roles" });
+    }
+
+    baseHeaders.push(
+        { title: t("users.department"), key: "department_id" },
+        { title: t("users.position"), key: "position_id" },
+        { title: t("main.created"), key: "created_at" },
+        { title: t("main.updated"), key: "updated_at" }
+    );
+
+    if (
+        authStore.checkPermission("users-update") ||
+        authStore.checkPermission("users-delete")
+    ) {
+        baseHeaders.push({
+            title: t("main.actions"),
+            key: "actions",
+            sortable: false,
+            align: "center",
+        });
+    }
+
+    return baseHeaders;
+});
 
 const itemsPerPage = ref(10);
 const currentPage = ref(1);
@@ -66,7 +82,7 @@ const requestData = function ({ page, itemsPerPage, sortBy }) {
         .get("/api/users/datatable", { params })
         .then((response) => {
             console.log(response);
-            users.value = response.data.data.original.data;
+            users.value = response.data.data.original.data; 
             currentPage.value = response.data.input.page;
             totalItems.value = response.data.recordsFiltered;
             console.log("Response:", response.data);
@@ -115,10 +131,10 @@ const closeDialog = function (dataChanged, method) {
         });
     }
 
-    console.log('here')
-    console.log(method)
+    console.log("here");
+    console.log(method);
     if (method === "add") {
-        console.log('add');
+        console.log("add");
         showSnackBar(
             t("users.user") +
                 " " +
@@ -128,7 +144,7 @@ const closeDialog = function (dataChanged, method) {
             "success"
         );
     } else if (method === "edit") {
-        console.log('edit');
+        console.log("edit");
 
         showSnackBar(
             t("users.user") +
@@ -207,11 +223,17 @@ const alertAcceptText = ref("");
 
 <template>
     <div class="mb-5">
-        <v-btn @click="openDialog()" prepend-icon="ri-add-line" color="success">
+        <v-btn
+            v-if="authStore.checkPermission('users-create')"
+            @click="openDialog()"
+            prepend-icon="ri-add-line"
+            color="success"
+        >
             {{ t("main.append_button") }}
         </v-btn>
     </div>
     <UserDialog
+        v-if="authStore.checkPermission('users-create')"
         @close-dialog="closeDialog"
         :isOpen="isDialogOpen"
         :edit-id="dialogEditId"
@@ -258,6 +280,7 @@ const alertAcceptText = ref("");
 
         <template v-slot:item.actions="{ item }">
             <v-btn
+                v-if="authStore.checkPermission('users-update')"
                 icon="ri-edit-line"
                 class="me-3"
                 color="warning"
@@ -265,6 +288,7 @@ const alertAcceptText = ref("");
                 @click="edit(item.id)"
             ></v-btn>
             <v-btn
+                v-if="authStore.checkPermission('users-delete')"
                 icon="ri-delete-bin-fill"
                 class="me-3"
                 color="error"

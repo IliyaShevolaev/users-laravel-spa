@@ -62,10 +62,10 @@ class UserRepository implements UserRepositoryInterface
     }
 
 
-    public function getQueryWithRelations(): Builder
+    public function getQueryWithRelations(array $relations): Builder
     {
         return User::withoutGlobalScope(ActiveUserScope::class)
-        ->with(['department', 'position', 'roles'])
+        ->with($relations)
         ->select('users.*');
     }
 

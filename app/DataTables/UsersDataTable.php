@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\DataTables;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Services\DataTable;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
@@ -27,7 +28,6 @@ class UsersDataTable extends DataTable
     {
         $this->repository = $userRepository;
     }
-
     /**
      * Build the DataTable class.
      *
@@ -35,7 +35,9 @@ class UsersDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query))
+        $permissions = Auth::user()->getUserRolePermissionsCollection();
+
+        $dataTable = (new EloquentDataTable($query))
             ->editColumn('department_id', function (User $user) {
                 return $user->department->name ?? trans('main.users.without_department');
             })
@@ -53,11 +55,17 @@ class UsersDataTable extends DataTable
             })
             ->editColumn('updated_at', function (User $user) {
                 return $user->updated_at->format('H:i d.m.Y');
-            })->editColumn('roles', function (User $user) {
+            });
+
+        if ($permissions->contains('roles-read')) {
+            $dataTable->editColumn('roles', function (User $user) {
                 return $user->roles->isNotEmpty()
                     ? $user->roles->first()->name
                     : trans('main.users.empty_role');
             });
+        }
+
+        return $dataTable;
     }
 
     public function ajax(): \Illuminate\Http\JsonResponse
@@ -90,7 +98,14 @@ class UsersDataTable extends DataTable
      */
     public function query(): QueryBuilder
     {
-        $query = $this->repository->getQueryWithRelations();
+        $queryRelations = ['department', 'position'];
+
+        $permissions = Auth::user()->getUserRolePermissionsCollection();
+        if ($permissions->contains('roles-read')) {
+            $queryRelations[] = 'roles';
+        }
+
+        $query = $this->repository->getQueryWithRelations($queryRelations);
 
         if ($this->request()->has('sort_by') && $this->request()->has('sort_order')) {
             $query->orderBy($this->request()->input('sort_by'), $this->request()->input('sort_order'));

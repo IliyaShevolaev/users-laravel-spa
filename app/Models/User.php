@@ -8,19 +8,22 @@ use App\Models\User\Position;
 use App\Enums\User\GenderEnum;
 use App\Enums\User\StatusEnum;
 use App\Models\User\Department;
+use App\Policies\User\UserPolicy;
+use Illuminate\Support\Collection;
 use Database\Factories\UserFactory;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Scopes\ActiveUserScope;
 use Laratrust\Contracts\LaratrustUser;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Builder;
+use Laratrust\Traits\HasRolesAndPermissions;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
+use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Laratrust\Traits\HasRolesAndPermissions;
 
 /**
  * Модель пользователя системы
@@ -35,6 +38,7 @@ use Laratrust\Traits\HasRolesAndPermissions;
  * @use HasFactory<UserFactory>
  */
 #[ScopedBy([ActiveUserScope::class])]
+#[UsePolicy(UserPolicy::class)]
 class User extends Authenticatable implements LaratrustUser
 {
     //@phpstan-ignore-next-line
@@ -116,5 +120,21 @@ class User extends Authenticatable implements LaratrustUser
     public function position(): HasOne
     {
         return $this->hasOne(Position::class, 'id', 'position_id');
+    }
+
+    public function getUserRolePermissionsCollection(): Collection
+    {
+        if (!$this->relationLoaded('roles')) {
+            $this->load('roles.permissions');
+        }
+
+        if ($this->roles->isNotEmpty()) {
+            $role = $this->roles->first();
+            if ($role->permissions->isNotEmpty()) {
+                return $role->permissions->pluck('name');
+            }
+        }
+
+        return collect();
     }
 }
