@@ -35,8 +35,6 @@ class UsersDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        $permissions = Auth::user()->getUserRolePermissionsCollection();
-
         $dataTable = (new EloquentDataTable($query))
             ->editColumn('department_id', function (User $user) {
                 return $user->department->name ?? trans('main.users.without_department');
@@ -57,7 +55,7 @@ class UsersDataTable extends DataTable
                 return $user->updated_at->format('H:i d.m.Y');
             });
 
-        if ($permissions->contains('roles-read')) {
+        if (Auth::user()->getUserRolePermissionsCollection()->contains('roles-read')) {
             $dataTable->editColumn('roles', function (User $user) {
                 return $user->roles->isNotEmpty()
                     ? $user->roles->first()->name
@@ -107,9 +105,25 @@ class UsersDataTable extends DataTable
 
         $query = $this->repository->getQueryWithRelations($queryRelations);
 
-        if ($this->request()->has('sort_by') && $this->request()->has('sort_order')) {
-            $query->orderBy($this->request()->input('sort_by'), $this->request()->input('sort_order'));
+        if (
+            $this->request()->has('sort_by') &&
+            $this->request()->input('sort_by') === 'roles' &&
+            $this->request()->has('sort_order')
+        ) {
+            $query->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
+                ->leftJoin('roles', 'role_user.role_id', '=', 'roles.id')
+                ->select('users.*')
+                ->orderBy('roles.name', $this->request()->input('sort_order'));
+        } elseif (
+            $this->request()->has('sort_by') &&
+            $this->request()->has('sort_order')
+        ) {
+            $query->orderBy(
+                $this->request()->input('sort_by'),
+                $this->request()->input('sort_order')
+            );
         }
+
 
         if ($this->request()->has('search') && !empty($this->request()->input('search'))) {
             $query->where('name', 'like', '%' . $this->request()->input('search') . '%');
