@@ -9,27 +9,37 @@ import { useDisplay } from "vuetify";
 import { debounce } from "vuetify/lib/util/helpers.mjs";
 import { useI18n } from "vue-i18n";
 import { useModelChangesStore } from "../stores/modelChanges";
+import { useAuthStore } from "../stores/auth";
 
+const authStore = useAuthStore();
 const modelChangesStore = useModelChangesStore();
-
 const { t } = useI18n();
-
 const { mobile } = useDisplay();
 
 const positions = ref([]);
 
-const headers = [
-    { title: "ID", key: "id" },
-    { title: t("main.title"), key: "name" },
-    { title: t("main.created"), key: "created_at" },
-    { title: t("main.updated"), key: "updated_at" },
-    {
-        title: t("main.actions"),
-        key: "actions",
-        sortable: false,
-        align: "center",
-    },
-];
+const headers = computed(() => {
+    const baseHeaders = [
+        { title: "ID", key: "id" },
+        { title: t("main.title"), key: "name" },
+        { title: t("main.created"), key: "created_at" },
+        { title: t("main.updated"), key: "updated_at" },
+    ];
+
+    if (
+        authStore.checkPermission("positions-update") ||
+        authStore.checkPermission("positions-delete")
+    ) {
+        baseHeaders.push({
+            title: t("main.actions"),
+            key: "actions",
+            sortable: false,
+            align: "center",
+        });
+    }
+
+    return baseHeaders;
+});
 
 const itemsPerPage = ref(10);
 const currentPage = ref(1);
@@ -200,7 +210,12 @@ const alertAcceptText = ref("");
 
 <template>
     <div class="mb-5">
-        <v-btn @click="openDialog()" prepend-icon="ri-add-line" color="success">
+        <v-btn
+            v-if="authStore.checkPermission('positions-create')"
+            @click="openDialog()"
+            prepend-icon="ri-add-line"
+            color="success"
+        >
             {{ $t("main.append_button") }}
         </v-btn>
     </div>
@@ -257,6 +272,7 @@ const alertAcceptText = ref("");
 
         <template v-slot:item.actions="{ item }">
             <v-btn
+                v-if="authStore.checkPermission('positions-update')"
                 icon="ri-edit-line"
                 color="warning"
                 class="me-3"
@@ -264,6 +280,7 @@ const alertAcceptText = ref("");
                 @click="edit(item.id)"
             ></v-btn>
             <v-btn
+                v-if="authStore.checkPermission('positions-delete')"
                 icon="ri-delete-bin-fill"
                 color="error"
                 class="me-3"

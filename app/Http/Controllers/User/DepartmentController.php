@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\User;
 
-use App\DTO\User\Department\CreateDepartmentDTO;
-use App\DTO\User\Department\DepartmentDTO;
-use App\Http\Resources\User\DepartmerntResource;
+use App\Models\User\Department;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use App\DataTables\DepartmentsDataTable;
+use App\DTO\User\Department\DepartmentDTO;
+use App\DTO\User\Department\CreateDepartmentDTO;
+use App\Http\Resources\User\DepartmerntResource;
 use App\Services\User\Department\DepartmentService;
 use App\Http\Requests\Users\Department\DepartmentRequest;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use App\Repositories\Interfaces\User\Department\DepartmentRepositoryInterface;
 
 /**
@@ -23,11 +26,13 @@ use App\Repositories\Interfaces\User\Department\DepartmentRepositoryInterface;
  */
 class DepartmentController extends Controller
 {
+    use AuthorizesRequests;
+
     /**
      * Сервис для контроллера
      * @var DepartmentService
      *
-     * Реаозиторий для представления данных для отделов
+     * Репозиторий для представления данных для отделов
      * @var DepartmentRepositoryInterface
      */
     public function __construct(
@@ -43,6 +48,8 @@ class DepartmentController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
+        $this->authorize('viewAny', Department::class);
+        
         return DepartmerntResource::collection($this->repository->all());
     }
 
@@ -54,6 +61,8 @@ class DepartmentController extends Controller
      */
     public function datatable(DepartmentsDataTable $departmentsDataTable): JsonResponse
     {
+        $this->authorize('viewAny', Department::class);
+
         return $departmentsDataTable->ajax();
     }
 
@@ -65,6 +74,8 @@ class DepartmentController extends Controller
      */
     public function store(DepartmentRequest $departmentRequest): JsonResponse
     {
+        $this->authorize('create', Department::class);
+
         $dto = CreateDepartmentDTO::from($departmentRequest->validated());
 
         $this->service->create($dto);
@@ -80,6 +91,8 @@ class DepartmentController extends Controller
      */
     public function edit(int $departmentId): DepartmerntResource
     {
+        $this->authorize('update', Department::class);
+
         $departmentToEdit = $this->repository->find($departmentId);
 
         return new DepartmerntResource($departmentToEdit);
@@ -94,6 +107,8 @@ class DepartmentController extends Controller
      */
     public function update(DepartmentRequest $departmentRequest, int $departmentId): JsonResponse
     {
+        $this->authorize('update', Department::class);
+
         $dto = CreateDepartmentDTO::from($departmentRequest->validated());
 
         $this->service->update($departmentId, $dto);
@@ -109,6 +124,8 @@ class DepartmentController extends Controller
      */
     public function destroy(int $departmentId): JsonResponse
     {
+        $this->authorize('delete', Department::class);
+
         $deleteResult = $this->service->delete($departmentId);
 
         return response()->json(['message' => $deleteResult->message], $deleteResult->code);

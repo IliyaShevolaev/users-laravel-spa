@@ -88,6 +88,6 @@ class RoleController extends Controller
     {
         $this->service->delete($roleId);
 
-        return response()->json(['message' => 'success']); // 409!
+        return response()->json(['message' => 'success']); // @todo 409!
     }
 }

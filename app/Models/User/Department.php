@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Models\User;
 
 use App\Models\User;
+use App\Policies\User\DepartmentPolicy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -18,6 +20,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @method static \Illuminate\Database\Eloquent\Builder<Department> create(array<string, mixed> $attributes = [])
  * @property-read \Illuminate\Database\Eloquent\Collection<int, User>|null $users Пользоватили из отдела
  */
+#[UsePolicy(DepartmentPolicy::class)]
 class Department extends Model
 {
     use SoftDeletes;

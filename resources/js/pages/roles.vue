@@ -6,7 +6,9 @@ import { debounce } from "vuetify/lib/util/helpers.mjs";
 import { useDisplay } from "vuetify";
 import AcceptDialog from "../components/alerts/AcceptDialog.vue";
 import Snackbar from "../components/toaster/Snackbar.vue";
+import { useAuthStore } from "../stores/auth";
 
+const authStore = useAuthStore();
 const { mobile } = useDisplay();
 const router = useRouter();
 const modelChangesStore = useModelChangesStore();
@@ -14,18 +16,28 @@ const { t } = useI18n();
 
 const roles = ref([]);
 
-const headers = [
-    { title: "ID", key: "id" },
-    { title: t("main.title"), key: "name" },
-    { title: t("main.created"), key: "created_at" },
-    { title: t("main.updated"), key: "updated_at" },
-    {
-        title: t("main.actions"),
-        key: "actions",
-        sortable: false,
-        align: "center",
-    },
-];
+const headers = computed(() => {
+    const baseHeaders = [
+        { title: "ID", key: "id" },
+        { title: t("main.title"), key: "name" },
+        { title: t("main.created"), key: "created_at" },
+        { title: t("main.updated"), key: "updated_at" },
+    ];
+
+    if (
+        authStore.checkPermission("departments-update") ||
+        authStore.checkPermission("departments-delete")
+    ) {
+        baseHeaders.push({
+            title: t("main.actions"),
+            key: "actions",
+            sortable: false,
+            align: "center",
+        });
+    }
+
+    return baseHeaders;
+});
 
 const itemsPerPage = ref(10);
 const currentPage = ref(1);
@@ -148,7 +160,8 @@ const showSnackBar = function (message, color) {
 };
 
 const checkHistoryStateToNotify = function () {
-    if (history.state?.created) {
+    const betweenPagesMethod = modelChangesStore.role.betweenPagesMethod;
+    if (betweenPagesMethod === "create") {
         showSnackBar(
             t("users.role") +
                 " " +
@@ -157,7 +170,7 @@ const checkHistoryStateToNotify = function () {
                 t("users.roles.was_append"),
             "success"
         );
-    } else if (history.state?.updated) {
+    } else if (betweenPagesMethod === "update") {
         showSnackBar(
             t("users.role") +
                 " " +
@@ -167,13 +180,9 @@ const checkHistoryStateToNotify = function () {
             "warning"
         );
     }
-    const newState = { ...history.state };
-    delete newState.created;
-    delete newState.updated;
-    history.replaceState(newState, document.title, window.location.href);
+    modelChangesStore.unsetRoleBetweenPagesMethod();
 };
 checkHistoryStateToNotify();
-
 </script>
 <template>
     <AcceptDialog
@@ -192,6 +201,7 @@ checkHistoryStateToNotify();
 
     <div class="mb-5">
         <v-btn
+            v-if="authStore.checkPermission('roles-create')"
             @click="router.push('/roles/create')"
             prepend-icon="ri-add-line"
             color="success"
@@ -227,6 +237,7 @@ checkHistoryStateToNotify();
 
         <template v-slot:item.actions="{ item }">
             <v-btn
+                v-if="authStore.checkPermission('roles-update')"
                 icon="ri-edit-line"
                 color="warning"
                 class="me-3"
@@ -234,6 +245,7 @@ checkHistoryStateToNotify();
                 @click="edit(item.id)"
             ></v-btn>
             <v-btn
+                v-if="authStore.checkPermission('roles-delete')"
                 icon="ri-delete-bin-fill"
                 color="error"
                 class="me-3"

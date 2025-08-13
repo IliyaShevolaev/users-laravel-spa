@@ -59,7 +59,7 @@ class UserService
     public function update(CreateUserDTO $dto, int $userId): void
     {
         $updatedUser = $this->repository->update($userId, $dto);
-        $updatedUser->addRole($this->roleRepository->find($dto->role));
+        $updatedUser->syncRoles([$this->roleRepository->find($dto->role)]);
     }
 
     /**

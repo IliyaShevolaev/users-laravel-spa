@@ -5,6 +5,7 @@ declare(strict_types=1);
 // php vendor/bin/phpstan analyse -c phpstan.neon
 // php vendor/bin/phpcs
 
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Role\RoleController;
 use App\Http\Controllers\User\PositionController;
 use App\Http\Controllers\User\UserController;
@@ -32,7 +33,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/roles/datatable', [RoleController::class, 'datatable']);
     Route::resource('roles', RoleController::class);
 });
-Route::get('/user', function (Request $request) {
-    return Auth::user();
-});
+
+Route::get('/user', AuthController::class);
 

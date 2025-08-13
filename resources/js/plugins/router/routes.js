@@ -4,6 +4,7 @@ export const routes = [
         path: "/",
         component: () => import("@/layouts/default.vue"),
         meta: { requiresAuth: true },
+        // @todo защита read permission
         children: [
             {
                 path: "ping",
@@ -32,7 +33,7 @@ export const routes = [
             {
                 path: "roles/edit/:id",
                 component: () => import("@/pages/rolesCreate.vue"),
-                props: true
+                props: true,
             },
         ],
     },

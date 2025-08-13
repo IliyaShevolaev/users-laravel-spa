@@ -3,7 +3,9 @@ import VerticalNavSectionTitle from "@/@layouts/components/VerticalNavSectionTit
 import VerticalNavGroup from "@layouts/components/VerticalNavGroup.vue";
 import VerticalNavLink from "@layouts/components/VerticalNavLink.vue";
 import { useI18n } from "vue-i18n";
+import { useAuthStore } from "../../stores/auth";
 
+const authStore = useAuthStore();
 const { t } = useI18n();
 </script>
 
@@ -15,6 +17,7 @@ const { t } = useI18n();
         }"
     />
     <VerticalNavLink
+        v-if="authStore.checkPermission('users-read')"
         :item="{
             title: t('nav.users'),
             icon: 'ri-group-line',
@@ -22,6 +25,7 @@ const { t } = useI18n();
         }"
     />
     <VerticalNavLink
+        v-if="authStore.checkPermission('departments-read')"
         :item="{
             title: t('nav.departments'),
             icon: 'ri-building-line',
@@ -29,6 +33,7 @@ const { t } = useI18n();
         }"
     />
     <VerticalNavLink
+        v-if="authStore.checkPermission('positions-read')"
         :item="{
             title: t('nav.positions'),
             icon: 'ri-briefcase-line',
@@ -37,10 +42,11 @@ const { t } = useI18n();
     />
 
     <VerticalNavLink
-    :item="{
-        title: t('nav.roles'),
-        icon: 'ri-admin-fill',
-        to: '/roles',
-    }"
-/>
+        v-if="authStore.checkPermission('roles-read')"
+        :item="{
+            title: t('nav.roles'),
+            icon: 'ri-admin-fill',
+            to: '/roles',
+        }"
+    />
 </template>

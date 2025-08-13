@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers\User;
 
 use App\DTO\User\Position\CreatePositionDTO;
+use App\Models\User\Position;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Contracts\View\View;
 use App\Http\Controllers\Controller;
@@ -23,6 +25,8 @@ use App\Repositories\Interfaces\User\Position\PositionRepositoryInterface;
  */
 class PositionController extends Controller
 {
+    use AuthorizesRequests;
+
     /**
      * Сервис для контроллера
      * @var PositionService
@@ -43,17 +47,21 @@ class PositionController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
+        $this->authorize('viewAny', Position::class);
+
         return PositionResource::collection($this->repository->all());
     }
 
     /**
      * Возвращает таблицу должностей
-     * 
+     *
      * @param PositionsDataTable $positionsDataTable
      * @return JsonResponse
      */
     public function dataTable(PositionsDataTable $positionsDataTable): JsonResponse
     {
+        $this->authorize('viewAny', Position::class);
+
         return $positionsDataTable->ajax();
     }
 
@@ -65,6 +73,8 @@ class PositionController extends Controller
      */
     public function store(PositionRequest $positionRequest): JsonResponse
     {
+        $this->authorize('create', Position::class);
+
         $dto = CreatePositionDTO::from($positionRequest->validated());
 
         $this->service->create($dto);
@@ -80,6 +90,8 @@ class PositionController extends Controller
      */
     public function edit(int $positionId): PositionResource
     {
+        $this->authorize('update', Position::class);
+
         $positionToEdit = $this->repository->find($positionId);
 
         return new PositionResource($positionToEdit);
@@ -94,6 +106,8 @@ class PositionController extends Controller
      */
     public function update(PositionRequest $positionRequest, int $positionId): JsonResponse
     {
+        $this->authorize('update', Position::class);
+
         $dto = CreatePositionDTO::from($positionRequest->validated());
 
         $this->service->update($positionId, $dto);
@@ -109,6 +123,8 @@ class PositionController extends Controller
      */
     public function destroy(int $positionId): JsonResponse
     {
+        $this->authorize('delete', Position::class);
+
         $deleteResult = $this->service->delete($positionId);
 
         return response()->json(['message' => $deleteResult->message], $deleteResult->code);

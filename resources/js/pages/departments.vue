@@ -9,27 +9,37 @@ import { useDisplay } from "vuetify";
 import { debounce } from "vuetify/lib/util/helpers.mjs";
 import { useI18n } from "vue-i18n";
 import { useModelChangesStore } from "../stores/modelChanges";
+import { useAuthStore } from "../stores/auth";
 
+const authStore = useAuthStore();
 const modelChangesStore = useModelChangesStore();
-
 const { t } = useI18n();
-
 const { mobile } = useDisplay();
 
 const departments = ref([]);
 
-const headers = [
-    { title: "ID", key: "id" },
-    { title: t("main.title"), key: "name" },
-    { title: t("main.created"), key: "created_at" },
-    { title: t("main.updated"), key: "updated_at" },
-    {
-        title: t("main.actions"),
-        key: "actions",
-        sortable: false,
-        align: "center",
-    },
-];
+const headers = computed(() => {
+    const baseHeaders = [
+        { title: "ID", key: "id" },
+        { title: t("main.title"), key: "name" },
+        { title: t("main.created"), key: "created_at" },
+        { title: t("main.updated"), key: "updated_at" },
+    ];
+
+    if (
+        authStore.checkPermission("departments-update") ||
+        authStore.checkPermission("departments-delete")
+    ) {
+        baseHeaders.push({
+            title: t("main.actions"),
+            key: "actions",
+            sortable: false,
+            align: "center",
+        });
+    }
+
+    return baseHeaders;
+});
 
 const itemsPerPage = ref(10);
 const currentPage = ref(1);
@@ -199,7 +209,7 @@ const alertAcceptText = ref("");
 </script>
 
 <template>
-    <div class="mb-5">
+    <div class="mb-5" v-if="authStore.checkPermission('departments-create')">
         <v-btn @click="openDialog()" prepend-icon="ri-add-line" color="success">
             {{ $t("main.append_button") }}
         </v-btn>
@@ -257,6 +267,7 @@ const alertAcceptText = ref("");
 
         <template v-slot:item.actions="{ item }">
             <v-btn
+                v-if="authStore.checkPermission('departments-update')"
                 icon="ri-edit-line"
                 class="me-3"
                 size="small"
@@ -264,6 +275,7 @@ const alertAcceptText = ref("");
                 @click="edit(item.id)"
             ></v-btn>
             <v-btn
+                v-if="authStore.checkPermission('departments-delete')"
                 icon="ri-delete-bin-fill"
                 class="me-3"
                 size="small"

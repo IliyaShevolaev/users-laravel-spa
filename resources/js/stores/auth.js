@@ -1,3 +1,4 @@
+import axios from "axios";
 import { defineStore } from "pinia";
 
 export const useAuthStore = defineStore("auth", {
@@ -6,7 +7,8 @@ export const useAuthStore = defineStore("auth", {
         userData: {
             id: null,
             name: null
-        }
+        },
+        userPermissions: []
     }),
     getters: {
         isAuth() {
@@ -15,15 +17,37 @@ export const useAuthStore = defineStore("auth", {
 
         userInfo() {
             return this.userData;
+        },
+
+        permissions() {
+            return this.userPermissions;
         }
     },
     actions: {
-        authUser(userData) {
+        requestAuth(){
+            axios.get('/api/user').then(response => {
+                if (response.data.user !== null) {
+                    this.authUser(response.data.user, response.data.permissions);
+                } else {
+                    this.logoutUser();
+                }
+                console.log('this.userData');
+                console.log(this.userInfo);
+                console.log(this.permissions);
+            });
+        },
+
+        checkPermission(permissionName) {
+            return this.permissions.includes(permissionName);
+        },
+
+        authUser(userData, permissions) {
             localStorage.setItem('auth', 'true');
             this.auth = true;
             this.userData.id = userData.id;
             this.userData.name = userData.name;
             this.userData.email = userData.email;
+            this.userPermissions = permissions;
         },
 
         logoutUser() {
@@ -32,6 +56,7 @@ export const useAuthStore = defineStore("auth", {
             this.userData.id = null;
             this.userData.name = null;
             this.userData.email = null;
+            this.userPermissions = [];
         }
     },
 });

@@ -41,8 +41,9 @@ const loginSubmit = function () {
                 withCredentials: true,
             })
             .then((response) => {
-                authStore.authUser(response.data.user);
-                router.push("/");
+                //authStore.authUser(response.data.user);
+                authStore.requestAuth();
+                router.push("/"); //@todo перестало редиректить
             })
             .catch((error) => {
                 clearErrors();

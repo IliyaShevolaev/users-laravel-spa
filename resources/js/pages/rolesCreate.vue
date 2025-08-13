@@ -5,6 +5,7 @@ import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { useDisplay } from "vuetify";
 import { useModelChangesStore } from "../stores/modelChanges";
+import { useAuthStore } from "../stores/auth";
 
 const { mobile } = useDisplay();
 const router = useRouter();
@@ -121,10 +122,8 @@ const addRole = function () {
         .then((response) => {
             console.log(response);
             modelChangesStore.addRole(formData.name);
-            router.push({
-                path: "/roles",
-                state: { created: true },
-            });
+            modelChangesStore.setRoleBetweenPagesMethod("create");
+            router.push("/roles");
         })
         .catch((error) => {
             console.log(error);
@@ -145,18 +144,14 @@ const updateRole = function () {
         permissions: processPermissionsBeforeRequest(),
     };
 
-    console.log(bodyData);
-    console.log(`/api/roles/${props.id}`);
-
     axios
         .patch(`/api/roles/${props.id}`, bodyData)
         .then((response) => {
             modelChangesStore.editRole(formData.name);
+            modelChangesStore.setRoleBetweenPagesMethod("update");
+            useAuthStore().requestAuth();
             console.log(response);
-            router.push({
-                path: "/roles",
-                state: { updated: true },
-            });
+            router.push("/roles");
         })
         .catch((error) => {
             console.log(error);
@@ -172,7 +167,7 @@ const updateRole = function () {
 };
 
 const cancel = function () {
-    router.push('/roles');
+    router.push("/roles");
 };
 </script>
 <template>

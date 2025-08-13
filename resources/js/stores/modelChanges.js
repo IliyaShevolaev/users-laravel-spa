@@ -23,7 +23,8 @@ export const useModelChangesStore = defineStore("modelChanges", {
         role: {
             lastAdd: null,
             lastEdit: null,
-            lastDelete: null
+            lastDelete: null,
+            betweenPagesMethod: null,
         },
     }),
     getters: {
@@ -81,6 +82,12 @@ export const useModelChangesStore = defineStore("modelChanges", {
         },
         deleteRole(name) {
             this.role.lastDelete = name;
+        },
+        setRoleBetweenPagesMethod(method) {
+            this.role.betweenPagesMethod = method
+        },
+        unsetRoleBetweenPagesMethod() {
+            this.role.betweenPagesMethod = null
         }
     },
 });

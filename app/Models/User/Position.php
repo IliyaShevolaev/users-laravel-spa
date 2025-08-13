@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Models\User;
 
 use App\Models\User;
+use App\Policies\User\PositionPolicy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 
 /**
  * Модель должности пользвателя
@@ -19,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
  * @method static \Illuminate\Database\Eloquent\Builder<Position> create(array<string, mixed> $attributes = [])
  * @property-read Collection<int, User>|null $users Пользоватили с должностью
  */
+#[UsePolicy(PositionPolicy::class)]
 class Position extends Model
 {
     use SoftDeletes;
