@@ -7,6 +7,7 @@ import { useDisplay } from "vuetify";
 import AcceptDialog from "../components/alerts/AcceptDialog.vue";
 import Snackbar from "../components/toaster/Snackbar.vue";
 import { useAuthStore } from "../stores/auth";
+import AlertDangerDialog from "../components/alerts/AlertDangerDialog.vue";
 
 const authStore = useAuthStore();
 const { mobile } = useDisplay();
@@ -137,10 +138,10 @@ const deleteRow = function (id) {
             console.log(error);
             if (error.response.status === 409) {
                 showAlertDialog.value = true;
-                alertText.value = t("users.positions.unable_to_delete");
+                alertText.value = t("users.roles.unable_to_delete");
             } else if (error.response.status === 404) {
                 showAlertDialog.value = true;
-                alertText.value = t("users.positions.no_selected");
+                alertText.value = t("users.roles.no_selected");
             }
         });
     showAlertAcceptDialog.value = false;
@@ -183,6 +184,9 @@ const checkHistoryStateToNotify = function () {
     modelChangesStore.unsetRoleBetweenPagesMethod();
 };
 checkHistoryStateToNotify();
+
+const showAlertDialog = ref(false);
+const alertText = ref("");
 </script>
 <template>
     <AcceptDialog
@@ -191,6 +195,12 @@ checkHistoryStateToNotify();
         :is-open="showAlertAcceptDialog"
         :message="alertAcceptText"
     ></AcceptDialog>
+
+    <AlertDangerDialog
+        @close-dialog="showAlertDialog = false"
+        :is-open="showAlertDialog"
+        :message="alertText"
+    ></AlertDangerDialog>
 
     <Snackbar
         :color="snackbarColor"

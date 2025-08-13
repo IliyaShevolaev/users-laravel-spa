@@ -4,11 +4,12 @@ import { defineStore } from "pinia";
 export const useAuthStore = defineStore("auth", {
     state: () => ({
         auth: false,
+        loading: false,
         userData: {
             id: null,
-            name: null
+            name: null,
         },
-        userPermissions: []
+        userPermissions: [],
     }),
     getters: {
         isAuth() {
@@ -21,20 +22,29 @@ export const useAuthStore = defineStore("auth", {
 
         permissions() {
             return this.userPermissions;
-        }
+        },
+        isLoading() {
+            return this.loading;
+        },
     },
     actions: {
-        requestAuth(){
-            axios.get('/api/user').then(response => {
-                if (response.data.user !== null) {
-                    this.authUser(response.data.user, response.data.permissions);
-                } else {
-                    this.logoutUser();
-                }
-                console.log('this.userData');
-                console.log(this.userInfo);
-                console.log(this.permissions);
-            });
+        requestAuth() {
+            this.loading = true;
+            return axios
+                .get("/api/user")
+                .then((response) => {
+                    if (response.data.user !== null) {
+                        this.authUser(
+                            response.data.user,
+                            response.data.permissions
+                        );
+                    } else {
+                        this.logoutUser();
+                    }
+                })
+                .finally(() => {
+                    this.loading = false;
+                });
         },
 
         checkPermission(permissionName) {
@@ -42,7 +52,7 @@ export const useAuthStore = defineStore("auth", {
         },
 
         authUser(userData, permissions) {
-            localStorage.setItem('auth', 'true');
+            localStorage.setItem("auth", "true");
             this.auth = true;
             this.userData.id = userData.id;
             this.userData.name = userData.name;
@@ -51,13 +61,12 @@ export const useAuthStore = defineStore("auth", {
         },
 
         logoutUser() {
-            localStorage.removeItem('auth');
+            localStorage.removeItem("auth");
             this.auth = false;
             this.userData.id = null;
             this.userData.name = null;
             this.userData.email = null;
             this.userPermissions = [];
-        }
+        },
     },
 });
-

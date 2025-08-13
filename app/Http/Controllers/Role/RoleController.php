@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Role;
 
 use App\DTO\Roles\CreateRoleDTO;
+use App\Models\Roles\Role;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use App\DataTables\RolesDataTable;
 use App\Services\Roles\RoleService;
@@ -13,6 +15,7 @@ use App\Http\Resources\Roles\RoleResource;
 
 class RoleController extends Controller
 {
+    use AuthorizesRequests;
 
     /**
      * Сервис для взаимодействия с ролями
@@ -31,6 +34,8 @@ class RoleController extends Controller
      */
     public function dataTable(RolesDataTable $rolesDataTable): JsonResponse
     {
+        $this->authorize('viewAny', Role::class);
+
         return $rolesDataTable->ajax();
     }
 
@@ -42,6 +47,8 @@ class RoleController extends Controller
      */
     public function store(RoleRequest $roleRequest): JsonResponse
     {
+        $this->authorize('create', Role::class);
+
         $dto = CreateRoleDTO::from($roleRequest->validated());
 
         $this->service->store($dto);
@@ -57,6 +64,8 @@ class RoleController extends Controller
      */
     public function edit(int $roleId): RoleResource
     {
+        $this->authorize('update', Role::class);
+
         $roleToEdit = $this->service->edit($roleId);
 
         return new RoleResource($roleToEdit);
@@ -71,6 +80,8 @@ class RoleController extends Controller
      */
     public function update(RoleRequest $roleRequest, int $roleId): JsonResponse
     {
+        $this->authorize('update', Role::class);
+
         $dto = CreateRoleDTO::from($roleRequest->validated());
 
         $this->service->update($dto, $roleId);
@@ -86,8 +97,10 @@ class RoleController extends Controller
      */
     public function destroy(int $roleId): JsonResponse
     {
-        $this->service->delete($roleId);
+        $this->authorize('delete', Role::class);
 
-        return response()->json(['message' => 'success']); // @todo 409!
+        $deleteResult = $this->service->delete($roleId);
+
+        return response()->json(['message' => $deleteResult->message], $deleteResult->code);
     }
 }

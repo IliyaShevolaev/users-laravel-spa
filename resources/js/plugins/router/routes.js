@@ -4,7 +4,6 @@ export const routes = [
         path: "/",
         component: () => import("@/layouts/default.vue"),
         meta: { requiresAuth: true },
-        // @todo защита read permission
         children: [
             {
                 path: "ping",
@@ -13,27 +12,33 @@ export const routes = [
             {
                 path: "users",
                 component: () => import("@/pages/users.vue"),
+                meta: { permission: 'users-read' },
             },
             {
                 path: "departments",
                 component: () => import("@/pages/departments.vue"),
+                meta: { permission: 'departments-read' },
             },
             {
                 path: "positions",
                 component: () => import("@/pages/positions.vue"),
+                meta: { permission: 'positions-read' },
             },
             {
                 path: "roles",
                 component: () => import("@/pages/roles.vue"),
+                meta: { permission: 'roles-read' },
             },
             {
                 path: "roles/create",
                 component: () => import("@/pages/rolesCreate.vue"),
+                meta: { permission: 'roles-create' },
             },
             {
                 path: "roles/edit/:id",
                 component: () => import("@/pages/rolesCreate.vue"),
                 props: true,
+                meta: { permission: 'roles-update' },
             },
         ],
     },

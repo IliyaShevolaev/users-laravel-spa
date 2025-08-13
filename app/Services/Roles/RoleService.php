@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Roles;
 
+use App\DTO\MessageDTO;
 use App\Models\Roles\Role;
 use App\DTO\Roles\CreateRoleDTO;
 use Illuminate\Support\Facades\Log;
@@ -55,18 +56,31 @@ class RoleService
     }
 
     /**
-     * Удаляет роль при отсутсвии связей
+     * Удаляет роль при отсутствии связей
      *
      * @param int $roleId
-     * @return void
+     * @return MessageDTO
      */
-    public function delete(int $roleId): void
+    public function delete(int $roleId): MessageDTO
     {
+        $result = [];
+
         $role = $this->repository->find($roleId);
-        if (isset($role)) {
+
+        if ($role->users()->exists()) {
+            $result['message'] = 'delete not allowed';
+            $result['code'] = 409;
+            return MessageDTO::from($result);
+        } else {
             $role->syncPermissions([]);
-            $this->repository->delete($role); // Добавить проверку
+            $this->repository->delete($role);
+
+            $result['message'] = 'success';
+            $result['code'] = 200;
         }
 
+
+        return MessageDTO::from($result);
     }
+
 }

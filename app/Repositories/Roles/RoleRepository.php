@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories\Roles;
 
+use App\DTO\User\UserDTO;
 use App\DTO\Roles\RoleDTO;
 use App\Models\Roles\Role;
 use App\DTO\Roles\CreateRoleDTO;
