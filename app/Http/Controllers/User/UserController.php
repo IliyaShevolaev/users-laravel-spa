@@ -44,14 +44,14 @@ class UserController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
-        $this->authorize('viewAny', User::class);
+        $this->authorize('viewAny-user');
 
         return UserResource::collection($this->repository->allWithRelations());
     }
 
     public function datatable(UsersDataTable $usersDataTable): JsonResponse
     {
-        $this->authorize('viewAny', User::class);
+        $this->authorize('viewAny-user');
 
         return $usersDataTable->ajax();
     }
@@ -63,7 +63,7 @@ class UserController extends Controller
      */
     public function create(): JsonResponse
     {
-        $this->authorize('changeUsers', User::class);
+        $this->authorize('change-user');
 
         $data = $this->service->prepareViewData();
 
@@ -79,7 +79,7 @@ class UserController extends Controller
      */
     public function store(CreateRequest $createRequest): JsonResponse
     {
-        $this->authorize('create', User::class);
+        $this->authorize('create-user');
 
         $dto = CreateUserDTO::from($createRequest->validated());
 
@@ -96,7 +96,7 @@ class UserController extends Controller
      */
     public function edit(int $userId): JsonResponse
     {
-        $this->authorize('update', User::class);
+        $this->authorize('update-user');
 
         $data = $this->service->prepareViewData($userId);
 
@@ -112,7 +112,7 @@ class UserController extends Controller
      */
     public function update(EditRequest $editRequest, int $userId): JsonResponse
     {
-        $this->authorize('update', User::class);
+        $this->authorize('update-user');
 
         $dto = CreateUserDTO::from($editRequest->validated());
 
@@ -129,7 +129,7 @@ class UserController extends Controller
      */
     public function destroy(int $userId): JsonResponse
     {
-        $this->authorize('delete', User::class);
+        $this->authorize('delete-user');
 
         $this->service->delete($userId);
 

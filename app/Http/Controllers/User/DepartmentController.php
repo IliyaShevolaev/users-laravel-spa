@@ -48,8 +48,8 @@ class DepartmentController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
-        $this->authorize('viewAny', Department::class);
-        
+        $this->authorize('viewAny-department');
+
         return DepartmerntResource::collection($this->repository->all());
     }
 
@@ -61,7 +61,7 @@ class DepartmentController extends Controller
      */
     public function datatable(DepartmentsDataTable $departmentsDataTable): JsonResponse
     {
-        $this->authorize('viewAny', Department::class);
+        $this->authorize('viewAny-department');
 
         return $departmentsDataTable->ajax();
     }
@@ -74,7 +74,7 @@ class DepartmentController extends Controller
      */
     public function store(DepartmentRequest $departmentRequest): JsonResponse
     {
-        $this->authorize('create', Department::class);
+        $this->authorize('create-department');
 
         $dto = CreateDepartmentDTO::from($departmentRequest->validated());
 
@@ -91,7 +91,7 @@ class DepartmentController extends Controller
      */
     public function edit(int $departmentId): DepartmerntResource
     {
-        $this->authorize('update', Department::class);
+        $this->authorize('update-department');
 
         $departmentToEdit = $this->repository->find($departmentId);
 
@@ -107,7 +107,7 @@ class DepartmentController extends Controller
      */
     public function update(DepartmentRequest $departmentRequest, int $departmentId): JsonResponse
     {
-        $this->authorize('update', Department::class);
+        $this->authorize('update-department');
 
         $dto = CreateDepartmentDTO::from($departmentRequest->validated());
 
@@ -124,7 +124,7 @@ class DepartmentController extends Controller
      */
     public function destroy(int $departmentId): JsonResponse
     {
-        $this->authorize('delete', Department::class);
+        $this->authorize('delete-department');
 
         $deleteResult = $this->service->delete($departmentId);
 

@@ -21,7 +21,6 @@ use Illuminate\Database\Eloquent\Attributes\UsePolicy;
  * @method static \Illuminate\Database\Eloquent\Builder<Position> create(array<string, mixed> $attributes = [])
  * @property-read Collection<int, User>|null $users Пользоватили с должностью
  */
-#[UsePolicy(PositionPolicy::class)]
 class Position extends Model
 {
     use SoftDeletes;

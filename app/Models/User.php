@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Scopes\SystemUserScope;
 use App\Models\User\Position;
 use App\Enums\User\GenderEnum;
 use App\Enums\User\StatusEnum;
@@ -38,7 +39,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  * @use HasFactory<UserFactory>
  */
 #[ScopedBy([ActiveUserScope::class])]
-#[UsePolicy(UserPolicy::class)]
 class User extends Authenticatable implements LaratrustUser
 {
     //@phpstan-ignore-next-line
@@ -125,7 +125,12 @@ class User extends Authenticatable implements LaratrustUser
     public function getUserRolePermissionsCollection(): Collection
     {
         if (!$this->relationLoaded('roles')) {
-            $this->load('roles.permissions');
+            $this->load([
+                'roles' => function ($query) {
+                    $query->withoutGlobalScopes();
+                },
+                'roles.permissions'
+            ]);
         }
 
         if ($this->roles->isNotEmpty()) {

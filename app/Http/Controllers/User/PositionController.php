@@ -60,7 +60,7 @@ class PositionController extends Controller
      */
     public function dataTable(PositionsDataTable $positionsDataTable): JsonResponse
     {
-        $this->authorize('viewAny', Position::class);
+        $this->authorize('viewAny-position');
 
         return $positionsDataTable->ajax();
     }
@@ -73,7 +73,7 @@ class PositionController extends Controller
      */
     public function store(PositionRequest $positionRequest): JsonResponse
     {
-        $this->authorize('create', Position::class);
+        $this->authorize('create-position');
 
         $dto = CreatePositionDTO::from($positionRequest->validated());
 
@@ -90,7 +90,7 @@ class PositionController extends Controller
      */
     public function edit(int $positionId): PositionResource
     {
-        $this->authorize('update', Position::class);
+        $this->authorize('update-position');
 
         $positionToEdit = $this->repository->find($positionId);
 
@@ -106,7 +106,7 @@ class PositionController extends Controller
      */
     public function update(PositionRequest $positionRequest, int $positionId): JsonResponse
     {
-        $this->authorize('update', Position::class);
+        $this->authorize('update-position');
 
         $dto = CreatePositionDTO::from($positionRequest->validated());
 
@@ -123,7 +123,7 @@ class PositionController extends Controller
      */
     public function destroy(int $positionId): JsonResponse
     {
-        $this->authorize('delete', Position::class);
+        $this->authorize('delete-position');
 
         $deleteResult = $this->service->delete($positionId);
 

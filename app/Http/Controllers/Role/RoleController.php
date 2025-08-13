@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Role;
 
 use App\DTO\Roles\CreateRoleDTO;
 use App\Models\Roles\Role;
+use App\Repositories\Interfaces\Roles\RoleRepositoryInterface;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use App\DataTables\RolesDataTable;
@@ -22,7 +23,7 @@ class RoleController extends Controller
      *
      * @var RoleService $service
      */
-    public function __construct(private RoleService $service)
+    public function __construct(private RoleService $service, private RoleRepositoryInterface $repository)
     {
     }
 
@@ -34,7 +35,7 @@ class RoleController extends Controller
      */
     public function dataTable(RolesDataTable $rolesDataTable): JsonResponse
     {
-        $this->authorize('viewAny', Role::class);
+        $this->authorize('viewAny-role');
 
         return $rolesDataTable->ajax();
     }
@@ -45,15 +46,13 @@ class RoleController extends Controller
      * @param RoleRequest $roleRequest
      * @return JsonResponse
      */
-    public function store(RoleRequest $roleRequest): JsonResponse
+    public function store(RoleRequest $roleRequest): void
     {
-        $this->authorize('create', Role::class);
+        $this->authorize('create-role');
 
         $dto = CreateRoleDTO::from($roleRequest->validated());
 
         $this->service->store($dto);
-
-        return response()->json(['message' => 'success']);
     }
 
     /**
@@ -64,7 +63,7 @@ class RoleController extends Controller
      */
     public function edit(int $roleId): RoleResource
     {
-        $this->authorize('update', Role::class);
+        $this->authorize('update-role', $this->repository->find($roleId));
 
         $roleToEdit = $this->service->edit($roleId);
 
@@ -76,17 +75,17 @@ class RoleController extends Controller
      *
      * @param RoleRequest $roleRequest
      * @param int $roleId
-     * @return JsonResponse
+     * @return void
      */
-    public function update(RoleRequest $roleRequest, int $roleId): JsonResponse
+    public function update(RoleRequest $roleRequest, int $roleId): void
     {
-        $this->authorize('update', Role::class);
+        $currentRole = $this->repository->find($roleId);
+
+        $this->authorize('update-role', $currentRole);
 
         $dto = CreateRoleDTO::from($roleRequest->validated());
 
-        $this->service->update($dto, $roleId);
-
-        return response()->json(['message' => 'success']);
+        $this->service->update($dto, $currentRole);
     }
 
     /**
@@ -97,9 +96,10 @@ class RoleController extends Controller
      */
     public function destroy(int $roleId): JsonResponse
     {
-        $this->authorize('delete', Role::class);
+        $currentRole = $this->repository->find($roleId);
+        $this->authorize('delete-role', $currentRole);
 
-        $deleteResult = $this->service->delete($roleId);
+        $deleteResult = $this->service->delete($currentRole);
 
         return response()->json(['message' => $deleteResult->message], $deleteResult->code);
     }

@@ -28,7 +28,8 @@ class DatabaseSeeder extends Seeder
 
         //Department::factory(100)->create();
         $this->call([
-            PermissionSeeder::class
+            PermissionSeeder::class,
+            SystemRoleSeeder::class
         ]);
     }
 }

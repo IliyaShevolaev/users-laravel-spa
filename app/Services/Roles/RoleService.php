@@ -47,25 +47,28 @@ class RoleService
         return $this->repository->find($roleId);
     }
 
-    public function update(CreateRoleDTO $createRoleDTO, int $roleId)
+    /**
+     * Обновить роль
+     *
+     * @param CreateRoleDTO $createRoleDTO
+     * @param Role $role
+     * @return void
+     */
+    public function update(CreateRoleDTO $createRoleDTO, Role $role)
     {
-        $role = $this->repository->find($roleId);
-
-        $role->syncPermissions($createRoleDTO->permissions);
         $this->repository->update($createRoleDTO, $role);
+        $role->syncPermissions($createRoleDTO->permissions);
     }
 
     /**
      * Удаляет роль при отсутствии связей
      *
-     * @param int $roleId
+     * @param Role $role
      * @return MessageDTO
      */
-    public function delete(int $roleId): MessageDTO
+    public function delete(Role $role): MessageDTO
     {
         $result = [];
-
-        $role = $this->repository->find($roleId);
 
         if ($role->users()->exists()) {
             $result['message'] = 'delete not allowed';

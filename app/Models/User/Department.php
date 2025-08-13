@@ -20,7 +20,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @method static \Illuminate\Database\Eloquent\Builder<Department> create(array<string, mixed> $attributes = [])
  * @property-read \Illuminate\Database\Eloquent\Collection<int, User>|null $users Пользоватили из отдела
  */
-#[UsePolicy(DepartmentPolicy::class)]
 class Department extends Model
 {
     use SoftDeletes;
