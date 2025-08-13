@@ -26,7 +26,7 @@ const headers = computed(() => {
         { title: t("users.status"), key: "status" },
     ];
 
-    if (authStore.checkPermission("roles-update")) {
+    if (authStore.checkPermission("roles-read")) {
         baseHeaders.push({ title: t("users.role"), key: "roles" });
     }
 
@@ -82,7 +82,7 @@ const requestData = function ({ page, itemsPerPage, sortBy }) {
         .get("/api/users/datatable", { params })
         .then((response) => {
             console.log(response);
-            users.value = response.data.data.original.data; 
+            users.value = response.data.data.original.data;
             currentPage.value = response.data.input.page;
             totalItems.value = response.data.recordsFiltered;
             console.log("Response:", response.data);
@@ -233,7 +233,6 @@ const alertAcceptText = ref("");
         </v-btn>
     </div>
     <UserDialog
-        v-if="authStore.checkPermission('users-create')"
         @close-dialog="closeDialog"
         :isOpen="isDialogOpen"
         :edit-id="dialogEditId"

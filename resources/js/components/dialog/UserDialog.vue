@@ -48,7 +48,7 @@ const requestCreateUserData = function () {
         userStatuses.value = response.data.statuses;
         userDepartments.value = response.data.departments;
         userPositions.value = response.data.positions;
-        if (authStore.checkPermission('roles-update')) {
+        if (authStore.checkPermission("roles-update")) {
             userRoles.value = response.data.roles;
         }
     });
@@ -104,19 +104,22 @@ const edit = function () {
     axios
         .get(`/api/users/${props.editId}/edit`, formData)
         .then((response) => {
+            console.log("response.data");
             console.log(response.data);
             Object.keys(response.data.user).forEach((key) => {
                 formData[key] = response.data.user[key];
             });
 
-            axios
-                .get(`/api/users/role/${response.data.user.id}`)
-                .then((res) => {
-                    console.log(res.data);
-                    if (res.data != null) {
-                        formData.role = res.data.id
-                    }
-                });
+            if (authStore.checkPermission("roles-update")) {
+                axios
+                    .get(`/api/users/role/${response.data.user.id}`)
+                    .then((res) => {
+                        console.log(res.data);
+                        if (res.data != null) {
+                            formData.role = res.data.id;
+                        }
+                    });
+            }
         })
         .catch((error) => {
             console.log(error);

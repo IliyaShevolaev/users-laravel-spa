@@ -38,7 +38,6 @@ export const useAuthStore = defineStore("auth", {
                             response.data.user,
                             response.data.permissions
                         );
-                        console.log(response.data.permissions);
                     } else {
                         this.logoutUser();
                     }

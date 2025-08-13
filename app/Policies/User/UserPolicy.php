@@ -38,4 +38,12 @@ class UserPolicy
     {
         return $user->hasPermission('users-delete');
     }
+
+    /**
+     * Determine whether the user can change users
+     */
+    public function changeUsers(User $user): bool
+    {
+        return $user->hasPermission('users-create') || $user->hasPermission('users-update');
+    }
 }

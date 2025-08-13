@@ -63,7 +63,7 @@ class UserController extends Controller
      */
     public function create(): JsonResponse
     {
-        $this->authorize('create', User::class);
+        $this->authorize('changeUsers', User::class);
 
         $data = $this->service->prepareViewData();
 
