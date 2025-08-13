@@ -131,15 +131,21 @@ class UserController extends Controller
     {
         $this->authorize('delete-user');
 
-        $this->service->delete($userId);
+        $deleteResult = $this->service->delete($userId);
 
-        return response()->json([
-            'message' => 'success',
-        ]);
+        return response()->json([], $deleteResult->code);
+
     }
 
+    /**
+     * Получить роль пользователя по id
+     *
+     * @param int $userId
+     */
     public function getUserRole(int $userId)
     {
+        $this->authorize('viewAny-role');
+
         return $this->repository->getRelatedRole($userId);
     }
 }

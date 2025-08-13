@@ -9,6 +9,7 @@ import { debounce } from "vuetify/lib/util/helpers.mjs";
 import { useI18n } from "vue-i18n";
 import { useModelChangesStore } from "../stores/modelChanges";
 import { useAuthStore } from "../stores/auth";
+import AlertDangerDialog from "../components/alerts/AlertDangerDialog.vue";
 
 const authStore = useAuthStore();
 const modelChangesStore = useModelChangesStore();
@@ -196,6 +197,9 @@ const deleteRow = function (id) {
             if (error.response.status === 404) {
                 showAlertDialog.value = true;
                 alertText.value = t("users.no_selected");
+            } else if (error.response.status === 409) {
+                showAlertDialog.value = true;
+                alertText.value = t("users.delete_itself");
             }
         });
     showAlertAcceptDialog.value = false;
@@ -244,6 +248,12 @@ const alertAcceptText = ref("");
         :is-open="showAlertAcceptDialog"
         :message="alertAcceptText"
     ></AcceptDialog>
+
+    <AlertDangerDialog
+        @close-dialog="showAlertDialog = false"
+        :is-open="showAlertDialog"
+        :message="alertText"
+    ></AlertDangerDialog>
 
     <Snackbar
         :color="snackbarColor"

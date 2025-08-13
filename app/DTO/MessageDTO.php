@@ -8,7 +8,7 @@ class MessageDTO extends Data
 {
     public function __construct(
         public int $code,
-        public string $message
+        public ?string $message = null
     ) {
     }
 }

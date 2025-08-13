@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace App\Services\User;
 
+use App\DTO\MessageDTO;
 use App\DTO\Roles\RoleDTO;
 use App\Enums\User\GenderEnum;
 use App\Enums\User\StatusEnum;
-use App\Repositories\Interfaces\Roles\RoleRepositoryInterface;
 use App\DTO\User\CreateUserDTO;
 use App\DTO\User\UserRelatedDTO;
 use Illuminate\Support\Facades\Auth;
 use App\Repositories\Interfaces\User\UserRepositoryInterface;
+use App\Repositories\Interfaces\Roles\RoleRepositoryInterface;
 use App\Repositories\Interfaces\User\Position\PositionRepositoryInterface;
 use App\Repositories\Interfaces\User\Department\DepartmentRepositoryInterface;
 
@@ -77,13 +78,21 @@ class UserService
      * Удаляет данные о пользователе
      *
      * @param int $userId
-     * @return void
+     * @return MessageDTO
      */
-    public function delete(int $userId): void
+    public function delete(int $userId): MessageDTO
     {
+        $result = collect();
+
         if (Auth::id() !== $userId) {
             $this->repository->delete($userId);
+
+            $result->put('code', 200);
+        } else {
+            $result->put('code', 409);
         }
+
+        return MessageDTO::from($result);
     }
 
     /**
