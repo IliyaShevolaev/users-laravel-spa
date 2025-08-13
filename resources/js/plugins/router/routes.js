@@ -40,6 +40,10 @@ export const routes = [
                 props: true,
                 meta: { permission: 'roles-update' },
             },
+            {
+                path: "/:pathMatch(.*)*",
+                component: () => import("@/pages/[...error].vue"),
+            },
         ],
     },
     {
@@ -55,10 +59,6 @@ export const routes = [
                 path: "register",
                 component: () => import("@/pages/register.vue"),
                 meta: { requiresNoAuth: true },
-            },
-            {
-                path: "/:pathMatch(.*)*",
-                component: () => import("@/pages/[...error].vue"),
             },
         ],
     },

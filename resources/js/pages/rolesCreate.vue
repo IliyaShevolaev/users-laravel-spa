@@ -175,7 +175,7 @@ const cancel = function () {
         <v-col cols="10" class="mx-auto">
             <v-card class="pa-5">
                 <h2 class="text-2xl font-bold mb-4">
-                    {{ t("users.roles.add") }}
+                    {{props.id ? t("users.roles.edit") : t("users.roles.add") }}
                 </h2>
 
                 <v-text-field

@@ -26,8 +26,8 @@ const headers = computed(() => {
     ];
 
     if (
-        authStore.checkPermission("departments-update") ||
-        authStore.checkPermission("departments-delete")
+        authStore.checkPermission("roles-update") ||
+        authStore.checkPermission("roles-delete")
     ) {
         baseHeaders.push({
             title: t("main.actions"),

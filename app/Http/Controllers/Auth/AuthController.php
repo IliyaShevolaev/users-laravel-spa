@@ -12,7 +12,7 @@ class AuthController extends Controller
     public function __invoke(): JsonResponse
     {
         $user = Auth::user();
-        $permissions = $user ? $user->roles->first()->permissions->pluck('name') ?? [] : [];
+        $permissions = $user?->getUserRolePermissionsCollection();
 
         return response()->json([
             'user' => $user,
