@@ -237,6 +237,9 @@ return [
         'title' => 'Заголовок',
         'userName' => 'имя',
         'year' => 'Год',
+        'department_id' => 'отдел',
+        'position_id' => 'должность',
+        'role' => 'роль',
     ],
 
 ];
