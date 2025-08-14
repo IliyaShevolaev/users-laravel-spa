@@ -48,7 +48,7 @@ class DepartmentController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
-        $this->authorize('viewAny-department');
+        $this->authorize('check-permission', 'departments-read');
 
         return DepartmerntResource::collection($this->repository->all());
     }
@@ -61,7 +61,7 @@ class DepartmentController extends Controller
      */
     public function datatable(DepartmentsDataTable $departmentsDataTable): JsonResponse
     {
-        $this->authorize('viewAny-department');
+        $this->authorize('check-permission', 'departments-read');
 
         return $departmentsDataTable->ajax();
     }
@@ -74,7 +74,7 @@ class DepartmentController extends Controller
      */
     public function store(DepartmentRequest $departmentRequest): JsonResponse
     {
-        $this->authorize('create-department');
+        $this->authorize('check-permission', 'departments-create');
 
         $dto = CreateDepartmentDTO::from($departmentRequest->validated());
 
@@ -91,7 +91,7 @@ class DepartmentController extends Controller
      */
     public function edit(int $departmentId): DepartmerntResource
     {
-        $this->authorize('update-department');
+        $this->authorize('check-permission', 'departments-update');
 
         $departmentToEdit = $this->repository->find($departmentId);
 
@@ -107,7 +107,7 @@ class DepartmentController extends Controller
      */
     public function update(DepartmentRequest $departmentRequest, int $departmentId): JsonResponse
     {
-        $this->authorize('update-department');
+        $this->authorize('check-permission', 'departments-update');
 
         $dto = CreateDepartmentDTO::from($departmentRequest->validated());
 
@@ -124,7 +124,7 @@ class DepartmentController extends Controller
      */
     public function destroy(int $departmentId): JsonResponse
     {
-        $this->authorize('delete-department');
+        $this->authorize('check-permission', 'departments-delete');
 
         $deleteResult = $this->service->delete($departmentId);
 

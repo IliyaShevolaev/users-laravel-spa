@@ -34,6 +34,7 @@ const permissionGroups = ref([
             create: false,
             update: false,
             delete: false,
+            find: false,
         },
     },
     {
@@ -175,7 +176,9 @@ const cancel = function () {
         <v-col cols="10" class="mx-auto">
             <v-card class="pa-5">
                 <h2 class="text-2xl font-bold mb-4">
-                    {{props.id ? t("users.roles.edit") : t("users.roles.add") }}
+                    {{
+                        props.id ? t("users.roles.edit") : t("users.roles.add")
+                    }}
                 </h2>
 
                 <v-text-field
@@ -197,34 +200,43 @@ const cancel = function () {
                     </h3>
 
                     <v-row>
-                        <v-col cols="6" sm="3">
+                        <v-col cols="6" lg="3">
                             <v-checkbox
                                 v-model="group.permissions.read"
-                                label="Смотреть"
+                                :label="t('users.roles.view')"
                                 density="compact"
                                 hide-details
                             />
                         </v-col>
-                        <v-col cols="6" sm="3">
-                            <v-checkbox
-                                v-model="group.permissions.update"
-                                label="Редактировать"
-                                density="compact"
-                                hide-details
-                            />
-                        </v-col>
-                        <v-col cols="6" sm="3">
+                        <v-col cols="6" lg="3">
                             <v-checkbox
                                 v-model="group.permissions.create"
-                                label="Создавать"
+                                :label="t('users.roles.create')"
                                 density="compact"
                                 hide-details
                             />
                         </v-col>
-                        <v-col cols="6" sm="3">
+                        <v-col cols="6" lg="3">
+                            <v-checkbox
+                                v-model="group.permissions.update"
+                                :label="t('users.roles.update')"
+                                density="compact"
+                                hide-details
+                            />
+                        </v-col>
+                        <v-col cols="6" lg="3">
                             <v-checkbox
                                 v-model="group.permissions.delete"
-                                label="Удалять"
+                                :label="t('users.roles.delete')"
+                                density="compact"
+                                hide-details
+                            />
+                        </v-col>
+                        <v-col cols="6" lg="3">
+                            <v-checkbox
+                                v-if="'find' in group.permissions"
+                                v-model="group.permissions.find"
+                                :label="t('users.roles.find')"
                                 density="compact"
                                 hide-details
                             />

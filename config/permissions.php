@@ -6,6 +6,7 @@ return [
         'create',
         'update',
         'delete',
+        'find'
     ],
 
     'departments' => [
@@ -21,7 +22,7 @@ return [
         'update',
         'delete',
     ],
-    
+
     'roles' => [
         'read',
         'create',

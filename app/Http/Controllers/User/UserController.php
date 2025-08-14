@@ -44,14 +44,14 @@ class UserController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
-        $this->authorize('viewAny-user');
+        $this->authorize('check-permission', 'users-read');
 
         return UserResource::collection($this->repository->allWithRelations());
     }
 
     public function datatable(UsersDataTable $usersDataTable): JsonResponse
     {
-        $this->authorize('viewAny-user');
+        $this->authorize('check-permission', 'users-read');
 
         return $usersDataTable->ajax();
     }
@@ -79,7 +79,8 @@ class UserController extends Controller
      */
     public function store(CreateRequest $createRequest): JsonResponse
     {
-        $this->authorize('create-user');
+        $this->authorize('check-permission', 'users-create');
+
 
         $dto = CreateUserDTO::from($createRequest->validated());
 
@@ -96,7 +97,7 @@ class UserController extends Controller
      */
     public function edit(int $userId): JsonResponse
     {
-        $this->authorize('update-user');
+        $this->authorize('check-permission', 'users-update');
 
         $data = $this->service->prepareViewData($userId);
 
@@ -112,7 +113,7 @@ class UserController extends Controller
      */
     public function update(EditRequest $editRequest, int $userId): JsonResponse
     {
-        $this->authorize('update-user');
+        $this->authorize('check-permission', 'users-update');
 
         $dto = CreateUserDTO::from($editRequest->validated());
 
@@ -129,7 +130,7 @@ class UserController extends Controller
      */
     public function destroy(int $userId): JsonResponse
     {
-        $this->authorize('delete-user');
+        $this->authorize('check-permission', 'users-delete');
 
         $deleteResult = $this->service->delete($userId);
 
@@ -144,7 +145,7 @@ class UserController extends Controller
      */
     public function getUserRole(int $userId)
     {
-        $this->authorize('viewAny-role');
+        $this->authorize('check-permission', 'roles-read');
 
         return $this->repository->getRelatedRole($userId);
     }

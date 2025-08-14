@@ -47,7 +47,7 @@ class PositionController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
-        $this->authorize('viewAny', Position::class);
+        $this->authorize('check-permission', 'positions-read');
 
         return PositionResource::collection($this->repository->all());
     }
@@ -60,7 +60,7 @@ class PositionController extends Controller
      */
     public function dataTable(PositionsDataTable $positionsDataTable): JsonResponse
     {
-        $this->authorize('viewAny-position');
+        $this->authorize('check-permission', 'positions-read');
 
         return $positionsDataTable->ajax();
     }
@@ -73,7 +73,7 @@ class PositionController extends Controller
      */
     public function store(PositionRequest $positionRequest): JsonResponse
     {
-        $this->authorize('create-position');
+        $this->authorize('check-permission', 'positions-create');
 
         $dto = CreatePositionDTO::from($positionRequest->validated());
 
@@ -90,7 +90,7 @@ class PositionController extends Controller
      */
     public function edit(int $positionId): PositionResource
     {
-        $this->authorize('update-position');
+        $this->authorize('check-permission', 'positions-update');
 
         $positionToEdit = $this->repository->find($positionId);
 
@@ -106,7 +106,7 @@ class PositionController extends Controller
      */
     public function update(PositionRequest $positionRequest, int $positionId): JsonResponse
     {
-        $this->authorize('update-position');
+        $this->authorize('check-permission', 'positions-update');
 
         $dto = CreatePositionDTO::from($positionRequest->validated());
 
@@ -123,7 +123,7 @@ class PositionController extends Controller
      */
     public function destroy(int $positionId): JsonResponse
     {
-        $this->authorize('delete-position');
+        $this->authorize('check-permission', 'positions-delete');
 
         $deleteResult = $this->service->delete($positionId);
 

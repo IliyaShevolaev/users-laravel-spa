@@ -273,7 +273,10 @@ const alertAcceptText = ref("");
         @update:options="requestData"
     >
         <template v-slot:top>
-            <div class="flex flex-row-reverse">
+            <div
+                v-if="authStore.checkPermission('users-find')"
+                class="flex flex-row-reverse"
+            >
                 <div :class="mobile ? 'w-full' : 'w-25'">
                     <v-text-field
                         v-model.lazy="search"

@@ -124,9 +124,10 @@ class UsersDataTable extends DataTable
             );
         }
 
-
-        if ($this->request()->has('search') && !empty($this->request()->input('search'))) {
-            $query->where('name', 'like', '%' . $this->request()->input('search') . '%');
+        if ($permissions->contains('users-find')) {
+            if ($this->request()->has('search') && !empty($this->request()->input('search'))) {
+                $query->where('name', 'like', '%' . $this->request()->input('search') . '%');
+            }
         }
 
         return $query;

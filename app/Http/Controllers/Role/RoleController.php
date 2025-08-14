@@ -35,7 +35,7 @@ class RoleController extends Controller
      */
     public function dataTable(RolesDataTable $rolesDataTable): JsonResponse
     {
-        $this->authorize('viewAny-role');
+        $this->authorize('check-permission', 'roles-read');
 
         return $rolesDataTable->ajax();
     }
@@ -48,7 +48,7 @@ class RoleController extends Controller
      */
     public function store(RoleRequest $roleRequest): void
     {
-        $this->authorize('create-role');
+        $this->authorize('check-permission', 'roles-create');
 
         $dto = CreateRoleDTO::from($roleRequest->validated());
 
