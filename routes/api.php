@@ -5,14 +5,15 @@ declare(strict_types=1);
 // php vendor/bin/phpstan analyse -c phpstan.neon
 // php vendor/bin/phpcs
 
-use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\Role\RoleController;
-use App\Http\Controllers\User\PositionController;
-use App\Http\Controllers\User\UserController;
+use App\Events\ChatMessage;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Role\RoleController;
+use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\User\PositionController;
 use App\Http\Controllers\User\DepartmentController;
 
 Route::get('/auth/create', '\App\Http\Controllers\Auth\RegisterController@create');
@@ -36,3 +37,13 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/user', AuthController::class);
 
+Route::post('/chat/send', function (Request $request) {
+    $data = $request->validate([
+        'username' => 'required|string|max:50',
+        'message' => 'required|string|max:500',
+    ]);
+
+    broadcast(new ChatMessage($data['username'], $data['message']))->toOthers();
+
+    return ['status' => 'ok'];
+});

@@ -10,6 +10,10 @@ export const routes = [
                 component: () => import("@/pages/Ping.vue"),
             },
             {
+                path: "ws",
+                component: () => import("@/pages/ws.vue"),
+            },
+            {
                 path: "users",
                 component: () => import("@/pages/users.vue"),
                 meta: { permission: 'users-read' },
