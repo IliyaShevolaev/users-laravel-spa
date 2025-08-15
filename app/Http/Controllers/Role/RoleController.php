@@ -67,7 +67,7 @@ class RoleController extends Controller
      */
     public function edit(int $roleId): RoleResource
     {
-        $this->authorize('update-role', $this->repository->find($roleId));
+        $this->authorize('check-permission', 'roles-update');
 
         $roleToEdit = $this->service->edit($roleId);
 
@@ -83,9 +83,9 @@ class RoleController extends Controller
      */
     public function update(RoleRequest $roleRequest, int $roleId): void
     {
-        $currentRole = $this->repository->find($roleId);
+        $this->authorize('check-permission', 'roles-update');
 
-        $this->authorize('update-role', $currentRole);
+        $currentRole = $this->repository->find($roleId);
 
         $dto = CreateRoleDTO::from($roleRequest->validated());
 

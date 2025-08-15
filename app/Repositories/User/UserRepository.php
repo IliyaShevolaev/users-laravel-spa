@@ -66,9 +66,6 @@ class UserRepository implements UserRepositoryInterface
     {
         return User::withoutGlobalScope(ActiveUserScope::class)
         ->with($relations)
-        ->whereDoesntHave('roles', function ($query) {
-            $query->where('system', true);
-        })
         ->select('users.*');
     }
 

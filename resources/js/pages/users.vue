@@ -203,6 +203,9 @@ const deleteRow = function (id) {
             } else if (error.response.status === 409) {
                 showAlertDialog.value = true;
                 alertText.value = t("users.delete_itself");
+            } else if (error.response.status === 403) {
+                showAlertDialog.value = true;
+                alertText.value = t("main.unable_system");
             }
         });
     showAlertAcceptDialog.value = false;

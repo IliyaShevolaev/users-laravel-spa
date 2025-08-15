@@ -28,9 +28,8 @@ class AuthProvider extends ServiceProvider
         Gate::define('change-user', function (User $user) {
             return $user->hasPermission('users-create') || $user->hasPermission('users-update');
         });
-
-        Gate::define('update-role', function (User $user, Role $role) {
-            return $user->hasPermission('roles-update') && !$role->system;
+        Gate::define('delete-user', function (User $user) {
+            return $user->roles()?->first()->system;
         });
         Gate::define('delete-role', function (User $user, Role $role) {
             return $user->hasPermission('roles-delete') && !$role->system;

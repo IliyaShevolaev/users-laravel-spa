@@ -16,7 +16,7 @@ class RoleRepository implements RoleRepositoryInterface
 {
     public function all(): Collection
     {
-        return RoleDTO::collect(Role::where('system', false)->get());
+        return RoleDTO::collect(Role::all());
     }
 
     public function create(CreateRoleDTO $createRoleDTO): Role
@@ -36,7 +36,7 @@ class RoleRepository implements RoleRepositoryInterface
 
     public function find(int $roleId): Role
     {
-        return Role::where('system', false)->findOrFail($roleId);
+        return Role::findOrFail($roleId);
     }
 
     public function count(): int
@@ -46,6 +46,6 @@ class RoleRepository implements RoleRepositoryInterface
 
     public function getQuery(): Builder
     {
-        return Role::query()->where('system', false);
+        return Role::query();
     }
 }
