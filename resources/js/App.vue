@@ -1,11 +1,13 @@
 <script setup>
 import { useAuthStore } from './stores/auth';
-import { listenRoleEvent } from './composables/events/roleChanges';
+import { listenRolePermissionChangesEvent } from './composables/events/rolePermissionsChanges';
+import { listenUserRoleChangesEvent } from './composables/events/roleChanges';
 
 const authStore = useAuthStore();
 authStore.requestAuth();
 
-listenRoleEvent();
+listenRolePermissionChangesEvent();
+listenUserRoleChangesEvent();
 </script>
 
 <template>

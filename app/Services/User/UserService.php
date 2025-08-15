@@ -10,6 +10,8 @@ use App\Enums\User\GenderEnum;
 use App\Enums\User\StatusEnum;
 use App\DTO\User\CreateUserDTO;
 use App\DTO\User\UserRelatedDTO;
+use App\Events\ChangeUseRole;
+use App\Events\ChangeUserRole;
 use Illuminate\Support\Facades\Auth;
 use App\Repositories\Interfaces\User\UserRepositoryInterface;
 use App\Repositories\Interfaces\Roles\RoleRepositoryInterface;
@@ -71,6 +73,7 @@ class UserService
             } else {
                 $updatedUser->syncRoles([]);
             }
+            broadcast(new ChangeUserRole($updatedUser->id));
         }
     }
 

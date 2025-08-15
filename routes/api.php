@@ -36,14 +36,3 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/user', AuthController::class);
-
-Route::post('/chat/send', function (Request $request) {
-    $data = $request->validate([
-        'username' => 'required|string|max:50',
-        'message' => 'required|string|max:500',
-    ]);
-
-    broadcast(new ChatMessage($data['username'], $data['message']));
-
-    return ['status' => 'ok'];
-});
