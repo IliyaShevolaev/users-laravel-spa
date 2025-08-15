@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers\Role;
 
-use App\DTO\Roles\CreateRoleDTO;
 use App\Models\Roles\Role;
-use App\Repositories\Interfaces\Roles\RoleRepositoryInterface;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\DTO\Roles\CreateRoleDTO;
 use Illuminate\Http\JsonResponse;
 use App\DataTables\RolesDataTable;
 use App\Services\Roles\RoleService;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Roles\RoleRequest;
+use App\DTO\DataTable\DatatableRequestDTO;
 use App\Http\Resources\Roles\RoleResource;
+use App\Http\Requests\DataTables\DataTableRequest;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Repositories\Interfaces\Roles\RoleRepositoryInterface;
 
 class RoleController extends Controller
 {
@@ -33,11 +35,13 @@ class RoleController extends Controller
      * @param RolesDataTable $rolesDataTable
      * @return JsonResponse
      */
-    public function dataTable(RolesDataTable $rolesDataTable): JsonResponse
+    public function dataTable(DataTableRequest $dataTableRequest, RolesDataTable $rolesDataTable): JsonResponse
     {
         $this->authorize('check-permission', 'roles-read');
 
-        return $rolesDataTable->ajax();
+        $dto = DatatableRequestDTO::from($dataTableRequest->validated());
+
+        return $rolesDataTable->json($dto);
     }
 
     /**

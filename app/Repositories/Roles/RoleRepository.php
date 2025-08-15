@@ -39,6 +39,10 @@ class RoleRepository implements RoleRepositoryInterface
         return Role::where('system', false)->findOrFail($roleId);
     }
 
+    public function count(): int
+    {
+        return Role::count();
+    }
 
     public function getQuery(): Builder
     {

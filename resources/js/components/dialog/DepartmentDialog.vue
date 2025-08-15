@@ -125,11 +125,23 @@ const alertText = ref("");
     <v-dialog v-model="props.isOpen" persistent max-width="600px">
         <v-card>
             <v-card-title>
-                <span class="headline">{{
-                    props.editId
-                        ? t("users.departments.edit_button")
-                        : t("users.departments.add_button")
-                }}</span>
+                <span class="headline flex justify-between">
+                    {{
+                        props.editId
+                            ? t("users.departments.edit_button")
+                            : t("users.departments.add_button")
+                    }}
+                    <v-btn
+                        icon
+                        variant="text"
+                        size="large"
+                        @click="close(false)"
+                    >
+                        <v-icon size="30" class="text-gray-900">
+                            ri-close-line
+                        </v-icon>
+                    </v-btn>
+                </span>
             </v-card-title>
             <v-card-text>
                 <v-form @submit.prevent="add">

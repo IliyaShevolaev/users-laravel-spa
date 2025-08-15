@@ -38,7 +38,7 @@ interface RoleRepositoryInterface
      * Найти роль
      *
      * @param int $roleId
-     * @return Role 
+     * @return Role
      */
     public function find(int $roleId): Role;
 
@@ -49,6 +49,13 @@ interface RoleRepositoryInterface
      * @return void
      */
     public function delete(Role $role): void;
+
+    /**
+     * Количество ролей
+     *
+     * @return int
+     */
+    public function count(): int;
 
     /**
      * Получить запрос

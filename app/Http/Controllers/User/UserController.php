@@ -10,10 +10,13 @@ use Illuminate\Http\JsonResponse;
 use App\DataTables\UsersDataTable;
 use App\Services\User\UserService;
 use App\Http\Controllers\Controller;
+use App\DataTables\DepartmentsDataTable;
 use App\Http\Requests\Users\EditRequest;
 use App\Http\Resources\User\UserResource;
 use App\Repositories\User\UserRepository;
+use App\DTO\DataTable\DatatableRequestDTO;
 use App\Http\Requests\Users\CreateRequest;
+use App\Http\Requests\DataTables\DataTableRequest;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
@@ -49,11 +52,13 @@ class UserController extends Controller
         return UserResource::collection($this->repository->allWithRelations());
     }
 
-    public function datatable(UsersDataTable $usersDataTable): JsonResponse
+    public function datatable(DataTableRequest $dataTableRequest, UsersDataTable $usersDataTable): JsonResponse
     {
         $this->authorize('check-permission', 'users-read');
 
-        return $usersDataTable->ajax();
+        $dto = DatatableRequestDTO::from($dataTableRequest->validated());
+
+        return $usersDataTable->json($dto);
     }
 
     /**

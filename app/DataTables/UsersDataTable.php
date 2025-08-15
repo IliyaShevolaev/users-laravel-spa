@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\DataTables;
 
+use App\DTO\DataTable\DatatableRequestDTO;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\EloquentDataTable;
@@ -66,17 +67,17 @@ class UsersDataTable extends DataTable
         return $dataTable;
     }
 
-    public function ajax(): \Illuminate\Http\JsonResponse
+    public function json(DatatableRequestDTO $dto): \Illuminate\Http\JsonResponse
     {
-        $query = $this->query();
+        $query = $this->query($dto);
 
         $totalRecords = $this->repository->count();
-
         $filteredRecords = $query->count();
+        $paginateQuery = $query;
 
-        if ($this->request()->has('page') && $this->request()->has('per_page')) {
-            $perPage = $this->request()->input('per_page');
-            $offset = ($this->request()->input('page') - 1) * $perPage;
+        if (isset($dto->page) && isset($dto->perPage)) {
+            $perPage = $dto->perPage;
+            $offset = ($dto->page - 1) * $perPage;
             $paginateQuery = $query->skip($offset)->take($perPage);
         }
 
@@ -84,8 +85,8 @@ class UsersDataTable extends DataTable
             'data' => $this->dataTable($paginateQuery)->toJson(),
             'recordsTotal' => $totalRecords,
             'recordsFiltered' => $filteredRecords,
-            'draw' => $this->request()->input('draw', 0),
-            'input' => $this->request()->all()
+            'draw' => $dto->draw ?? 0,
+            'input' => $dto->all()
         ]);
     }
 
@@ -94,7 +95,7 @@ class UsersDataTable extends DataTable
      *
      * @return QueryBuilder<User>
      */
-    public function query(): QueryBuilder
+    public function query(DatatableRequestDTO $dto): QueryBuilder
     {
         $queryRelations = ['department', 'position'];
 
@@ -105,29 +106,19 @@ class UsersDataTable extends DataTable
 
         $query = $this->repository->getQueryWithRelations($queryRelations);
 
-        if (
-            $this->request()->has('sort_by') &&
-            $this->request()->input('sort_by') === 'roles' &&
-            $this->request()->has('sort_order')
-        ) {
-            $query->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
-                ->leftJoin('roles', 'role_user.role_id', '=', 'roles.id')
-                ->select('users.*')
-                ->orderBy('roles.name', $this->request()->input('sort_order'));
-        } elseif (
-            $this->request()->has('sort_by') &&
-            $this->request()->has('sort_order')
-        ) {
-            $query->orderBy(
-                $this->request()->input('sort_by'),
-                $this->request()->input('sort_order')
-            );
+        if (isset($dto->sortBy) && isset($dto->sortOrder)) {
+            if ($dto->sortBy === 'roles' && $permissions->contains('roles-read')) {
+                $query->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
+                    ->leftJoin('roles', 'role_user.role_id', '=', 'roles.id')
+                    ->select('users.*')
+                    ->orderBy('roles.name', $dto->sortOrder);
+            } else {
+                $query->orderBy($dto->sortBy, $dto->sortOrder);
+            }
         }
 
-        if ($permissions->contains('users-find')) {
-            if ($this->request()->has('search') && !empty($this->request()->input('search'))) {
-                $query->where('name', 'like', '%' . $this->request()->input('search') . '%');
-            }
+        if ($permissions->contains('users-find') && !empty($dto->search)) {
+            $query->where('name', 'like', '%' . $dto->search . '%');
         }
 
         return $query;

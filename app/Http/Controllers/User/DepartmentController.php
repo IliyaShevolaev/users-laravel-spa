@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\User;
 
-use App\Models\User\Department;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
 use App\DataTables\DepartmentsDataTable;
-use App\DTO\User\Department\DepartmentDTO;
+use App\DTO\DataTable\DatatableRequestDTO;
 use App\DTO\User\Department\CreateDepartmentDTO;
 use App\Http\Resources\User\DepartmerntResource;
+use App\Http\Requests\DataTables\DataTableRequest;
 use App\Services\User\Department\DepartmentService;
 use App\Http\Requests\Users\Department\DepartmentRequest;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use App\Repositories\Interfaces\User\Department\DepartmentRepositoryInterface;
 
@@ -59,11 +59,13 @@ class DepartmentController extends Controller
      * @param DepartmentsDataTable $departmentsDataTable
      * @return JsonResponse
      */
-    public function datatable(DepartmentsDataTable $departmentsDataTable): JsonResponse
+    public function datatable(DataTableRequest $dataTableRequest, DepartmentsDataTable $departmentsDataTable): JsonResponse
     {
         $this->authorize('check-permission', 'departments-read');
 
-        return $departmentsDataTable->ajax();
+        $dto = DatatableRequestDTO::from($dataTableRequest->validated());
+
+        return $departmentsDataTable->json($dto);
     }
 
     /**

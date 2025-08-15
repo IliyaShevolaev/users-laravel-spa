@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\User;
 
-use App\DTO\User\Position\CreatePositionDTO;
 use App\Models\User\Position;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Contracts\View\View;
 use App\Http\Controllers\Controller;
 use App\DataTables\PositionsDataTable;
 use App\DTO\User\Position\PositionDTO;
+use App\DTO\DataTable\DatatableRequestDTO;
+use App\DTO\User\Position\CreatePositionDTO;
 use App\Http\Resources\User\PositionResource;
 use App\Services\User\Position\PositionService;
+use App\Http\Requests\DataTables\DataTableRequest;
 use App\Http\Requests\Users\Position\PositionRequest;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use App\Repositories\Interfaces\User\Position\PositionRepositoryInterface;
 
@@ -58,11 +60,13 @@ class PositionController extends Controller
      * @param PositionsDataTable $positionsDataTable
      * @return JsonResponse
      */
-    public function dataTable(PositionsDataTable $positionsDataTable): JsonResponse
+    public function dataTable(DataTableRequest $dataTableRequest, PositionsDataTable $positionsDataTable): JsonResponse
     {
         $this->authorize('check-permission', 'positions-read');
 
-        return $positionsDataTable->ajax();
+        $dto = DatatableRequestDTO::from($dataTableRequest->validated());
+
+        return $positionsDataTable->json($dto);
     }
 
     /**

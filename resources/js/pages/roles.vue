@@ -2,7 +2,7 @@
 import { useI18n } from "vue-i18n";
 import { useModelChangesStore } from "../stores/modelChanges";
 import { useRouter } from "vue-router";
-import { debounce } from "vuetify/lib/util/helpers.mjs";
+import debounce from "lodash/debounce";
 import { useDisplay } from "vuetify";
 import AcceptDialog from "../components/alerts/AcceptDialog.vue";
 import Snackbar from "../components/toaster/Snackbar.vue";
@@ -67,7 +67,7 @@ const requestData = function ({ page, itemsPerPage, sortBy }) {
     console.log("Request:", params);
 
     axios
-        .get("/api/roles/datatable", { params })
+        .post("/api/roles/datatable", params)
         .then((response) => {
             roles.value = response.data.data.original.data;
             currentPage.value = response.data.input.page;
@@ -79,6 +79,10 @@ const requestData = function ({ page, itemsPerPage, sortBy }) {
                 showAlertDialog.value = true;
                 alertText.value = t("main.no_permission");
             }
+            if (error.status === 422) {
+                showAlertDialog.value = true;
+                alertText.value = t("main.bad_request");
+            }
             console.error(error);
             roles.value = [];
             totalItems.value = 0;
@@ -88,22 +92,17 @@ const requestData = function ({ page, itemsPerPage, sortBy }) {
         });
 };
 
-const debouncedSearch = debounce((newValue) => {
-    if (newValue === "" || newValue.length >= 3) {
-        requestData({
-            page: 1,
-            itemsPerPage: itemsPerPage.value,
-            sortBy: currentSortBy.value,
-        });
-    }
-}, 1000);
+const debouncedSearch = debounce(() => {
+    requestData({
+        page: 1,
+        itemsPerPage: itemsPerPage.value,
+        sortBy: currentSortBy.value,
+    });
+}, 500);
 
-watch(
-    () => search.value,
-    (newValue) => {
-        debouncedSearch(newValue);
-    }
-);
+watch(search, () => {
+    debouncedSearch();
+});
 
 const edit = function (id) {
     router.push(`/roles/edit/${id}`);
@@ -231,14 +230,13 @@ const alertText = ref("");
         :items-length="totalItems"
         :items="roles"
         :loading="loadingTable"
-        :search="search"
         @update:options="requestData"
     >
         <template v-slot:top>
             <div class="flex flex-row-reverse">
                 <div :class="mobile ? 'w-full' : 'w-25'">
                     <v-text-field
-                        v-model.lazy="search"
+                        v-model="search"
                         class="ma-2"
                         density="compact"
                         :placeholder="$t('main.search')"

@@ -1,12 +1,12 @@
 <script setup>
 import axios from "axios";
-import { computed, onMounted, ref } from "vue";
+import { computed, ref } from "vue";
 import UserDialog from "../components/dialog/UserDialog.vue";
 import Snackbar from "../components/toaster/Snackbar.vue";
 import AcceptDialog from "../components/alerts/AcceptDialog.vue";
-import { useDisplay } from "vuetify";
-import { debounce } from "vuetify/lib/util/helpers.mjs";
+import debounce from "lodash/debounce";
 import { useI18n } from "vue-i18n";
+import { useDisplay } from "vuetify";
 import { useModelChangesStore } from "../stores/modelChanges";
 import { useAuthStore } from "../stores/auth";
 import AlertDangerDialog from "../components/alerts/AlertDangerDialog.vue";
@@ -80,7 +80,7 @@ const requestData = function ({ page, itemsPerPage, sortBy }) {
     console.log("Request:", params);
 
     axios
-        .get("/api/users/datatable", { params })
+        .post("/api/users/datatable", params)
         .then((response) => {
             console.log(response);
             users.value = response.data.data.original.data;
@@ -93,6 +93,10 @@ const requestData = function ({ page, itemsPerPage, sortBy }) {
                 showAlertDialog.value = true;
                 alertText.value = t("main.no_permission");
             }
+            if (error.status === 422) {
+                showAlertDialog.value = true;
+                alertText.value = t("main.bad_request");
+            }
             console.error(error);
             users.value = [];
             totalItems.value = 0;
@@ -102,22 +106,17 @@ const requestData = function ({ page, itemsPerPage, sortBy }) {
         });
 };
 
-const debouncedSearch = debounce((newValue) => {
-    if (newValue === "" || newValue.length >= 3) {
-        requestData({
-            page: 1,
-            itemsPerPage: itemsPerPage.value,
-            sortBy: currentSortBy.value,
-        });
-    }
-}, 1000);
+const debouncedSearch = debounce(() => {
+    requestData({
+        page: 1,
+        itemsPerPage: itemsPerPage.value,
+        sortBy: currentSortBy.value,
+    });
+}, 500);
 
-watch(
-    () => search.value,
-    (newValue) => {
-        debouncedSearch(newValue);
-    }
-);
+watch(search, () => {
+    debouncedSearch();
+});
 
 const isDialogOpen = ref(false);
 const dialogEditId = ref(null);
@@ -273,7 +272,6 @@ const alertAcceptText = ref("");
         :items-length="totalItems"
         :items="users"
         :loading="loadingTable"
-        :search="search"
         @update:options="requestData"
     >
         <template v-slot:top>
@@ -283,7 +281,7 @@ const alertAcceptText = ref("");
             >
                 <div :class="mobile ? 'w-full' : 'w-25'">
                     <v-text-field
-                        v-model.lazy="search"
+                        v-model="search"
                         class="ma-2"
                         density="compact"
                         :placeholder="t('main.search')"

@@ -21,17 +21,17 @@ Route::get('/auth/create', '\App\Http\Controllers\Auth\RegisterController@create
 Route::middleware('auth')->group(function () {
     Route::get('/', 'App\Http\Controllers\User\UserController@index');
 
-    Route::get('/users/datatable', [UserController::class, 'datatable']);
+    Route::post('/users/datatable', [UserController::class, 'datatable']);
     Route::get('/users/role/{user}', [UserController::class, 'getUserRole']);
     Route::resource('users', UserController::class);
 
-    Route::get('/departments/datatable', [DepartmentController::class, 'datatable']);
+    Route::post('/departments/datatable', [DepartmentController::class, 'datatable']);
     Route::resource('departments', DepartmentController::class);
 
-    Route::get('/positions/datatable', [PositionController::class, 'datatable']);
+    Route::post('/positions/datatable', [PositionController::class, 'datatable']);
     Route::resource('positions', PositionController::class);
 
-    Route::get('/roles/datatable', [RoleController::class, 'datatable']);
+    Route::post('/roles/datatable', [RoleController::class, 'datatable']);
     Route::resource('roles', RoleController::class);
 });
 

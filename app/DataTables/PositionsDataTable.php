@@ -7,6 +7,7 @@ namespace App\DataTables;
 use App\Models\User\Position;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Services\DataTable;
+use App\DTO\DataTable\DatatableRequestDTO;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use App\Repositories\Interfaces\User\Position\PositionRepositoryInterface;
 
@@ -45,17 +46,17 @@ class PositionsDataTable extends DataTable
             ->setRowId('id');
     }
 
-    public function ajax(): \Illuminate\Http\JsonResponse
+    public function json(DatatableRequestDTO $dto): \Illuminate\Http\JsonResponse
     {
-        $query = $this->query();
+        $query = $this->query($dto);
 
-        $totalRecords = Position::count();
-
+        $totalRecords = $this->repository->count();
         $filteredRecords = $query->count();
+        $paginateQuery = $query;
 
-        if ($this->request()->has('page') && $this->request()->has('per_page')) {
-            $perPage = $this->request()->input('per_page');
-            $offset = ($this->request()->input('page') - 1) * $perPage;
+        if (isset($dto->page) && isset($dto->perPage)) {
+            $perPage = $dto->perPage;
+            $offset = ($dto->page - 1) * $perPage;
             $paginateQuery = $query->skip($offset)->take($perPage);
         }
 
@@ -63,8 +64,8 @@ class PositionsDataTable extends DataTable
             'data' => $this->dataTable($paginateQuery)->toJson(),
             'recordsTotal' => $totalRecords,
             'recordsFiltered' => $filteredRecords,
-            'draw' => $this->request()->input('draw', 0),
-            'input' => $this->request()->all()
+            'draw' => $dto->draw ?? 0,
+            'input' => $dto->all()
         ]);
     }
 
@@ -73,16 +74,16 @@ class PositionsDataTable extends DataTable
      *
      * @return QueryBuilder<Position>
      */
-    public function query(): QueryBuilder
+    public function query(DatatableRequestDTO $dto): QueryBuilder
     {
-        $query = Position::query();
+        $query = $this->repository->getQuery();
 
-        if ($this->request()->has('sort_by') && $this->request()->has('sort_order')) {
-            $query->orderBy($this->request()->input('sort_by'), $this->request()->input('sort_order'));
+        if (isset($dto->sortBy) && isset($dto->sortOrder)) {
+            $query->orderBy($dto->sortBy, $dto->sortOrder);
         }
 
-        if ($this->request()->has('search') && !empty($this->request()->input('search'))) {
-            $query->where('name', 'like', '%' . $this->request()->input('search') . '%');
+        if (isset($dto->search)) {
+            $query->where('name', 'like', '%' . $dto->search . '%');
         }
 
         return $query;

@@ -58,6 +58,7 @@
         "apexcharts": "^4.0.0",
         "install": "^0.13.0",
         "laravel-echo": "^2.2.0",
+        "lodash.debounce": "^4.0.8",
         "npm": "^11.5.2",
         "pinia": "^3.0.3",
         "prismjs": "^1.29.0",
