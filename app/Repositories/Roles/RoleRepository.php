@@ -36,7 +36,7 @@ class RoleRepository implements RoleRepositoryInterface
 
     public function find(int $roleId): Role
     {
-        return Role::where('system', false)->find($roleId);
+        return Role::where('system', false)->findOrFail($roleId);
     }
 
 

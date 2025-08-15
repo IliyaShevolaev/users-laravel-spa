@@ -30,11 +30,4 @@ export function listenRolePermissionChangesEvent() {
             listenRoleEvent(roleId);
         }
     );
-
-    onBeforeUnmount(() => {
-        if (echoChannel.value) {
-            echoChannel.value.stopListening(".change.role.permissions");
-            echoChannel.value = null;
-        }
-    });
 }

@@ -4,6 +4,7 @@ import { computed, reactive, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useModelChangesStore } from "../../stores/modelChanges";
 import { useAuthStore } from "../../stores/auth";
+import AlertDangerDialog from "../alerts/AlertDangerDialog.vue";
 
 const authStore = useAuthStore();
 
@@ -122,6 +123,11 @@ const edit = function () {
             }
         })
         .catch((error) => {
+            if (error.status === 404) {
+                showAlertDialog.value = true;
+                alertText.value = t("users.no_selected");
+                close(false);
+            }
             console.log(error);
         });
 };
@@ -165,9 +171,16 @@ const clearFields = function (obj) {
         obj[key] = null;
     });
 };
+const showAlertDialog = ref(false);
+const alertText = ref("");
 </script>
 
 <template>
+    <AlertDangerDialog
+        @close-dialog="showAlertDialog = false"
+        :is-open="showAlertDialog"
+        :message="alertText"
+    ></AlertDangerDialog>
     <v-dialog v-model="props.isOpen" persistent max-width="600px">
         <v-card>
             <v-card-title>

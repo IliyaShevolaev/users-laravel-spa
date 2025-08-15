@@ -38,7 +38,7 @@ interface RoleRepositoryInterface
      * Найти роль
      *
      * @param int $roleId
-     * @return Role
+     * @return Role 
      */
     public function find(int $roleId): Role;
 

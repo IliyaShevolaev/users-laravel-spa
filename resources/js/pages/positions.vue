@@ -77,6 +77,10 @@ const requestData = function ({ page, itemsPerPage, sortBy }) {
             console.log("Response:", response.data);
         })
         .catch((error) => {
+            if (error.status === 403) {
+                showAlertDialog.value = true;
+                alertText.value = t("main.no_permission");
+            }
             console.error(error);
             positions.value = [];
             totalItems.value = 0;

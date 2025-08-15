@@ -30,11 +30,4 @@ export function listenUserRoleChangesEvent() {
             listenUser(userId);
         }
     );
-
-    onBeforeUnmount(() => {
-        if (echoChannel.value) {
-            echoChannel.value.stopListening(".change.user.role");
-            echoChannel.value = null;
-        }
-    });
 }

@@ -6,6 +6,7 @@ import { useRouter } from "vue-router";
 import { useDisplay } from "vuetify";
 import { useModelChangesStore } from "../stores/modelChanges";
 import { useAuthStore } from "../stores/auth";
+import AlertDangerDialog from "../components/alerts/AlertDangerDialog.vue";
 
 const { mobile } = useDisplay();
 const router = useRouter();
@@ -70,25 +71,32 @@ const permissionGroups = ref([
 ]);
 
 const editRequest = function (id) {
-    axios.get(`/api/roles/${id}/edit`).then((response) => {
-        formData.name = response.data.data.name;
+    axios
+        .get(`/api/roles/${id}/edit`)
+        .then((response) => {
+            formData.name = response.data.data.name;
 
-        permissionGroups.value.forEach((group) => {
-            for (let perm in group.permissions) {
-                group.permissions[perm] = false;
+            permissionGroups.value.forEach((group) => {
+                for (let perm in group.permissions) {
+                    group.permissions[perm] = false;
+                }
+            });
+
+            response.data.data.permissions.forEach((permission) => {
+                const [entity, action] = permission.name.split("-");
+                const group = permissionGroups.value.find(
+                    (group) => group.key === entity
+                );
+                if (group && action in group.permissions) {
+                    group.permissions[action] = true;
+                }
+            });
+        })
+        .catch((error) => {
+            if (error.status === 404) {
+                router.push("/roles");
             }
         });
-
-        response.data.data.permissions.forEach((permission) => {
-            const [entity, action] = permission.name.split("-");
-            const group = permissionGroups.value.find(
-                (group) => group.key === entity
-            );
-            if (group && action in group.permissions) {
-                group.permissions[action] = true;
-            }
-        });
-    });
 };
 
 if (props.id !== null) {
@@ -170,8 +178,16 @@ const updateRole = function () {
 const cancel = function () {
     router.push("/roles");
 };
+
+const showAlertDialog = ref(false);
+const alertText = ref("");
 </script>
 <template>
+    <AlertDangerDialog
+        @close-dialog="showAlertDialog = false"
+        :is-open="showAlertDialog"
+        :message="alertText"
+    ></AlertDangerDialog>
     <v-row>
         <v-col cols="10" class="mx-auto">
             <v-card class="pa-5">
