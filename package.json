@@ -50,6 +50,7 @@
     "dependencies": {
         "@floating-ui/dom": "^1.6.8",
         "@iconify-json/bxl": "^1.1.10",
+        "@laravel/echo-vue": "^2.2.0",
         "@mdi/font": "^7.4.47",
         "@stylistic/stylelint-config": "^1.0.1",
         "@vueuse/core": "^10.11.1",

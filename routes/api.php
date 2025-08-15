@@ -43,7 +43,7 @@ Route::post('/chat/send', function (Request $request) {
         'message' => 'required|string|max:500',
     ]);
 
-    broadcast(new ChatMessage($data['username'], $data['message']))->toOthers();
+    broadcast(new ChatMessage($data['username'], $data['message']));
 
     return ['status' => 'ok'];
 });

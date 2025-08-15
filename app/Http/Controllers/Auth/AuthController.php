@@ -11,12 +11,13 @@ class AuthController extends Controller
 {
     public function __invoke(): JsonResponse
     {
-        $user = Auth::user();
+        $user = Auth::user()?->load('roles');
         $permissions = $user?->getUserRolePermissionsCollection();
 
         return response()->json([
             'user' => $user,
-            'permissions' => $permissions
+            'permissions' => $permissions,
+            'role' => $user?->roles()->first()
         ]);
     }
 }

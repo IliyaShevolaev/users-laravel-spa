@@ -8,6 +8,7 @@ export const useAuthStore = defineStore("auth", {
         userData: {
             id: null,
             name: null,
+            role: null
         },
         userPermissions: [],
     }),
@@ -36,7 +37,8 @@ export const useAuthStore = defineStore("auth", {
                     if (response.data.user !== null) {
                         this.authUser(
                             response.data.user,
-                            response.data.permissions
+                            response.data.permissions,
+                            response.data.role
                         );
                     } else {
                         this.logoutUser();
@@ -51,12 +53,13 @@ export const useAuthStore = defineStore("auth", {
             return this.permissions.includes(permissionName);
         },
 
-        authUser(userData, permissions) {
+        authUser(userData, permissions, role) {
             localStorage.setItem("auth", "true");
             this.auth = true;
             this.userData.id = userData.id;
             this.userData.name = userData.name;
             this.userData.email = userData.email;
+            this.userData.role = role;
             this.userPermissions = permissions;
         },
 

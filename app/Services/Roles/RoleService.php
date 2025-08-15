@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Roles;
 
 use App\DTO\MessageDTO;
+use App\Events\ChangeRolePermissions;
 use App\Models\Roles\Role;
 use App\DTO\Roles\CreateRoleDTO;
 use Illuminate\Support\Facades\Log;
@@ -58,6 +59,8 @@ class RoleService
     {
         $this->repository->update($createRoleDTO, $role);
         $role->syncPermissions($createRoleDTO->permissions);
+
+        broadcast(new ChangeRolePermissions($role->id));
     }
 
     /**
