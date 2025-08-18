@@ -6,12 +6,13 @@ namespace App\Services\User;
 
 use App\DTO\MessageDTO;
 use App\DTO\Roles\RoleDTO;
+use App\Events\ChangeUseRole;
 use App\Enums\User\GenderEnum;
 use App\Enums\User\StatusEnum;
+use App\Events\ChangeUserRole;
 use App\DTO\User\CreateUserDTO;
 use App\DTO\User\UserRelatedDTO;
-use App\Events\ChangeUseRole;
-use App\Events\ChangeUserRole;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use App\Repositories\Interfaces\User\UserRepositoryInterface;
 use App\Repositories\Interfaces\Roles\RoleRepositoryInterface;
@@ -106,36 +107,37 @@ class UserService
      */
     public function prepareViewData(int $userId = null): UserRelatedDTO
     {
-        $userRelatedDtoArray = [];
+        $userRelatedDtoArray = collect();
 
-        $userRelatedDtoArray['user'] = isset($userId) ? $this->repository->withoutScopeFind($userId) : null;
+        $userRelatedDtoArray->put('user', isset($userId) ? $this->repository->withoutScopeFind($userId) : null);
 
-        $userRelatedDtoArray['departments'] = $this->departmentRepository->all();
-        $userRelatedDtoArray['positions'] = $this->positionRepository->all();
+        $userRelatedDtoArray->put('departments', $this->departmentRepository->all());
+        $userRelatedDtoArray->put('positions', $this->positionRepository->all());
 
         $permissions = Auth::user()->getUserRolePermissionsCollection();
         if ($permissions->contains('roles-update')) {
-            $userRelatedDtoArray['roles'] = $this->roleRepository->all();
+            $userRelatedDtoArray->put('roles', $this->roleRepository->all());
         }
 
 
-        $genderArray = [];
+        $genderCollection = collect();
         foreach (GenderEnum::cases() as $genderValue) {
-            array_push($genderArray, [
+            $genderCollection->push([
                 'text' => trans('main.users.genders.' . $genderValue->value),
-                'value' => $genderValue->value
+                'value' => $genderValue->value,
             ]);
         }
-        $userRelatedDtoArray['genders'] = $genderArray;
+        $userRelatedDtoArray->put('genders', $genderCollection);
 
-        $statusArray = [];
+
+        $statusCollection = collect();
         foreach (StatusEnum::cases() as $statusValue) {
-            array_push($statusArray, [
+            $statusCollection->push([
                 'text' => trans('main.users.statuses.' . $statusValue->value),
-                'value' => $statusValue->value
+                'value' => $statusValue->value,
             ]);
         }
-        $userRelatedDtoArray['statuses'] = $statusArray;
+        $userRelatedDtoArray->put('statuses', $statusCollection);
 
 
         return UserRelatedDTO::from($userRelatedDtoArray);

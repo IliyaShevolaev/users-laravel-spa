@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\DTO\User;
 
+use App\Models\User;
 use App\DTO\Roles\RoleDTO;
 use Spatie\LaravelData\Data;
 use App\Enums\User\GenderEnum;
 use App\Enums\User\StatusEnum;
+use Illuminate\Support\Facades\Auth;
 
 class UserDTO extends Data
 {
@@ -21,7 +23,14 @@ class UserDTO extends Data
         public ?int $positionId = null,
 
         public GenderEnum $gender,
-        public StatusEnum $status
+        public StatusEnum $status,
+
+        public ?RoleDTO $role = null
     ) {
+        $user  = Auth::user();
+        if ($user->getUserRolePermissionsCollection()->contains('roles-read')) {
+            $userRole = User::withoutScopeFind($this->id)->roles()?->first();
+            $this->role = $userRole ? RoleDTO::from($userRole) : null;
+        }
     }
 }

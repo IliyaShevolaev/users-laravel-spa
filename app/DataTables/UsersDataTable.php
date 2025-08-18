@@ -59,7 +59,7 @@ class UsersDataTable extends DataTable
         if (Auth::user()->getUserRolePermissionsCollection()->contains('roles-read')) {
             $dataTable->editColumn('roles', function (User $user) {
                 return $user->roles->isNotEmpty()
-                    ? $user->roles->first()->name
+                    ? $user->roles->first()->display_name
                     : trans('main.users.empty_role');
             });
         }

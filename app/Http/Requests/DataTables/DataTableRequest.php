@@ -23,7 +23,7 @@ class DataTableRequest extends FormRequest
     {
         return [
             'page' => ['nullable', 'integer', 'min:1'],
-            'per_page' => ['nullable', 'integer', 'min:1', 'max:1000'],
+            'per_page' => ['nullable', 'integer', 'min:-1', 'max:1000'],
             'sort_by' => ['nullable', 'string', 'max:255'],
             'sort_order' => ['nullable', 'in:asc,desc'],
             'search' => ['nullable', 'string', 'max:255'],

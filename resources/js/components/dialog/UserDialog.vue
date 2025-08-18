@@ -108,22 +108,11 @@ const edit = function () {
     axios
         .get(`/api/users/${props.editId}/edit`, formData)
         .then((response) => {
-            console.log("response.data");
+            console.log("response.dataEDIRT");
             console.log(response.data);
             Object.keys(response.data.user).forEach((key) => {
                 formData[key] = response.data.user[key];
             });
-
-            if (authStore.checkPermission("roles-update")) {
-                axios
-                    .get(`/api/users/role/${response.data.user.id}`)
-                    .then((res) => {
-                        console.log(res.data);
-                        if (res.data != null) {
-                            formData.role = res.data.id;
-                        }
-                    });
-            }
         })
         .catch((error) => {
             if (error.status === 404) {
