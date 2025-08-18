@@ -54,8 +54,9 @@ const registerSubmit = function () {
                 },
             })
             .then((response) => {
-                authStore.authUser(response.data.user);
-                router.push('/');
+                authStore.requestAuth().then(() => {
+                    router.push("/");
+                });
             })
             .catch((error) => {
                 clearErrors();
@@ -173,15 +174,15 @@ const clearErrors = function () {
 
                         <VCol cols="12">
                             <VBtn block @click="registerSubmit">
-                                {{ t('auth.register') }}
+                                {{ t("auth.register") }}
                             </VBtn>
                         </VCol>
 
                         <!-- login instead -->
                         <VCol cols="12" class="text-center text-base">
-                            <span>{{ t('auth.already_register') }}</span>
+                            <span>{{ t("auth.already_register") }}</span>
                             <RouterLink class="text-primary ms-2" to="login">
-                                {{ t('auth.login') }}
+                                {{ t("auth.login") }}
                             </RouterLink>
                         </VCol>
                     </VRow>

@@ -51,7 +51,7 @@ class RolesDataTable extends DataTable
         }
 
         if (isset($dto->search)) {
-            $query->where('name', 'like', '%' . $dto->search . '%');
+            $query->where('name', 'ILIKE', '%' . $dto->search . '%')->orWhere('display_name', 'ILIKE', '%' . $dto->search . '%');
         }
 
         return $query;

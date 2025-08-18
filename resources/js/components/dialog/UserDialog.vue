@@ -43,17 +43,19 @@ const userPositions = ref([]);
 const userRoles = ref([]);
 
 const requestCreateUserData = function () {
-    axios.get("/api/users/create").then((response) => {
-        console.log('response');
-        console.log(response);
-        userGenders.value = response.data.genders;
-        userStatuses.value = response.data.statuses;
-        userDepartments.value = response.data.departments;
-        userPositions.value = response.data.positions;
-        if (authStore.checkPermission("roles-update")) {
-            userRoles.value = response.data.roles;
-        }
-    });
+    if (authStore.checkPermission("users-create") || authStore.checkPermission("users-update")) {
+        axios.get("/api/users/create").then((response) => {
+            console.log("response");
+            console.log(response);
+            userGenders.value = response.data.genders;
+            userStatuses.value = response.data.statuses;
+            userDepartments.value = response.data.departments;
+            userPositions.value = response.data.positions;
+            if (authStore.checkPermission("roles-update")) {
+                userRoles.value = response.data.roles;
+            }
+        });
+    }
 };
 requestCreateUserData();
 

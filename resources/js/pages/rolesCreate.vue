@@ -173,6 +173,9 @@ const updateRole = function () {
                 for (error in errors) {
                     formDataErrors[error] = errors[error][0];
                 }
+                if (errors.name) {
+                    formDataErrors.display_name = errors.name;
+                }
                 console.log(formDataErrors);
             }
         });
