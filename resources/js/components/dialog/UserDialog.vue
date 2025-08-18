@@ -112,7 +112,11 @@ const edit = function () {
             console.log(response.data);
             Object.keys(response.data.user).forEach((key) => {
                 formData[key] = response.data.user[key];
+                if (key === 'role') {
+                    formData[key] = response.data.user[key].id
+                }
             });
+            console.log(formData);
         })
         .catch((error) => {
             if (error.status === 404) {

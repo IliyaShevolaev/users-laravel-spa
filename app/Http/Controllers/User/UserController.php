@@ -135,7 +135,7 @@ class UserController extends Controller
      */
     public function destroy(int $userId): JsonResponse
     {
-        $this->authorize('delete-user');
+        $this->authorize('delete-user', $this->repository->withoutScopeFind($userId));
 
         $deleteResult = $this->service->delete($userId);
 

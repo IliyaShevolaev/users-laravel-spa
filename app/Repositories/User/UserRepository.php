@@ -61,7 +61,6 @@ class UserRepository implements UserRepositoryInterface
         return UserDTO::from(User::withoutScopeFind($userId)->toArray());
     }
 
-
     public function getQueryWithRelations(array $relations): Builder
     {
         return User::withoutGlobalScope(ActiveUserScope::class)

@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\DTO\User\UserDTO;
 use App\Models\User;
 use App\Models\Roles\Role;
 use Illuminate\Support\Facades\Gate;
@@ -28,8 +29,8 @@ class AuthProvider extends ServiceProvider
         Gate::define('change-user', function (User $user) {
             return $user->hasPermission('users-create') || $user->hasPermission('users-update');
         });
-        Gate::define('delete-user', function (User $user) {
-            return $user->roles()?->first()->system;
+        Gate::define('delete-user', function (User $user, UserDTO $deleteUser) {
+            return !$deleteUser->role?->system;
         });
         Gate::define('delete-role', function (User $user, Role $role) {
             return $user->hasPermission('roles-delete') && !$role->system;
