@@ -139,7 +139,6 @@ class UserService
         }
         $userRelatedDtoArray->put('statuses', $statusCollection);
 
-
         return UserRelatedDTO::from($userRelatedDtoArray);
     }
 }

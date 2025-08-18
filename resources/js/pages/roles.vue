@@ -105,7 +105,7 @@ watch(search, () => {
 });
 
 const edit = function (id) {
-    router.push(`/roles/edit/${id}`);
+    router.push(`/roles/edit/${Number(id)}`);
 };
 
 const showAlertAcceptDialog = ref(false);

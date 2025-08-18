@@ -37,7 +37,7 @@ export const routes = [
             {
                 path: "roles/edit/:id",
                 component: () => import("@/pages/rolesCreate.vue"),
-                props: true,
+                props: route => ({ id: Number(route.params.id) }),
                 meta: { permission: 'roles-update' },
             },
             {

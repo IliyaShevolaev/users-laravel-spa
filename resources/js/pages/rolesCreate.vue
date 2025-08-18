@@ -92,6 +92,8 @@ const editRequest = function (id) {
                     group.permissions[action] = true;
                 }
             });
+
+            lastSelect.value = allSelectCheck();
         })
         .catch((error) => {
             if (error.status === 404) {
@@ -187,6 +189,24 @@ const cancel = function () {
 
 const showAlertDialog = ref(false);
 const alertText = ref("");
+
+const allSelectCheck = function () {
+    return permissionGroups.value.some((group) =>
+        Object.values(group.permissions).some((val) => !val)
+    );
+};
+
+const lastSelect = ref(true);
+
+const selectAll = function () {
+    permissionGroups.value.forEach((group) => {
+        Object.keys(group.permissions).forEach((key) => {
+            group.permissions[key] = lastSelect.value;
+        });
+    });
+
+    lastSelect.value = !lastSelect.value;
+};
 </script>
 <template>
     <AlertDangerDialog
@@ -264,6 +284,16 @@ const alertText = ref("");
                             />
                         </v-col>
                     </v-row>
+                </div>
+
+                <div>
+                    <span @click="selectAll(true)" class="text-l font-bold cursor-pointer select-none">
+                        {{
+                            lastSelect
+                                ? t("users.roles.choice_all")
+                                : t("users.roles.unchoice_all")
+                        }}
+                    </span>
                 </div>
 
                 <div class="mt-6 flex justify-end gap-3">
