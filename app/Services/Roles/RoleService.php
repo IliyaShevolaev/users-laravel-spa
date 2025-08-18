@@ -31,6 +31,7 @@ class RoleService
     public function store(CreateRoleDTO $createRoleDTO): void
     {
         $createdRole = $this->repository->create($createRoleDTO);
+        debugbar()->addMessage($createdRole);
 
         if (!empty($createRoleDTO->permissions)) {
             $createdRole->syncPermissions($createRoleDTO->permissions);

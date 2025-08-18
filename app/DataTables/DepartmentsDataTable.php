@@ -47,28 +47,6 @@ class DepartmentsDataTable extends DataTable
             ->setRowId('id');
     }
 
-    public function json(DatatableRequestDTO $dto): \Illuminate\Http\JsonResponse
-    {
-        $query = $this->query($dto);
-
-        $totalRecords = $this->repository->count();
-        $filteredRecords = $query->count();
-        $paginateQuery = $query;
-
-        if (isset($dto->page) && isset($dto->perPage)) {
-            $perPage = $dto->perPage;
-            $offset = ($dto->page - 1) * $perPage;
-            $paginateQuery = $query->skip($offset)->take($perPage);
-        }
-
-        return response()->json([
-            'data' => $this->dataTable($paginateQuery)->toJson(),
-            'recordsTotal' => $totalRecords,
-            'recordsFiltered' => $filteredRecords,
-            'draw' => $dto->draw ?? 0,
-            'input' => $dto->all()
-        ]);
-    }
 
     /**
      * Get the query source of dataTable.
@@ -88,5 +66,26 @@ class DepartmentsDataTable extends DataTable
         }
 
         return $query;
+    }
+
+    public function json(DatatableRequestDTO $dto): \Illuminate\Http\JsonResponse
+    {
+        $query = $this->query($dto);
+
+        $filteredRecords = $query->count();
+        $paginateQuery = $query;
+
+        if (isset($dto->page) && isset($dto->perPage)) {
+            $perPage = $dto->perPage;
+            $offset = ($dto->page - 1) * $perPage;
+            $paginateQuery = $query->skip($offset)->take($perPage);
+        }
+
+        return response()->json([
+            'data' => $this->dataTable($paginateQuery)->toJson(),
+            'recordsFiltered' => $filteredRecords,
+            'draw' => $dto->draw ?? 0,
+            'input' => $dto->all()
+        ]);
     }
 }

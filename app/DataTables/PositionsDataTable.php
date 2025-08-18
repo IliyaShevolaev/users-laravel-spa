@@ -50,7 +50,6 @@ class PositionsDataTable extends DataTable
     {
         $query = $this->query($dto);
 
-        $totalRecords = $this->repository->count();
         $filteredRecords = $query->count();
         $paginateQuery = $query;
 
@@ -62,7 +61,6 @@ class PositionsDataTable extends DataTable
 
         return response()->json([
             'data' => $this->dataTable($paginateQuery)->toJson(),
-            'recordsTotal' => $totalRecords,
             'recordsFiltered' => $filteredRecords,
             'draw' => $dto->draw ?? 0,
             'input' => $dto->all()
