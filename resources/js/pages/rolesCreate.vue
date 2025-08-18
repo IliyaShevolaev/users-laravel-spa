@@ -21,7 +21,7 @@ const props = defineProps({
 });
 
 const formData = reactive({
-    name: null,
+    display_name: null,
 });
 
 const formDataErrors = reactive({});
@@ -74,7 +74,8 @@ const editRequest = function (id) {
     axios
         .get(`/api/roles/${id}/edit`)
         .then((response) => {
-            formData.name = response.data.data.name;
+            console.log(response);
+            formData.display_name = response.data.data.name;
 
             permissionGroups.value.forEach((group) => {
                 for (let perm in group.permissions) {
@@ -120,17 +121,16 @@ const processPermissionsBeforeRequest = function () {
 
 const addRole = function () {
     const bodyData = {
-        name: formData.name,
+        display_name: formData.display_name,
         permissions: processPermissionsBeforeRequest(),
     };
-
     console.log(bodyData);
 
     axios
         .post("/api/roles", bodyData)
         .then((response) => {
             console.log(response);
-            modelChangesStore.addRole(formData.name);
+            modelChangesStore.addRole(formData.display_name);
             modelChangesStore.setRoleBetweenPagesMethod("create");
             router.push("/roles");
         })
@@ -142,6 +142,9 @@ const addRole = function () {
                 for (error in errors) {
                     formDataErrors[error] = errors[error][0];
                 }
+                if (errors.name) {
+                    formDataErrors.display_name = errors.name;
+                }
                 console.log(formDataErrors);
             }
         });
@@ -149,14 +152,14 @@ const addRole = function () {
 
 const updateRole = function () {
     const bodyData = {
-        name: formData.name,
+        display_name: formData.display_name,
         permissions: processPermissionsBeforeRequest(),
     };
 
     axios
         .patch(`/api/roles/${props.id}`, bodyData)
         .then((response) => {
-            modelChangesStore.editRole(formData.name);
+            modelChangesStore.editRole(formData.display_name);
             modelChangesStore.setRoleBetweenPagesMethod("update");
             useAuthStore().requestAuth();
             console.log(response);
@@ -198,10 +201,10 @@ const alertText = ref("");
                 </h2>
 
                 <v-text-field
-                    v-model="formData.name"
+                    v-model="formData.display_name"
                     :label="t('users.roles.name_placeholder')"
-                    :error="!!formDataErrors.name"
-                    :error-messages="formDataErrors.name"
+                    :error="!!formDataErrors.display_name"
+                    :error-messages="formDataErrors.display_name"
                     outlined
                     class="mb-6"
                 />

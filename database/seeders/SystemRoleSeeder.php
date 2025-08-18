@@ -20,7 +20,7 @@ class SystemRoleSeeder extends Seeder
     {
         Role::truncate();
 
-        $systemRole = Role::create(['name' => 'system']);
+        $systemRole = Role::create(['name' => 'system', 'display_name' => 'system']);
         $systemRole->system = true;
         $systemRole->save();
 

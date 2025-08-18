@@ -20,7 +20,7 @@ const roles = ref([]);
 const headers = computed(() => {
     const baseHeaders = [
         { title: "ID", key: "id" },
-        { title: t("main.title"), key: "name" },
+        { title: t("main.title"), key: "display_name" },
         { title: t("main.created"), key: "created_at" },
         { title: t("main.updated"), key: "updated_at" },
     ];

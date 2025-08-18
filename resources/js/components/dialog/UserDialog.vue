@@ -44,6 +44,7 @@ const userRoles = ref([]);
 
 const requestCreateUserData = function () {
     axios.get("/api/users/create").then((response) => {
+        console.log('response');
         console.log(response);
         userGenders.value = response.data.genders;
         userStatuses.value = response.data.statuses;
@@ -277,7 +278,7 @@ const alertText = ref("");
                         :error="!!formDataErrors.role"
                         :error-messages="formDataErrors.role"
                         class="mt-2"
-                        item-title="name"
+                        item-title="display_name"
                         variant="underlined"
                         item-value="id"
                         :label="t('users.role')"

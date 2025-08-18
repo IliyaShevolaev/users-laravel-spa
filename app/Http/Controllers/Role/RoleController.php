@@ -53,8 +53,9 @@ class RoleController extends Controller
     public function store(RoleRequest $roleRequest): void
     {
         $this->authorize('check-permission', 'roles-create');
-
+        Log::info('$dto');
         $dto = CreateRoleDTO::from($roleRequest->validated());
+        Log::info($dto);
 
         $this->service->store($dto);
     }

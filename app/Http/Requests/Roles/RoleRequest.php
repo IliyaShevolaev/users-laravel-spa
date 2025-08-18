@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Roles;
 
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Foundation\Http\FormRequest;
@@ -23,15 +24,32 @@ class RoleRequest extends FormRequest
      */
     public function rules(): array
     {
-        Log::info($this);
         return [
             'name' => [
                 'required',
-                'string',
-                'max:255',
-                Rule::unique('roles')->ignore($this->role)
+                Rule::unique('roles', 'name')->ignore($this->route('role')),
             ],
+            'display_name' => ['required', 'string', 'max:255'],
             'permissions' => ['nullable', 'array'],
+        ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'name' => Str::slug($this->input('display_name')),
+        ]);
+    }
+
+    /**
+     * Задает название возвращаемых атрибутов при ошибках валидации
+     *
+     * @return array<string, mixed>
+     */
+    public function attributes(): array
+    {
+        return [
+            'display_name' => trans('main.title'),
         ];
     }
 }
