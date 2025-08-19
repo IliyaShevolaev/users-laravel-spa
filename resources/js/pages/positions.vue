@@ -48,11 +48,13 @@ const totalItems = ref(0);
 const search = ref("");
 
 const loadingTable = ref(false);
+let abortController = null;
 
 const requestData = function ({ page, itemsPerPage, sortBy }) {
-    if (loadingTable.value) {
-        return;
+    if (abortController) {
+        abortController.abort();
     }
+    abortController = new AbortController();
 
     loadingTable.value = true;
     currentSortBy.value = sortBy;
@@ -68,7 +70,9 @@ const requestData = function ({ page, itemsPerPage, sortBy }) {
     console.log("Request:", params);
 
     axios
-        .post("/api/positions/datatable", params )
+        .post("/api/positions/datatable", params, {
+            signal: abortController.signal,
+        })
         .then((response) => {
             console.log(response);
             positions.value = response.data.data.original.data;

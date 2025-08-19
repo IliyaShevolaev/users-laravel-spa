@@ -47,13 +47,16 @@ const totalItems = ref(0);
 const search = ref("");
 
 const loadingTable = ref(false);
+let abortController = null;
 
 const requestData = function ({ page, itemsPerPage, sortBy }) {
-    if (loadingTable.value) {
-        return;
-    }
-
     loadingTable.value = true;
+
+    if (abortController) {
+        abortController.abort();
+    }
+    abortController = new AbortController();
+
     currentSortBy.value = sortBy;
 
     const params = {
@@ -67,7 +70,9 @@ const requestData = function ({ page, itemsPerPage, sortBy }) {
     console.log("Request:", params);
 
     axios
-        .post("/api/roles/datatable", params)
+        .post("/api/roles/datatable", params, {
+            signal: abortController.signal,
+        })
         .then((response) => {
             roles.value = response.data.data.original.data;
             currentPage.value = response.data.input.page;
@@ -75,6 +80,7 @@ const requestData = function ({ page, itemsPerPage, sortBy }) {
             console.log("Response:", response.data);
         })
         .catch((error) => {
+            console.log(error)
             if (error.status === 403) {
                 showAlertDialog.value = true;
                 alertText.value = t("main.no_permission");
@@ -265,7 +271,7 @@ const alertText = ref("");
                 color="error"
                 class="me-3"
                 size="small"
-                @click="askToDeleteRow(item.id, item.name)"
+                @click="askToDeleteRow(item.id, item.display_name)"
             ></v-btn>
         </template>
     </v-data-table-server>
