@@ -5,30 +5,37 @@ import interactionPlugin from "@fullcalendar/interaction";
 import ruLocale from "@fullcalendar/core/locales/ru";
 import axios from "axios";
 
+const events = ref([]);
+
+let abortController = null;
+
+const requestEvents = (start, end) => {
+    if (abortController) {
+        abortController.abort();
+    }
+    abortController = new AbortController();
+
+    const params = { start, end };
+
+    axios
+        .get("/api/events", {
+            params,
+            signal: abortController.signal,
+        })
+        .then((response) => {
+            events.value = response.data.data;
+        });
+};
+
 const calendarOptions = reactive({
     plugins: [dayGridPlugin, interactionPlugin],
     initialView: "dayGridMonth",
     locale: ruLocale,
-    headerToolbar: {
-        left: "dayGridMonth,dayGridWeek,dayGridDay",
-        center: "title",
-        right: "today prev,next",
-    },
 
-    events: (fetchInfo, successCallback, failureCallback) => {
-        axios
-            .get("/api/events", {
-                params: {
-                    start: fetchInfo.startStr,
-                    end: fetchInfo.endStr,
-                },
-            })
-            .then((response) => {
-                successCallback(response.data.data);
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+    events: events,
+
+    datesSet: (dateInfo) => {
+        requestEvents(dateInfo.startStr, dateInfo.endStr);
     },
 });
 </script>
