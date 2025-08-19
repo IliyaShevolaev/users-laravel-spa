@@ -6,6 +6,7 @@ namespace App\Services\User;
 
 use App\DTO\MessageDTO;
 use App\DTO\Roles\RoleDTO;
+use App\DTO\User\UserDTO;
 use App\Events\ChangeUseRole;
 use App\Enums\User\GenderEnum;
 use App\Enums\User\StatusEnum;
@@ -57,6 +58,11 @@ class UserService
         }
     }
 
+    public function edit(int $userId): UserDTO
+    {
+        return $this->repository->withoutScopeFind($userId);
+    }
+
     /**
      * Обновляет данные о пользователе
      *
@@ -105,11 +111,11 @@ class UserService
      * @param int|null $userId
      * @return UserRelatedDTO
      */
-    public function prepareViewData(int $userId = null): UserRelatedDTO
+    public function prepareViewData(): UserRelatedDTO
     {
         $userRelatedDtoArray = collect();
 
-        $userRelatedDtoArray->put('user', isset($userId) ? $this->repository->withoutScopeFind($userId) : null);
+        // $userRelatedDtoArray->put('user', isset($userId) ? $this->repository->withoutScopeFind($userId) : null);
 
         $userRelatedDtoArray->put('departments', $this->departmentRepository->all());
         $userRelatedDtoArray->put('positions', $this->positionRepository->all());

@@ -12,7 +12,6 @@ class RoleDTO extends Data
         public int $id,
         public string $name,
         public string $display_name,
-        public bool $system = false,
     ) {
     }
 }

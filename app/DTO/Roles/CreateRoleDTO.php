@@ -15,14 +15,4 @@ class CreateRoleDTO extends Data
         public array $permissions,
     ) {
     }
-
-    /**
-     * Задать уникальное имя в Slug формате
-     *
-     * @return void
-     */
-    protected function setName(): void
-    {
-        $this->name = Str::slug($this->displayName);
-    }
 }

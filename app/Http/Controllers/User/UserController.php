@@ -104,9 +104,9 @@ class UserController extends Controller
     {
         $this->authorize('check-permission', 'users-update');
 
-        $data = $this->service->prepareViewData($userId);
+        $userToEdit = $this->service->edit($userId);
 
-        return response()->json($data);
+        return response()->json(['user' => $userToEdit]);
     }
 
     /**

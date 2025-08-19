@@ -112,8 +112,8 @@ const edit = function () {
             console.log(response.data);
             Object.keys(response.data.user).forEach((key) => {
                 formData[key] = response.data.user[key];
-                if (key === 'role') {
-                    formData[key] = response.data.user[key].id
+                if (key === 'role' && response.data.user[key] !== null) {
+                    formData[key] = response.data.user[key].id ?? null
                 }
             });
             console.log(formData);

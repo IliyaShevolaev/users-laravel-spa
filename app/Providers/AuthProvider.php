@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\DTO\User\UserDTO;
+use App\Enums\Role\SystemRolesEnum;
 use App\Models\User;
 use App\Models\Roles\Role;
 use Illuminate\Support\Facades\Gate;
@@ -30,10 +31,11 @@ class AuthProvider extends ServiceProvider
             return $user->hasPermission('users-create') || $user->hasPermission('users-update');
         });
         Gate::define('delete-user', function (User $user, UserDTO $deleteUser) {
-            return !$deleteUser->role?->system;
+            return collect(SystemRolesEnum::cases())->pluck('value')->doesntContain($deleteUser->role?->name);
         });
         Gate::define('delete-role', function (User $user, Role $role) {
-            return $user->hasPermission('roles-delete') && !$role->system;
+            return $user->hasPermission('roles-delete')
+                && collect(SystemRolesEnum::cases())->pluck('value')->doesntContain($role->name);
         });
     }
 }

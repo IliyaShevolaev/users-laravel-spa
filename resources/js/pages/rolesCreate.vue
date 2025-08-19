@@ -163,7 +163,6 @@ const updateRole = function () {
         .then((response) => {
             modelChangesStore.editRole(formData.display_name);
             modelChangesStore.setRoleBetweenPagesMethod("update");
-            useAuthStore().requestAuth();
             console.log(response);
             router.push("/roles");
         })

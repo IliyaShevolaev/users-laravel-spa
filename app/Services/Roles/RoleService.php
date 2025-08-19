@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Services\Roles;
 
 use App\DTO\MessageDTO;
-use App\Events\ChangeRolePermissions;
 use App\Models\Roles\Role;
 use App\DTO\Roles\CreateRoleDTO;
+use App\Enums\Role\SystemRolesEnum;
 use Illuminate\Support\Facades\Log;
+use App\Events\ChangeRolePermissions;
 use App\Repositories\Interfaces\Roles\RoleRepositoryInterface;
 
 class RoleService
@@ -31,7 +32,6 @@ class RoleService
     public function store(CreateRoleDTO $createRoleDTO): void
     {
         $createdRole = $this->repository->create($createRoleDTO);
-        debugbar()->addMessage($createdRole);
 
         if (!empty($createRoleDTO->permissions)) {
             $createdRole->syncPermissions($createRoleDTO->permissions);

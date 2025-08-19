@@ -6,6 +6,7 @@ namespace App\Repositories\User;
 
 use App\Models\User;
 use App\DTO\User\UserDTO;
+use App\DTO\Roles\RoleDTO;
 use App\DTO\User\CreateUserDTO;
 use App\Models\Scopes\ActiveUserScope;
 use Illuminate\Database\Eloquent\Builder;
@@ -58,7 +59,17 @@ class UserRepository implements UserRepositoryInterface
 
     public function withoutScopeFind(int $userId): UserDTO
     {
-        return UserDTO::from(User::withoutScopeFind($userId)->toArray());
+        $user = User::withoutScopeFind($userId)
+            ->load('roles');
+
+        $roleDto = null;
+        if ($user->roles->isNotEmpty()) {
+            $roleDto = RoleDTO::from($user->roles->first());
+        }
+
+        return UserDTO::from(array_merge($user->toArray(), [
+            'role' => $roleDto,
+        ]));
     }
 
     public function getQueryWithRelations(array $relations): Builder

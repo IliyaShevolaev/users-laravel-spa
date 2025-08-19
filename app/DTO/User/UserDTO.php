@@ -27,10 +27,5 @@ class UserDTO extends Data
 
         public ?RoleDTO $role = null
     ) {
-        $user  = Auth::user();
-        if ($user->getUserRolePermissionsCollection()->contains('roles-read')) {
-            $userRole = User::withoutScopeFind($this->id)->roles()?->first();
-            $this->role = $userRole ? RoleDTO::from($userRole) : null;
-        }
     }
 }

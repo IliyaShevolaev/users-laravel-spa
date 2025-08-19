@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\Role\SystemRolesEnum;
 use App\Models\User;
 use App\Models\Roles\Role;
 use App\Enums\User\GenderEnum;
@@ -20,9 +21,7 @@ class SystemRoleSeeder extends Seeder
     {
         Role::truncate();
 
-        $systemRole = Role::create(['name' => 'system', 'display_name' => 'system']);
-        $systemRole->system = true;
-        $systemRole->save();
+        $systemRole = Role::create(['name' => SystemRolesEnum::System, 'display_name' => SystemRolesEnum::System]);
 
         $systemRole->syncPermissions(Permission::all());
 
