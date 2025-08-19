@@ -6,6 +6,7 @@ declare(strict_types=1);
 // php vendor/bin/phpcs
 
 use App\Events\ChatMessage;
+use App\Http\Controllers\Tasks\EventController;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Auth;
@@ -33,6 +34,8 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/roles/datatable', [RoleController::class, 'datatable']);
     Route::resource('roles', RoleController::class);
+
+    Route::resource('events', EventController::class);
 });
 
 Route::get('/user', AuthController::class);

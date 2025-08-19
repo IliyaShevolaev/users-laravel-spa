@@ -53,6 +53,17 @@ export const useAuthStore = defineStore("auth", {
             return this.permissions.includes(permissionName);
         },
 
+        hasOneOfEachPermission(...permissions) {
+            let result = false;
+            permissions.forEach(permission => {
+                if (this.checkPermission(permission)) {
+                    result = true;
+                }
+            });
+
+            return result;
+        },
+
         authUser(userData, permissions, role) {
             localStorage.setItem("auth", "true");
             this.auth = true;

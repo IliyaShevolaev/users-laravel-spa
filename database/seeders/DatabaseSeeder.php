@@ -25,10 +25,10 @@ class DatabaseSeeder extends Seeder
         // Post::factory(20)->create();
 
         //User::factory(120)->create();
-        
-        // $this->call([
-        //     PermissionSeeder::class,
-        //     SystemRoleSeeder::class
-        // ]);
+
+        $this->call([
+            PermissionSeeder::class,
+            SystemRoleSeeder::class
+        ]);
     }
 }

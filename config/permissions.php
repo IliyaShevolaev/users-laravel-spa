@@ -29,4 +29,12 @@ return [
         'update',
         'delete',
     ],
+
+    'tasks' => [
+        'read',
+        'createDepartment',
+        'createAll',
+        'update',
+        'delete'
+    ]
 ];

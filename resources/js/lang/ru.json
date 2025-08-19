@@ -42,15 +42,18 @@
         "roles": {
             "roles": "Роли",
             "create": "Создавать",
-            "view": "Смотреть",
+            "read": "Смотреть",
             "update": "Обновлять",
             "delete": "Удалять",
             "find": "Искать",
+            "createDepartment": "Создавать подчиненным",
+            "createAll": "Создавать всем",
             "entities": {
                 "users": "Пользователи",
                 "departments": "Отделы",
                 "positions": "Должности",
-                "roles": "Роли"
+                "roles": "Роли",
+                "tasks": "Задачи"
             },
             "add": "Создать роль",
             "edit": "Редактировать роль",
@@ -70,7 +73,9 @@
         "users": "Пользователи",
         "departments": "Отделы",
         "positions": "Должности",
-        "roles": "Роли"
+        "roles": "Роли",
+        "tasks": "Задачи",
+        "tasks_schedule": "Расписание задач"
     },
 
     "auth": {
@@ -79,6 +84,10 @@
         "already_register": "Уже есть аккаунт?",
         "not_register_yet": "Нет аккаунта?",
         "logout": "Выход"
+    },
+
+    "calendar": {
+
     },
 
     "main": {

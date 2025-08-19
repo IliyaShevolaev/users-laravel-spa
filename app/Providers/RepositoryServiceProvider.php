@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Repositories\Interfaces\Roles\RoleRepositoryInterface;
+use App\Repositories\Interfaces\Tasks\EventRepositoryInterface;
 use App\Repositories\Roles\RoleRepository;
+use App\Repositories\Tasks\EventRepository;
 use Illuminate\Support\ServiceProvider;
 use App\Repositories\User\UserRepository;
 use App\Repositories\User\Position\PositionRepository;
@@ -24,7 +26,8 @@ class RepositoryServiceProvider extends ServiceProvider
         DepartmentRepositoryInterface::class => DepartmentRepository::class,
         PositionRepositoryInterface::class => PositionRepository::class,
         UserRepositoryInterface::class => UserRepository::class,
-        RoleRepositoryInterface::class => RoleRepository::class
+        RoleRepositoryInterface::class => RoleRepository::class,
+        EventRepositoryInterface::class => EventRepository::class
     ];
 
     /**

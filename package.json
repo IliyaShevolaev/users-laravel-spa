@@ -49,6 +49,10 @@
     },
     "dependencies": {
         "@floating-ui/dom": "^1.6.8",
+        "@fullcalendar/core": "^6.1.19",
+        "@fullcalendar/daygrid": "^6.1.19",
+        "@fullcalendar/interaction": "^6.1.19",
+        "@fullcalendar/vue3": "^6.1.19",
         "@iconify-json/bxl": "^1.1.10",
         "@laravel/echo-vue": "^2.2.0",
         "@mdi/font": "^7.4.47",

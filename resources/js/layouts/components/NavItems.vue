@@ -12,6 +12,13 @@ const { t } = useI18n();
 <template>
     <!-- 👉 User Interface -->
     <VerticalNavSectionTitle
+        v-if="
+            authStore.hasOneOfEachPermission(
+                'users-read',
+                'departments-read',
+                'positions-read'
+            )
+        "
         :item="{
             heading: t('nav.users'),
         }"
@@ -47,6 +54,19 @@ const { t } = useI18n();
             title: t('nav.roles'),
             icon: 'ri-admin-fill',
             to: '/roles',
+        }"
+    />
+
+    <VerticalNavSectionTitle
+        :item="{
+            heading: t('nav.tasks'),
+        }"
+    />
+    <VerticalNavLink
+        :item="{
+            title: t('nav.tasks_schedule'),
+            icon: 'ri-calendar-2-line',
+            to: '/tasks/calendar',
         }"
     />
 </template>

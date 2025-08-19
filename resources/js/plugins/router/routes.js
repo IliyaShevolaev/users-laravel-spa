@@ -44,6 +44,11 @@ export const routes = [
                 path: "/:pathMatch(.*)*",
                 component: () => import("@/pages/[...error].vue"),
             },
+            {
+                path: "tasks/calendar",
+                component: () => import("@/pages/tasksCalendar.vue"),
+                //meta: { permission: 'roles-create' },
+            },
         ],
     },
     {

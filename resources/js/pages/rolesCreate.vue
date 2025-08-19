@@ -68,6 +68,17 @@ const permissionGroups = ref([
             delete: false,
         },
     },
+    {
+        key: "tasks",
+        name: t("users.roles.entities.tasks"),
+        permissions: {
+            read: false,
+            createDepartment: false,
+            createAll: false,
+            update: false,
+            delete: false,
+        },
+    },
 ]);
 
 const editRequest = function (id) {
@@ -232,61 +243,36 @@ const selectAll = function () {
                 />
 
                 <div
-                    v-for="group in permissionGroups"
-                    :key="group.key"
-                    class="border rounded-lg pa-2 mb-4"
-                >
-                    <h3 class="text-lg font-semibold mb-2">
-                        {{ group.name }}
-                    </h3>
+                v-for="group in permissionGroups"
+                :key="group.key"
+                class="border rounded-lg pa-2 mb-4"
+            >
+                <h3 class="text-lg font-semibold mb-2">
+                    {{ group.name }}
+                </h3>
 
-                    <v-row>
-                        <v-col cols="6" lg="3">
-                            <v-checkbox
-                                v-model="group.permissions.read"
-                                :label="t('users.roles.view')"
-                                density="compact"
-                                hide-details
-                            />
-                        </v-col>
-                        <v-col cols="6" lg="3">
-                            <v-checkbox
-                                v-model="group.permissions.create"
-                                :label="t('users.roles.create')"
-                                density="compact"
-                                hide-details
-                            />
-                        </v-col>
-                        <v-col cols="6" lg="3">
-                            <v-checkbox
-                                v-model="group.permissions.update"
-                                :label="t('users.roles.update')"
-                                density="compact"
-                                hide-details
-                            />
-                        </v-col>
-                        <v-col cols="6" lg="3">
-                            <v-checkbox
-                                v-model="group.permissions.delete"
-                                :label="t('users.roles.delete')"
-                                density="compact"
-                                hide-details
-                            />
-                        </v-col>
-                        <v-col cols="6" lg="3">
-                            <v-checkbox
-                                v-if="'find' in group.permissions"
-                                v-model="group.permissions.find"
-                                :label="t('users.roles.find')"
-                                density="compact"
-                                hide-details
-                            />
-                        </v-col>
-                    </v-row>
-                </div>
+                <v-row>
+                    <v-col
+                        v-for="(value, permissionKey) in group.permissions"
+                        :key="permissionKey"
+                        cols="6"
+                        lg="3"
+                    >
+                        <v-checkbox
+                            v-model="group.permissions[permissionKey]"
+                            :label="t(`users.roles.${permissionKey}`)"
+                            density="compact"
+                            hide-details
+                        />
+                    </v-col>
+                </v-row>
+            </div>
 
                 <div>
-                    <span @click="selectAll(true)" class="text-l font-bold cursor-pointer select-none">
+                    <span
+                        @click="selectAll(true)"
+                        class="text-l font-bold cursor-pointer select-none"
+                    >
                         {{
                             lastSelect
                                 ? t("users.roles.choice_all")
