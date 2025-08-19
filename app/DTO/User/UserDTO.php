@@ -19,11 +19,12 @@ class UserDTO extends Data
         public string $name,
         public string $email,
 
-        public ?int $departmentId = null,
-        public ?int $positionId = null,
 
         public GenderEnum $gender,
         public StatusEnum $status,
+        
+        public ?int $departmentId = null,
+        public ?int $positionId = null,
 
         public ?RoleDTO $role = null
     ) {

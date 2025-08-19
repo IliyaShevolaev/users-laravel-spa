@@ -37,26 +37,26 @@ interface DepartmentRepositoryInterface
     /**
      * Удалить отдел
      *
-     * @param int $departmentId
+     * @param Department $department
      * @return void
      */
-    public function delete(int $departmentId): void;
+    public function delete(Department $department): void;
 
     /**
      * Найти отдел по id
      *
      * @param int $departmentId
-     * @return DepartmentDTO
+     * @return Department
      */
-    public function find(int $departmentId): DepartmentDTO;
+    public function find(int $departmentId): Department;
 
     /**
      * Найти пользователей по отделу
      *
-     * @param int $departmentId
+     * @param Department $department
      * @return Collection
      */
-    public function findRelatedUsers(int $departmentId): Collection;
+    public function findRelatedUsers(Department $department): Collection;
 
     /**
      * Возвращает query builder

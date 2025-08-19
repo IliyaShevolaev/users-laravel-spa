@@ -63,4 +63,20 @@ interface RoleRepositoryInterface
      * @return Builder<Role>
      */
     public function getQuery(): Builder;
+
+    /**
+     * Найти пользователей с ролью
+     *
+     * @param Role $role
+     * @return Collection
+     */
+    public function findRelatedUsers(Role $role): Collection;
+
+    /**
+     * Найти роль подгрузив разрешения
+     *
+     * @param int $roleId
+     * @return Role
+     */
+    public function findWithPermissions(int $roleId): Role;
 }

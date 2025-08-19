@@ -53,16 +53,17 @@ class DepartmentService
      */
     public function delete(int $departmentId): MessageDTO
     {
-        $result = [];
+        $result = collect();
+        $departmentToDelete = $this->repository->find($departmentId);
 
-        if ($this->repository->findRelatedUsers($departmentId)->isEmpty()) {
-            $this->repository->delete($departmentId);
+        if ($this->repository->findRelatedUsers($departmentToDelete)->isEmpty()) {
+            $this->repository->delete($departmentToDelete);
 
-            $result['message'] = 'success';
-            $result['code'] = 200;
+            $result->put('message', 'success');
+            $result->put('code', 200);
         } else {
-            $result['message'] = 'delete not allowed';
-            $result['code'] = 409;
+            $result->put('message', 'delete not allowed');
+            $result->put('code', 409);
         }
 
         return MessageDTO::from($result);

@@ -38,26 +38,26 @@ interface PositionRepositoryInterface
     /**
      * Удалить должность
      *
-     * @param int $positionId
+     * @param Position $position
      * @return void
      */
-    public function delete(int $positionId): void;
+    public function delete(Position $position): void;
 
     /**
      * Найти должность по id
      *
      * @param int $positionId
-     * @return PositionDTO
+     * @return Position
      */
-    public function find(int $positionId): PositionDTO;
+    public function find(int $positionId): Position;
 
     /**
      * Найти пользователей по должности
      *
-     * @param int $positionId
+     * @param Position $position
      * @return Collection
      */
-    public function findRelatedUsers(int $positionId): Collection;
+    public function findRelatedUsers(Position $position): Collection;
 
 
     /**

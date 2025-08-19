@@ -24,7 +24,7 @@ class RoleRepository implements RoleRepositoryInterface
         return Role::create($createRoleDTO->all());
     }
 
-    public function update( CreateRoleDTO $dto, Role $role): void
+    public function update(CreateRoleDTO $dto, Role $role): void
     {
         $role->update($dto->all());
     }
@@ -39,6 +39,11 @@ class RoleRepository implements RoleRepositoryInterface
         return Role::findOrFail($roleId);
     }
 
+    public function findWithPermissions(int $roleId): Role
+    {
+        return Role::with('permissions')->findOrFail($roleId);
+    }
+
     public function count(): int
     {
         return Role::count();
@@ -47,5 +52,12 @@ class RoleRepository implements RoleRepositoryInterface
     public function getQuery(): Builder
     {
         return Role::query();
+    }
+
+    public function findRelatedUsers(Role $role): Collection
+    {
+        $users = $role->users()->get();
+
+        return UserDTO::collect($users);
     }
 }

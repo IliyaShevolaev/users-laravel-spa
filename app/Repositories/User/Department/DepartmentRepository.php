@@ -31,20 +31,19 @@ class DepartmentRepository implements DepartmentRepositoryInterface
         $department->update($dto->all());
     }
 
-    public function delete(int $departmentId): void
+    public function delete(Department $department): void
     {
-        $department = Department::findOrFail($departmentId);
         $department->delete();
     }
 
-    public function find(int $departmentId): DepartmentDTO
+    public function find(int $departmentId): Department
     {
-        return DepartmentDTO::from(Department::findOrFail($departmentId));
+        return Department::findOrFail($departmentId);
     }
 
-    public function findRelatedUsers(int $departmentId): Collection
+    public function findRelatedUsers(Department $department): Collection
     {
-        $users = Department::findOrFail($departmentId)->users()->get();
+        $users = $department->users()->get();
 
         return UserDTO::collect($users);
     }

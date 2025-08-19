@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Services\User;
 
+use App\Models\User;
 use App\DTO\MessageDTO;
-use App\DTO\Roles\RoleDTO;
 use App\DTO\User\UserDTO;
+use App\DTO\Roles\RoleDTO;
 use App\Events\ChangeUseRole;
 use App\Enums\User\GenderEnum;
 use App\Enums\User\StatusEnum;
@@ -87,15 +88,15 @@ class UserService
     /**
      * Удаляет данные о пользователе
      *
-     * @param int $userId
+     * @param User $user
      * @return MessageDTO
      */
-    public function delete(int $userId): MessageDTO
+    public function delete(User $user): MessageDTO
     {
         $result = collect();
 
-        if (Auth::id() !== $userId) {
-            $this->repository->delete($userId);
+        if (Auth::id() !== $user->id) {
+            $this->repository->delete($user);
 
             $result->put('code', 200);
         } else {

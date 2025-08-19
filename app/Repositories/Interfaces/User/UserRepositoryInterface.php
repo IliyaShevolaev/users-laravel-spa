@@ -44,10 +44,10 @@ interface UserRepositoryInterface
     /**
      * Удалить должность
      *
-     * @param int $userId
+     * @param User $user
      * @return void
      */
-    public function delete(int $userId): void;
+    public function delete(User $user): void;
 
     /**
      * Найти должность по id

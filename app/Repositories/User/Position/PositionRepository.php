@@ -31,20 +31,19 @@ class PositionRepository implements PositionRepositoryInterface
         $position->update($dto->all());
     }
 
-    public function delete(int $positionId): void
+    public function delete(Position $position): void
     {
-        $position = Position::findOrFail($positionId);
         $position->delete();
     }
 
-    public function find(int $positionId): PositionDTO
+    public function find(int $positionId): Position
     {
-        return PositionDTO::from(Position::findOrFail($positionId));
+        return Position::findOrFail($positionId);
     }
 
-    public function findRelatedUsers(int $positionId): Collection
+    public function findRelatedUsers(Position $position): Collection
     {
-        $users = Position::findOrFail($positionId)->users()->get();
+        $users = $position->users()->get();
 
         return UserDTO::collect($users);
     }

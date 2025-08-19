@@ -46,15 +46,14 @@ class UserRepository implements UserRepositoryInterface
         return $user;
     }
 
-    public function delete(int $userId): void
+    public function delete(User $user): void
     {
-        $user = User::withoutScopeFind($userId);
         $user->delete();
     }
 
     public function find(int $userId): User
     {
-        return User::findOrFail($userId);
+        return User::withoutScopeFind($userId);
     }
 
     public function withoutScopeFind(int $userId): UserDTO

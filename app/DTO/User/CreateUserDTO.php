@@ -13,14 +13,14 @@ class CreateUserDTO extends Data
     public function __construct(
         public string $name,
         public string $email,
-        public ?string $password = null,
-
-        public ?int $departmentId = null,
-        public ?int $positionId = null,
-        public ?int $role = null,
 
         public GenderEnum $gender,
-        public StatusEnum $status
+        public StatusEnum $status,
+
+        public ?string $password = null,
+        public ?int $departmentId = null,
+        public ?int $positionId = null,
+        public ?int $role = null
     ) {
     }
 }

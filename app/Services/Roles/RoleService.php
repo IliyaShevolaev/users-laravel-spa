@@ -34,7 +34,7 @@ class RoleService
         $createdRole = $this->repository->create($createRoleDTO);
 
         if (!empty($createRoleDTO->permissions)) {
-            $createdRole->syncPermissions($createRoleDTO->permissions);
+            $createdRole->givePermissions($createRoleDTO->permissions);
         }
     }
 
@@ -46,7 +46,7 @@ class RoleService
      */
     public function edit(int $roleId): Role
     {
-        return $this->repository->find($roleId);
+        return $this->repository->findWithPermissions($roleId);
     }
 
     /**
@@ -72,18 +72,16 @@ class RoleService
      */
     public function delete(Role $role): MessageDTO
     {
-        $result = [];
+        $result = collect();
 
-        if ($role->users()->exists()) {
-            $result['message'] = 'delete not allowed';
-            $result['code'] = 409;
-            return MessageDTO::from($result);
+        if ($this->repository->findRelatedUsers($role)->isNotEmpty()) {
+            $result->put('message', 'delete not allowed');
+            $result->put('code', 409);
         } else {
-            $role->syncPermissions([]);
             $this->repository->delete($role);
 
-            $result['message'] = 'success';
-            $result['code'] = 200;
+            $result->put('message', 'success');
+            $result->put('code', 200);
         }
 
 

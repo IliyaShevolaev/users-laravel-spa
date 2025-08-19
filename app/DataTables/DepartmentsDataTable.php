@@ -38,6 +38,9 @@ class DepartmentsDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
+            ->editColumn('name', function (Department $department) {
+                return $department->name;
+            })
             ->editColumn('created_at', function (Department $department) {
                 return $department->created_at->format('H:i d.m.Y ');
             })
