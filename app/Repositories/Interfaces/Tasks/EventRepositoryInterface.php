@@ -26,6 +26,16 @@ interface EventRepositoryInterface
     public function between(string $start, string $end): Collection;
 
     /**
+     * Получить текущие видимые события
+     *
+     * @param string $start
+     * @param string $end
+     * @param int|null $department_id
+     * @return Collection
+     */
+    public function getCurrentVisible(string $start, string $end, int|null $department_id): Collection;
+
+    /**
      * Создать новое событие
      * @param CreateEventDTO $dto
      * @return void

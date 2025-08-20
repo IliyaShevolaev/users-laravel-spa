@@ -58,11 +58,13 @@ const { t } = useI18n();
     />
 
     <VerticalNavSectionTitle
+        v-if="authStore.hasOneOfEachPermission('tasks-read')"
         :item="{
             heading: t('nav.tasks'),
         }"
     />
     <VerticalNavLink
+        v-if="authStore.checkPermission('tasks-read')"
         :item="{
             title: t('nav.tasks_schedule'),
             icon: 'ri-calendar-2-line',

@@ -26,6 +26,7 @@ class CreateEventRequest extends FormRequest
             'start' => ['required', 'date'],
             'end' => ['required', 'date'],
             'department_id' => 'nullable|int|exists:departments,id,deleted_at,NULL',
+            'all_vision' => ['required', 'boolean']
         ];
     }
 

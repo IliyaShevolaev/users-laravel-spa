@@ -2,11 +2,13 @@
 
 namespace App\Providers;
 
-use App\DTO\User\UserDTO;
-use App\Enums\Role\SystemRolesEnum;
 use App\Models\User;
+use App\DTO\User\UserDTO;
 use App\Models\Roles\Role;
+use App\Enums\Role\SystemRolesEnum;
+use App\Policies\EventPolicy;
 use Illuminate\Support\Facades\Gate;
+use App\DTO\Tasks\Event\CreateEventDTO;
 use Illuminate\Support\ServiceProvider;
 
 class AuthProvider extends ServiceProvider
@@ -39,6 +41,24 @@ class AuthProvider extends ServiceProvider
         Gate::define('delete-role', function (User $user, Role $role) {
             return $user->hasPermission('roles-delete')
                 && collect(SystemRolesEnum::cases())->pluck('value')->doesntContain($role->name);
+        });
+        // Gate::define('create-event', function (User $user, CreateEventDTO $dto) {
+        //     if (!($user->hasPermission('tasks-createDepartment') || $user->hasPermission('tasks-createAll'))) {
+        //         return false;
+        //     }
+
+        //     if ($dto->allVision && !$user->hasPermission('tasks-createAll')) {
+        //         return false;
+        //     }
+
+        //     return true;
+        // });
+        
+        Gate::guessPolicyNamesUsing(function (string $class) {
+            if ($class === CreateEventDTO::class) {
+                return EventPolicy::class;
+            }
+            return null;
         });
     }
 }

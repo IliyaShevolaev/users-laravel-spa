@@ -5,6 +5,11 @@ import interactionPlugin from "@fullcalendar/interaction";
 import ruLocale from "@fullcalendar/core/locales/ru";
 import axios from "axios";
 import CalendarEventDialog from "../components/dialog/CalendarEventDialog.vue";
+import { useI18n } from "vue-i18n";
+import { useAuthStore } from "../stores/auth";
+
+const { t } = useI18n();
+const authStore = useAuthStore();
 
 const events = ref([]);
 
@@ -28,37 +33,47 @@ const requestEvents = (start, end) => {
         });
 };
 
-const startStr = ref(null)
-const endStr = ref(null)
+const calendarRef = ref(null);
+
+const startStr = ref(null);
+const endStr = ref(null);
 
 const calendarOptions = reactive({
     plugins: [dayGridPlugin, interactionPlugin],
     initialView: "dayGridMonth",
     locale: ruLocale,
 
-    customButtons: {
-        addButton: {
-            text: "Создать событие",
-            click: () => {
-                openDialog();
-            },
-        },
-    },
-
     headerToolbar: {
-        left: "title",
-        center: "addButton",
-        right: "today prev,next",
+        left: "",
+        center: "",
+        right: "",
     },
 
     events: events,
 
     datesSet: (dateInfo) => {
         requestEvents(dateInfo.startStr, dateInfo.endStr);
-        startStr.value = dateInfo.startStr
-        endStr.value = dateInfo.endStr
+
+        startStr.value = dateInfo.startStr;
+        endStr.value = dateInfo.endStr;
+
+        currentViewTitle.value = calendarRef.value.getApi().view.title;
     },
 });
+
+const currentViewTitle = ref(null);
+
+const goPrev = () => {
+    calendarRef.value.getApi().prev();
+};
+
+const goNext = () => {
+    calendarRef.value.getApi().next();
+};
+
+const goToday = () => {
+    calendarRef.value.getApi().today();
+};
 
 const isDialogOpen = ref(false);
 const dialogEditId = ref(null);
@@ -105,5 +120,38 @@ const closeDialog = function (dataChanged, method) {
         :edit-id="dialogEditId"
     ></CalendarEventDialog>
 
-    <FullCalendar :options="calendarOptions" />
+    <div class="flex justify-between">
+        <div>
+            <v-btn
+                color="success"
+                prepend-icon="ri-add-line"
+                @click="openDialog()"
+                v-if="
+                    authStore.hasOneOfEachPermission(
+                        'tasks-createDepartment',
+                        'tasks-createAll'
+                    )
+                "
+            >
+                {{ t("main.append_button") }}
+            </v-btn>
+        </div>
+        <div>
+            <p class="text-2xl font-bold">{{ currentViewTitle }}</p>
+        </div>
+
+        <div class="flex gap-2">
+            <v-btn @click="goPrev" variant="outlined">
+                <v-icon size="large">ri-arrow-left-line</v-icon>
+            </v-btn>
+            <v-btn @click="goToday" variant="outlined">
+                {{ t("calendar.today") }}
+            </v-btn>
+            <v-btn @click="goNext" variant="outlined">
+                <v-icon size="large">ri-arrow-right-line</v-icon>
+            </v-btn>
+        </div>
+    </div>
+
+    <FullCalendar :options="calendarOptions" ref="calendarRef" />
 </template>

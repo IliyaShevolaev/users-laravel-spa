@@ -1,15 +1,16 @@
 <script setup>
 import axios from "axios";
 import dayjs from "dayjs";
-import { reactive, ref, watch } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useModelChangesStore } from "../../stores/modelChanges";
 import AlertDangerDialog from "../alerts/AlertDangerDialog.vue";
 import { VDateInput } from "vuetify/labs/VDateInput";
-
 const modelChangesStore = useModelChangesStore();
+import { useAuthStore } from "../../stores/auth";
 
 const { t } = useI18n();
+const authStore = useAuthStore();
 
 const departments = ref([]);
 const userDepartmentsComputed = computed(() => {
@@ -19,12 +20,34 @@ const userDepartmentsComputed = computed(() => {
     }));
 });
 
-const requestCreateUserData = function () {
-    axios.get("/api/departments").then((response) => {
-        departments.value = response.data.data;
+const appendAllVissionDepartment = function () {
+    departments.value.push({
+        id: -1,
+        name: t("calendar.all_vision"),
     });
 };
-requestCreateUserData();
+
+const requestCreateUserData = function () {
+    axios.get("/api/events/create").then((response) => {
+        console.log(response.data);
+        departments.value = response.data.departments;
+        if (authStore.checkPermission("tasks-createAll")) {
+            appendAllVissionDepartment();
+        } else {
+            formData.department_id = departments.value[0].id;
+            console.log(departments.value[0]);
+            console.log(formData);
+        }
+    });
+};
+if (
+    authStore.hasOneOfEachPermission(
+        "tasks-createDepartment",
+        "tasks-createAll"
+    )
+) {
+    requestCreateUserData();
+}
 
 const props = defineProps({
     editId: {
@@ -40,6 +63,7 @@ const formData = reactive({
     start: null,
     end: null,
     department_id: null,
+    all_vision: false,
 });
 
 const formDataErrors = reactive({});
@@ -48,7 +72,9 @@ const dateRange = ref(null);
 watch(dateRange, (newDate) => {
     if (newDate && newDate.length > 0) {
         formData.start = dayjs(newDate[0]).format("YYYY-MM-DD");
-        formData.end = dayjs(newDate[newDate.length - 1]).format("YYYY-MM-DD");
+        formData.end = dayjs(newDate[newDate.length - 1])
+            .add(1, "day")
+            .format("YYYY-MM-DD");
     } else {
         formData.start = null;
         formData.end = null;
@@ -61,12 +87,25 @@ const close = function (dataChanged, method) {
     emit("closeDialog", dataChanged, method);
 };
 
+const validateBeforeRequest = function () {
+    if (formData.department_id === -1) {
+        formData.department_id = null;
+        formData.all_vision = true;
+    } else {
+        formData.all_vision = false;
+    }
+};
+
+const lockDepartmentSelect = computed(() => {
+    return !authStore.checkPermission("tasks-createAll");
+});
+
 const add = function () {
-    console.log(formData);
+    validateBeforeRequest();
     axios
         .post("/api/events", formData)
         .then((response) => {
-           // modelChangesStore.addPosition(formData.name);
+            // modelChangesStore.addPosition(formData.name);
             close(true, "add");
         })
         .catch((error) => {
@@ -140,9 +179,13 @@ watch(
 
 const clearFields = function (obj) {
     Object.keys(obj).forEach((key) => {
+        if (key === "department_id" && lockDepartmentSelect.value) {
+            return;
+        }
         obj[key] = null;
     });
-    dateRange.value = null
+
+    dateRange.value = null;
 };
 
 const showAlertDialog = ref(false);
@@ -201,8 +244,9 @@ const alertText = ref("");
                         item-title="text"
                         variant="underlined"
                         item-value="value"
-                        :label="t('users.department')"
+                        :label="t('calendar.event_for')"
                         clearable
+                        :disabled="lockDepartmentSelect"
                     ></v-select>
 
                     <v-date-input
@@ -212,6 +256,8 @@ const alertText = ref("");
                         :placeholder="t('calendar.date_placeholder')"
                         multiple="range"
                         clearable
+                        variant="underlined"
+                        prepend-icon=""
                     ></v-date-input>
                 </v-form>
             </v-card-text>

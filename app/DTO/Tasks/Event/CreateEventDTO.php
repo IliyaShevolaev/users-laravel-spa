@@ -10,7 +10,8 @@ class CreateEventDTO extends Data
         public string $title,
         public string $start,
         public string $end,
-        public ?int $department_id,
+        public bool $allVision,
+        public ?int $departmentId,
     ) {
     }
 }

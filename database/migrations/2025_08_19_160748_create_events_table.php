@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('title');
             $table->dateTime('start');
             $table->dateTime('end');
+            $table->boolean('all_vision');
             $table->foreignId('department_id')->nullable()->constrained('departments', 'id')->onDelete('cascade');
 
             $table->timestamps();
