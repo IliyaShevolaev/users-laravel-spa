@@ -87,7 +87,10 @@
     },
 
     "calendar": {
-
+        "add_button": "Добавить событие",
+        "edit_button": "Изменить событие",
+        "select_date_range": "Выберите даты события",
+        "date_placeholder": "ДД.ММ.ГГГГ - ДД.ММ.ГГГГ"
     },
 
     "main": {

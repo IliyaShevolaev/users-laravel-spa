@@ -60,6 +60,7 @@
         "@vueuse/core": "^10.11.1",
         "@vueuse/math": "^10.11.1",
         "apexcharts": "^4.0.0",
+        "dayjs": "^1.11.13",
         "install": "^0.13.0",
         "laravel-echo": "^2.2.0",
         "lodash.debounce": "^4.0.8",

@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AcceptDialog: typeof import('./resources/js/components/alerts/AcceptDialog.vue')['default']
     AlertDangerDialog: typeof import('./resources/js/components/alerts/AlertDangerDialog.vue')['default']
+    CalendarEventDialog: typeof import('./resources/js/components/dialog/CalendarEventDialog.vue')['default']
     CardStatisticsHorizontal: typeof import('./resources/js/@core/components/cards/CardStatisticsHorizontal.vue')['default']
     CardStatisticsVertical: typeof import('./resources/js/@core/components/cards/CardStatisticsVertical.vue')['default']
     CardStatisticsWithImages: typeof import('./resources/js/@core/components/cards/CardStatisticsWithImages.vue')['default']

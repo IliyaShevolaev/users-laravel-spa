@@ -4,10 +4,9 @@ namespace App\DTO\Tasks\Event;
 
 use Spatie\LaravelData\Data;
 
-class EventDTO extends Data
+class CreateEventDTO extends Data
 {
     public function __construct(
-        public int $id,
         public string $title,
         public string $start,
         public string $end,
