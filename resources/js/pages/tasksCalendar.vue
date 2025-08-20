@@ -4,9 +4,11 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import ruLocale from "@fullcalendar/core/locales/ru";
 import axios from "axios";
-import CalendarEventDialog from "../components/dialog/CalendarEventDialog.vue";
+import CalendarEventDialog from "../components/dialog/Calendar/CalendarEventDialog.vue";
+import ViewCalendarEvent from "../components/dialog/Calendar/ViewCalendarEventDialog.vue";
 import { useI18n } from "vue-i18n";
 import { useAuthStore } from "../stores/auth";
+import ViewCalendarEventDialog from "../components/dialog/Calendar/ViewCalendarEventDialog.vue";
 
 const { t } = useI18n();
 const authStore = useAuthStore();
@@ -59,6 +61,12 @@ const calendarOptions = reactive({
 
         currentViewTitle.value = calendarRef.value.getApi().view.title;
     },
+
+    eventClick: (info) => {
+        console.log("Clicked event:", info.event);
+        info.jsEvent.preventDefault();
+        openViewDialog(info.event._def.publicId)
+    },
 });
 
 const currentViewTitle = ref(null);
@@ -77,10 +85,12 @@ const goToday = () => {
 
 const isDialogOpen = ref(false);
 const dialogEditId = ref(null);
+const isDialogViewMode = ref(false);
 
-const openDialog = function (id = null) {
+const openDialog = function (id = null, isViewMode = false) {
     isDialogOpen.value = true;
     dialogEditId.value = id;
+    isDialogViewMode.value = isViewMode;
 };
 
 const closeDialog = function (dataChanged, method) {
@@ -111,6 +121,13 @@ const closeDialog = function (dataChanged, method) {
     isDialogOpen.value = false;
     dialogEditId.value = null;
 };
+
+const showViewDialog = ref(false);
+const showId = ref(null);
+const openViewDialog = function(id) {
+    showViewDialog.value = true;
+    showId.value = id;
+}
 </script>
 
 <template>
@@ -118,7 +135,14 @@ const closeDialog = function (dataChanged, method) {
         @close-dialog="closeDialog"
         :isOpen="isDialogOpen"
         :edit-id="dialogEditId"
+        :dialogViewMode="isDialogViewMode"
     ></CalendarEventDialog>
+
+    <ViewCalendarEventDialog
+        @close-dialog="showViewDialog = false"
+        :is-open="showViewDialog"
+        :show-id="showId"
+    ></ViewCalendarEventDialog>
 
     <div class="flex justify-between">
         <div>

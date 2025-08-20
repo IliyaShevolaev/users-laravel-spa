@@ -28,7 +28,8 @@ class EventRepository implements EventRepositoryInterface
     public function getCurrentVisible(string $start, string $end, int|null $department_id): Collection
     {
         return EventDTO::collect(
-            Event::whereDate('start', '<=', $end)
+            Event::with('department')
+                ->whereDate('start', '<=', $end)
                 ->whereDate('end', '>=', $start)
                 ->where(function ($query) use ($department_id) {
                     $query->where('all_vision', true)
@@ -42,5 +43,10 @@ class EventRepository implements EventRepositoryInterface
     {
         debugbar()->info($dto);
         Event::create($dto->all());
+    }
+
+    public function find(int $eventId): Event
+    {
+        return Event::with('department')->findOrFail($eventId);
     }
 }

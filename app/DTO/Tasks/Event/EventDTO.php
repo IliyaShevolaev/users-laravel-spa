@@ -2,6 +2,7 @@
 
 namespace App\DTO\Tasks\Event;
 
+use App\Models\User\Department;
 use Spatie\LaravelData\Data;
 
 class EventDTO extends Data
@@ -11,7 +12,8 @@ class EventDTO extends Data
         public string $title,
         public string $start,
         public string $end,
-        public ?int $department_id,
+        public bool $allVision,
+        public ?Department $department = null,
     ) {
     }
 }

@@ -89,13 +89,18 @@
     "calendar": {
         "add_button": "Добавить событие",
         "edit_button": "Изменить событие",
-        "select_date_range": "Выберите даты события",
+        "view_header": "Просмотр события",
+        "select_date_range": "Даты события",
         "date_placeholder": "ДД.ММ.ГГГГ - ДД.ММ.ГГГГ",
         "today": "Сегодня",
         "create_new": "Создать новое событие",
         "event_for": "Событие для",
         "all_vision": "Всех",
-        "for_department": "отдела: "
+        "for_department": "отдела: ",
+        "direction": "Длительность",
+        "assigned_to_event": "Ответственные за событие",
+        "all_vision_task_assigned": "Все",
+        "department_assigned": "Отдел — "
     },
 
     "main": {

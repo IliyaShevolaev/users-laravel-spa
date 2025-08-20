@@ -9,7 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AcceptDialog: typeof import('./resources/js/components/alerts/AcceptDialog.vue')['default']
     AlertDangerDialog: typeof import('./resources/js/components/alerts/AlertDangerDialog.vue')['default']
-    CalendarEventDialog: typeof import('./resources/js/components/dialog/CalendarEventDialog.vue')['default']
+    CalendarEventDialog: typeof import('./resources/js/components/dialog/Calendar/CalendarEventDialog.vue')['default']
     CardStatisticsHorizontal: typeof import('./resources/js/@core/components/cards/CardStatisticsHorizontal.vue')['default']
     CardStatisticsVertical: typeof import('./resources/js/@core/components/cards/CardStatisticsVertical.vue')['default']
     CardStatisticsWithImages: typeof import('./resources/js/@core/components/cards/CardStatisticsWithImages.vue')['default']
@@ -23,6 +23,8 @@ declare module 'vue' {
     ThemeSwitcher: typeof import('./resources/js/@core/components/ThemeSwitcher.vue')['default']
     UpgradeToPro: typeof import('./resources/js/components/UpgradeToPro.vue')['default']
     UserDialog: typeof import('./resources/js/components/dialog/UserDialog.vue')['default']
+    ViewCalendarEvent: typeof import('./resources/js/components/dialog/Calendar/ViewCalendarEvent.vue')['default']
+    ViewCalendarEventDialog: typeof import('./resources/js/components/dialog/Calendar/ViewCalendarEventDialog.vue')['default']
     VueApexCharts: typeof import('vue3-apexcharts')['default']
   }
 }

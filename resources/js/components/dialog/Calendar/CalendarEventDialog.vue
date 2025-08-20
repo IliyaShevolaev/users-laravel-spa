@@ -3,11 +3,12 @@ import axios from "axios";
 import dayjs from "dayjs";
 import { computed, reactive, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { useModelChangesStore } from "../../stores/modelChanges";
-import AlertDangerDialog from "../alerts/AlertDangerDialog.vue";
+import { useModelChangesStore } from "../../../stores/modelChanges";
+import AlertDangerDialog from "../../alerts/AlertDangerDialog.vue";
 import { VDateInput } from "vuetify/labs/VDateInput";
 const modelChangesStore = useModelChangesStore();
-import { useAuthStore } from "../../stores/auth";
+import { useAuthStore } from "../../../stores/auth";
+import ViewCalendarEventDialog from "./ViewCalendarEventDialog.vue";
 
 const { t } = useI18n();
 const authStore = useAuthStore();
@@ -55,6 +56,10 @@ const props = defineProps({
         default: null,
     },
     isOpen: Boolean,
+    dialogViewMode: {
+        type: Boolean,
+        default: false,
+    },
 });
 const emit = defineEmits(["closeDialog"]);
 
@@ -124,23 +129,31 @@ const add = function () {
         });
 };
 
-const edit = function () {
-    // clearFields(formData);
-    // axios
-    //     .get(`/api/positions/${props.editId}/edit`, formData)
-    //     .then((response) => {
-    //         Object.keys(response.data.data).forEach((key) => {
-    //             formData[key] = response.data.data[key];
-    //         });
-    //     })
-    //     .catch((error) => {
-    //         if (error.status === 404) {
-    //             showAlertDialog.value = true;
-    //             alertText.value = t("users.positions.no_selected");
-    //             close(false);
-    //         }
-    //         console.log(error);
-    //     });
+const showInfo = function () {
+    clearFields(formData);
+    axios
+        .get(`/api/events/${props.editId}`)
+        .then((response) => {
+            console.log(response);
+            Object.keys(response.data.data).forEach((key) => {
+                formData[key] = response.data.data[key];
+            });
+            dateRange.value = [
+                dayjs(response.data.data.start).format("YYYY-MM-DD"),
+                dayjs(response.data.data.end)
+                    .subtract(1, "day")
+                    .format("YYYY-MM-DD"),
+            ];
+            console.log(formData);
+        })
+        .catch((error) => {
+            if (error.status === 404) {
+                showAlertDialog.value = true;
+                alertText.value = t("users.positions.no_selected");
+                close(false);
+            }
+            console.log(error);
+        });
 };
 
 const update = function (id) {
@@ -171,7 +184,7 @@ watch(
         if (newValue === true && oldValue === false) {
             clearFields(formData);
             if (props.editId !== null) {
-                edit();
+                showInfo();
             }
         }
     }
@@ -198,6 +211,7 @@ const alertText = ref("");
         :is-open="showAlertDialog"
         :message="alertText"
     ></AlertDangerDialog>
+
     <v-dialog v-model="props.isOpen" persistent max-width="600px">
         <v-card>
             <v-card-title>
@@ -233,6 +247,7 @@ const alertText = ref("");
                         name="name"
                         outlined
                         validateOn="blur"
+                        :disabled="props.dialogViewMode"
                     ></v-text-field>
 
                     <v-select
@@ -246,7 +261,7 @@ const alertText = ref("");
                         item-value="value"
                         :label="t('calendar.event_for')"
                         clearable
-                        :disabled="lockDepartmentSelect"
+                        :disabled="lockDepartmentSelect || props.dialogViewMode"
                     ></v-select>
 
                     <v-date-input
@@ -258,6 +273,7 @@ const alertText = ref("");
                         clearable
                         variant="underlined"
                         prepend-icon=""
+                        :disabled="props.dialogViewMode"
                     ></v-date-input>
                 </v-form>
             </v-card-text>

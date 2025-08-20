@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories\Interfaces\Tasks;
 
+use App\Models\Tasks\Event;
 use App\DTO\Tasks\Event\CreateEventDTO;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -41,4 +42,12 @@ interface EventRepositoryInterface
      * @return void
      */
     public function create(CreateEventDTO $dto): void;
+
+    /**
+     * Найти событие по id
+     *
+     * @param int $eventId
+     * @return Event
+     */
+    public function find(int $eventId): Event;
 }

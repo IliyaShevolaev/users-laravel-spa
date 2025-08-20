@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Tasks;
 
+use App\DTO\Tasks\Event\EventDTO;
 use App\Models\Tasks\Event;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -68,5 +69,10 @@ class EventController extends Controller
         $this->authorize('store', $dto);
 
         $this->service->create($dto);
+    }
+
+    public function show(int $eventid)
+    {
+        return new EventResource(EventDTO::from($this->repository->find($eventid)));
     }
 }
