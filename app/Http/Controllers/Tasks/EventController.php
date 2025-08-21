@@ -71,8 +71,25 @@ class EventController extends Controller
         $this->service->create($dto);
     }
 
+    /**
+     * Найти информацию о событии
+     * 
+     * @param int $eventid
+     * @return EventResource
+     */
     public function show(int $eventid)
     {
         return new EventResource(EventDTO::from($this->repository->find($eventid)));
+    }
+
+    /**
+     * Удалить событие
+     *
+     * @param int $eventId
+     * @return void
+     */
+    public function destroy(int $eventId): void
+    {
+        $this->service->delete($eventId);
     }
 }

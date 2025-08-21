@@ -50,4 +50,12 @@ interface EventRepositoryInterface
      * @return Event
      */
     public function find(int $eventId): Event;
+
+    /**
+     * Удалить событие
+     *
+     * @param Event $event
+     * @return void
+     */
+    public function delete(Event $event): void;
 }

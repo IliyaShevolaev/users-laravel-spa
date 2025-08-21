@@ -87,6 +87,7 @@
     },
 
     "calendar": {
+        "event": "Событие",
         "add_button": "Добавить событие",
         "edit_button": "Изменить событие",
         "view_header": "Просмотр события",
@@ -100,13 +101,20 @@
         "direction": "Длительность",
         "assigned_to_event": "Ответственные за событие",
         "all_vision_task_assigned": "Все",
-        "department_assigned": "Отдел — "
+        "department_assigned": "Отдел — ",
+        "set_done": "Отметить выполненным",
+        "delete_event": "Удалить событие",
+        "no_selected": "Событие отсутствует",
+        "was_append": "было успешно добавлено",
+        "was_edited": "было успешно изменено",
+        "was_deleted": "было успешно удалено"
     },
 
     "main": {
         "append_button": "Добавить",
         "cancel_button": "Отмена",
         "edit_button": "Изменить",
+        "delete_button": "Удалить",
         "close_button": "Закрыть",
         "search": "Поиск",
         "created": "Создан",

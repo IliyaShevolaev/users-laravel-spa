@@ -9,7 +9,11 @@ import ViewCalendarEvent from "../components/dialog/Calendar/ViewCalendarEventDi
 import { useI18n } from "vue-i18n";
 import { useAuthStore } from "../stores/auth";
 import ViewCalendarEventDialog from "../components/dialog/Calendar/ViewCalendarEventDialog.vue";
+import AcceptDialog from "../components/alerts/AcceptDialog.vue";
+import { useModelChangesStore } from "../stores/modelChanges";
+import Snackbar from "../components/toaster/Snackbar.vue";
 
+const modelChangesStore = useModelChangesStore();
 const { t } = useI18n();
 const authStore = useAuthStore();
 
@@ -65,7 +69,7 @@ const calendarOptions = reactive({
     eventClick: (info) => {
         console.log("Clicked event:", info.event);
         info.jsEvent.preventDefault();
-        openViewDialog(info.event._def.publicId)
+        openViewDialog(info.event._def.publicId);
     },
 });
 
@@ -98,25 +102,25 @@ const closeDialog = function (dataChanged, method) {
         requestEvents(startStr.value, endStr.value);
     }
 
-    // if (method === "add") {
-    //     showSnackBar(
-    //         t("users.position") +
-    //             " " +
-    //             modelChangesStore.getPosition.lastAdd +
-    //             " " +
-    //             t("users.positions.was_append"),
-    //         "success"
-    //     );
-    // } else if (method === "edit") {
-    //     showSnackBar(
-    //         t("users.position") +
-    //             " " +
-    //             modelChangesStore.getPosition.lastEdit +
-    //             " " +
-    //             t("users.positions.was_edited"),
-    //         "warning"
-    //     );
-    // }
+    if (method === "add") {
+        showSnackBar(
+            t("calendar.event") +
+                " " +
+                modelChangesStore.getEvent.lastAdd +
+                " " +
+                t("calendar.was_append"),
+            "success"
+        );
+    } else if (method === "edit") {
+        showSnackBar(
+            t("calendar.event") +
+                " " +
+                modelChangesStore.getEvent.lastEdit +
+                " " +
+                t("calendar.was_edited"),
+            "warning"
+        );
+    }
 
     isDialogOpen.value = false;
     dialogEditId.value = null;
@@ -124,10 +128,66 @@ const closeDialog = function (dataChanged, method) {
 
 const showViewDialog = ref(false);
 const showId = ref(null);
-const openViewDialog = function(id) {
+const openViewDialog = function (id) {
     showViewDialog.value = true;
     showId.value = id;
-}
+};
+
+const showAlertAcceptDialog = ref(false);
+const alertAcceptText = ref("");
+
+const idToDelete = ref(0);
+
+const askToDeleteRow = function (id, name) {
+    showAlertAcceptDialog.value = true;
+    alertAcceptText.value = `${t("calendar.delete_event")} ${name}?`;
+    idToDelete.value = id;
+    modelChangesStore.deleteEvent(name);
+};
+
+const deleteRow = function (id) {
+    axios
+        .delete(`/api/events/${id}`)
+        .then(() => {
+            requestEvents(startStr.value, endStr.value);
+            showSnackBar(
+                t("calendar.event") +
+                    " " +
+                    modelChangesStore.getEvent.lastDelete +
+                    " " +
+                    t("calendar.was_deleted"),
+                "error"
+            );
+        })
+        .catch((error) => {
+            console.log(error);
+            if (error.response.status === 404) {
+                showAlertDialog.value = true;
+                alertText.value = t("calendar.no_selected");
+            }
+        });
+    showAlertAcceptDialog.value = false;
+};
+
+const closeViewDialog = function (id, name) {
+    console.log(id + " " + name);
+    showViewDialog.value = false;
+    askToDeleteRow(id, name);
+};
+
+const isSnackbarOpen = ref(false);
+const snackbarMessage = ref("");
+const snackbarColor = ref("");
+
+const showSnackBar = function (message, color) {
+    isSnackbarOpen.value = false;
+    setTimeout(() => {
+        snackbarMessage.value = message;
+        snackbarColor.value = color;
+        isSnackbarOpen.value = true;
+    }, 10);
+};
+
 </script>
 
 <template>
@@ -140,9 +200,24 @@ const openViewDialog = function(id) {
 
     <ViewCalendarEventDialog
         @close-dialog="showViewDialog = false"
+        @delete-event="closeViewDialog"
         :is-open="showViewDialog"
         :show-id="showId"
     ></ViewCalendarEventDialog>
+
+    <AcceptDialog
+        @close-dialog="showAlertAcceptDialog = false"
+        @accept-action="deleteRow(idToDelete)"
+        :is-open="showAlertAcceptDialog"
+        :message="alertAcceptText"
+    ></AcceptDialog>
+
+    <Snackbar
+        :color="snackbarColor"
+        :message="snackbarMessage"
+        :is-open="isSnackbarOpen"
+        @close-snackbar="isSnackbarOpen = false"
+    ></Snackbar>
 
     <div class="flex justify-between">
         <div>

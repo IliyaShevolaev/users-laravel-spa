@@ -64,4 +64,17 @@ class EventService
 
         return ['departments' => $departmentsToAssign];
     }
+
+    /**
+     * Удалить событие
+     * 
+     * @param int $eventId
+     * @return void
+     */
+    public function delete(int $eventId): void
+    {
+        $eventToDetete = $this->repository->find($eventId);
+
+        $this->repository->delete($eventToDetete);
+    }
 }

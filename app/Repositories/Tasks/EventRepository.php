@@ -49,4 +49,9 @@ class EventRepository implements EventRepositoryInterface
     {
         return Event::with('department')->findOrFail($eventId);
     }
+
+    public function delete(Event $event): void
+    {
+        $event->delete();
+    }
 }

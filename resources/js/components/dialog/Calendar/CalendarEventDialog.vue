@@ -110,7 +110,7 @@ const add = function () {
     axios
         .post("/api/events", formData)
         .then((response) => {
-            // modelChangesStore.addPosition(formData.name);
+            modelChangesStore.addEvent(formData.title);
             close(true, "add");
         })
         .catch((error) => {

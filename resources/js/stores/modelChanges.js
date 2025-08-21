@@ -26,21 +26,28 @@ export const useModelChangesStore = defineStore("modelChanges", {
             lastDelete: null,
             betweenPagesMethod: null,
         },
+
+        event: {
+            lastAdd: null,
+            lastEdit: null,
+            lastDelete: null
+        },
     }),
     getters: {
         getUser() {
             return this.user;
         },
-
         getPosition() {
             return this.position;
         },
-
         getDepartment() {
             return this.department;
         },
         getRole() {
             return this.role;
+        },
+        getEvent() {
+            return this.event;
         },
     },
     actions: {
@@ -88,7 +95,17 @@ export const useModelChangesStore = defineStore("modelChanges", {
         },
         unsetRoleBetweenPagesMethod() {
             this.role.betweenPagesMethod = null
-        }
+        },
+
+        addEvent(name) {
+            this.event.lastAdd = name;
+        },
+        editEvent(name) {
+            this.event.lastEdit = name;
+        },
+        deleteEvent(name) {
+            this.event.lastDelete = name;
+        },
     },
 });
 

@@ -15,7 +15,7 @@ const props = defineProps({
     },
     isOpen: Boolean,
 });
-const emit = defineEmits(["closeDialog"]);
+const emit = defineEmits(["closeDialog", "deleteEvent"]);
 
 const close = function () {
     emit("closeDialog");
@@ -30,12 +30,6 @@ const requestInfo = function () {
         .then((response) => {
             console.log(response);
             eventInfo.value = response.data.data;
-            // dateRange.value = [
-            //     dayjs(response.data.data.start).format("YYYY-MM-DD"),
-            //     dayjs(response.data.data.end)
-            //         .subtract(1, "day")
-            //         .format("YYYY-MM-DD"),
-            // ];
         })
         .catch((error) => {
             if (error.status === 404) {
@@ -55,6 +49,13 @@ watch(
         }
     }
 );
+
+const deleteButtonHandle = function () {
+    if (eventInfo.value) {
+        emit("deleteEvent", eventInfo.value.id, eventInfo.value.title);
+        eventInfo.value = null;
+    }
+};
 </script>
 
 <template>
@@ -101,16 +102,35 @@ watch(
                             eventInfo
                                 ? eventInfo.all_vision
                                     ? t("calendar.all_vision_task_assigned")
-                                    : t('calendar.department_assigned') + eventInfo.department.name
+                                    : t("calendar.department_assigned") +
+                                      eventInfo.department.name
                                 : ""
                         }}
                     </span>
                 </div>
             </v-card-text>
             <v-card-actions>
-                <v-btn color="error" variant="elevated" @click="close()">{{
-                    t("main.close_button")
-                }}</v-btn>
+                <v-btn color="error" variant="elevated" @click="close()">
+                    {{ t("main.close_button") }}
+                </v-btn>
+                <v-btn
+                    color="error"
+                    variant="elevated"
+                    @click="deleteButtonHandle"
+                >
+                    {{ t("main.delete_button") }}
+                </v-btn>
+                <v-btn color="warning" variant="elevated" @click="close()">
+                    {{ t("main.edit_button") }}
+                </v-btn>
+                <v-btn
+                    color="success"
+                    variant="elevated"
+                    style="text-transform: none"
+                    @click="close()"
+                >
+                    {{ t("calendar.set_done") }}
+                </v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
