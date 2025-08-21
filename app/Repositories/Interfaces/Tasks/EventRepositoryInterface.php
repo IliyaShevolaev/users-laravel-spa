@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Repositories\Interfaces\Tasks;
 
+use App\Models\User;
 use App\Models\Tasks\Event;
 use App\DTO\Tasks\Event\CreateEventDTO;
 use Illuminate\Database\Eloquent\Collection;
+use App\DTO\Tasks\Event\EventUserRelationDTO;
 
 interface EventRepositoryInterface
 {
@@ -66,4 +68,35 @@ interface EventRepositoryInterface
      * @return void
      */
     public function delete(Event $event): void;
+
+    /**
+     * Создать пометку выполненого задания пользователем
+     *
+     * @param EventUserRelationDTO $dto
+     * @return void
+     */
+    public function makeEventUserRelation(EventUserRelationDTO $dto);
+
+    /**
+     * Удалить связь пользователя с выполненной задачей
+     *
+     * @param EventUserRelationDTO $dto
+     * @return void
+     */
+    public function deleteEventUserRelation(EventUserRelationDTO $dto): void;
+
+    /**
+     * Получить выполненные задания по пользователю
+     *
+     * @param User $user
+     * @return Collection
+     */
+    public function getUserCompletedEvents(User $user);
+
+    /**
+     * Проверить сделал ли пользоватль задачу
+     *
+     * @param EventUserRelationDTO $dto
+     */
+    public function checkRelation(EventUserRelationDTO $dto);
 }

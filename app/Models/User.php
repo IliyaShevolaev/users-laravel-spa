@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Models\Scopes\SystemUserScope;
+use App\Models\Tasks\Event;
 use App\Models\User\Position;
 use App\Enums\User\GenderEnum;
 use App\Enums\User\StatusEnum;
@@ -14,6 +14,7 @@ use Illuminate\Support\Collection;
 use Database\Factories\UserFactory;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Scopes\ActiveUserScope;
+use App\Models\Scopes\SystemUserScope;
 use Laratrust\Contracts\LaratrustUser;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Builder;
@@ -25,6 +26,7 @@ use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * Модель пользователя системы
@@ -120,6 +122,16 @@ class User extends Authenticatable implements LaratrustUser
     public function position(): HasOne
     {
         return $this->hasOne(Position::class, 'id', 'position_id');
+    }
+
+    /**
+     * Получить выполненные задачи пользователем
+     *
+     * @return BelongsToMany<Event, User, \Illuminate\Database\Eloquent\Relations\Pivot>
+     */
+    public function completedEvents()
+    {
+        return $this->belongsToMany(Event::class, 'event_users');
     }
 
     public function getUserRolePermissionsCollection(): Collection

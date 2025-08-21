@@ -103,6 +103,7 @@
         "all_vision_task_assigned": "Все",
         "department_assigned": "Отдел — ",
         "set_done": "Отметить выполненным",
+        "is_done": "Выполнена",
         "delete_event": "Удалить событие",
         "no_selected": "Событие отсутствует",
         "was_append": "было успешно добавлено",

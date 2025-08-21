@@ -13,6 +13,7 @@ class EventDTO extends Data
         public string $start,
         public string $end,
         public bool $allVision,
+        public bool $isDone = false,
         public ?Department $department = null,
     ) {
     }

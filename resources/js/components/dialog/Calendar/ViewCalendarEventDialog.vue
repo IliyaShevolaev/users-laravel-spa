@@ -23,6 +23,8 @@ const close = function () {
     eventInfo.value = null;
 };
 
+const loading = ref(true);
+
 const eventInfo = ref(null);
 
 const requestInfo = function () {
@@ -51,7 +53,7 @@ watch(
     }
 );
 
-const editButtonHandle = function() {
+const editButtonHandle = function () {
     if (eventInfo.value) {
         emit("editEvent", eventInfo.value.id);
         eventInfo.value = null;
@@ -64,6 +66,19 @@ const deleteButtonHandle = function () {
         eventInfo.value = null;
     }
 };
+
+const markButtonHandle = function (newMarkedValue) {
+    if (eventInfo.value) {
+        axios
+            .post(`/api/events/mark/${eventInfo.value.id}`)
+            .then((response) => {
+                if (eventInfo.value) {
+                    eventInfo.value.is_done = newMarkedValue;
+                }
+            });
+    }
+};
+
 
 const showAlertDialog = ref(false);
 const alertText = ref("");
@@ -103,6 +118,13 @@ const checkEditButtonViewPermission = computed(() => {
 
     return false;
 });
+
+const isDone = computed(() => {
+    if (eventInfo.value) {
+        return eventInfo.value.is_done;
+    }
+    return false;
+});
 </script>
 
 <template>
@@ -112,7 +134,9 @@ const checkEditButtonViewPermission = computed(() => {
         :message="alertText"
     ></AlertDangerDialog>
     <v-dialog v-model="props.isOpen" persistent max-width="600px">
-        <v-card>
+        <v-skeleton-loader v-if="loading" type="card"></v-skeleton-loader>
+
+        <v-card v-else>
             <v-card-title>
                 <span class="headline flex justify-between">
                     {{ t("calendar.view_header") }}
@@ -182,10 +206,20 @@ const checkEditButtonViewPermission = computed(() => {
                     {{ t("main.edit_button") }}
                 </v-btn>
                 <v-btn
+                    v-if="isDone"
+                    color="success"
+                    variant="outlined"
+                    style="text-transform: none"
+                    @click="markButtonHandle(false)"
+                >
+                    {{ t("calendar.is_done") }}
+                </v-btn>
+                <v-btn
+                    v-else
                     color="success"
                     variant="elevated"
                     style="text-transform: none"
-                    @click="close()"
+                    @click="markButtonHandle(true)"
                 >
                     {{ t("calendar.set_done") }}
                 </v-btn>

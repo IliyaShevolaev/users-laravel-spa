@@ -36,6 +36,7 @@ const requestEvents = (start, end) => {
             signal: abortController.signal,
         })
         .then((response) => {
+            console.log(response);
             events.value = response.data.data;
         });
 };

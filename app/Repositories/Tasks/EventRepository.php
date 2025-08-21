@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace App\Repositories\Tasks;
 
-use App\DTO\Tasks\Event\CreateEventDTO;
-use App\DTO\Tasks\Event\EventDTO;
+use App\Models\User;
 use App\Models\Tasks\Event;
-use App\Repositories\Interfaces\Tasks\EventRepositoryInterface;
+use App\Models\Tasks\EventUser;
+use App\DTO\Tasks\Event\EventDTO;
+use Illuminate\Support\Facades\Auth;
+use App\DTO\Tasks\Event\CreateEventDTO;
 use Illuminate\Database\Eloquent\Collection;
+use App\DTO\Tasks\Event\EventUserRelationDTO;
+use App\Repositories\Interfaces\Tasks\EventRepositoryInterface;
 
 class EventRepository implements EventRepositoryInterface
 {
@@ -28,13 +32,17 @@ class EventRepository implements EventRepositoryInterface
     public function getCurrentVisible(string $start, string $end, int|null $department_id): Collection
     {
         return EventDTO::collect(
-            Event::with('department')
-                ->whereDate('start', '<=', $end)
+            Event::whereDate('start', '<=', $end)
                 ->whereDate('end', '>=', $start)
                 ->where(function ($query) use ($department_id) {
                     $query->where('all_vision', true)
                         ->orWhere('department_id', $department_id);
                 })
+                ->addSelect([
+                    'is_done' => EventUser::selectRaw('COUNT(*) > 0')
+                        ->whereColumn('event_id', 'events.id')
+                        ->where('user_id', Auth::id())
+                ])
                 ->get()
         );
     }
@@ -47,7 +55,13 @@ class EventRepository implements EventRepositoryInterface
 
     public function find(int $eventId): Event
     {
-        return Event::with('department')->findOrFail($eventId);
+        return Event::with('department')
+            ->addSelect([
+                'is_done' => EventUser::selectRaw('COUNT(*) > 0')
+                    ->whereColumn('event_id', 'events.id')
+                    ->where('user_id', Auth::id())
+            ])
+            ->findOrFail($eventId);
     }
 
     public function update(Event $updateEvent, CreateEventDTO $dto)
@@ -58,5 +72,26 @@ class EventRepository implements EventRepositoryInterface
     public function delete(Event $event): void
     {
         $event->delete();
+    }
+
+    public function makeEventUserRelation(EventUserRelationDTO $dto): void
+    {
+        EventUser::create($dto->all());
+    }
+
+    public function deleteEventUserRelation(EventUserRelationDTO $dto): void
+    {
+        $relationToDelete = EventUser::where('user_id', $dto->userId)->where('event_id', $dto->eventId);
+        $relationToDelete->delete();
+    }
+
+    public function getUserCompletedEvents(User $user): Collection
+    {
+        return EventDTO::collect($user->completedEvents()->get());
+    }
+
+    public function checkRelation(EventUserRelationDTO $dto)
+    {
+        return EventUser::where('user_id', $dto->userId)->where('event_id', $dto->eventId)->exists();
     }
 }

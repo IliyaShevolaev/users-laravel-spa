@@ -35,6 +35,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/roles/datatable', [RoleController::class, 'datatable']);
     Route::resource('roles', RoleController::class);
 
+    Route::post('/events/mark/{event}', [EventController::class, 'mark']);
     Route::resource('events', EventController::class);
 });
 

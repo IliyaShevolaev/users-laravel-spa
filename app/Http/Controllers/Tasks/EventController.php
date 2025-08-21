@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Tasks;
 
 use App\DTO\Tasks\Event\EventDTO;
 use App\Models\Tasks\Event;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Services\Tasks\EventService;
@@ -113,5 +112,14 @@ class EventController extends Controller
         $this->authorize('delete', $eventToDelete);
 
         $this->service->delete($eventToDelete);
+    }
+
+    public function mark(int $eventId)
+    {
+        $this->authorize('check-permission', 'tasks-read');
+
+        $eventToMark = $this->repository->find($eventId);
+
+        $this->service->markEventAsDone($eventToMark);
     }
 }

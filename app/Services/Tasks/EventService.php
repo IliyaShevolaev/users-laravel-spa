@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\Tasks;
 
+use App\DTO\Tasks\Event\EventUserRelationDTO;
 use App\Models\Tasks\Event;
+use App\Models\Tasks\EventUser;
 use Illuminate\Support\Facades\Auth;
 use App\DTO\Tasks\Event\CreateEventDTO;
 use App\DTO\User\Department\DepartmentDTO;
@@ -50,7 +52,7 @@ class EventService
      */
     public function prepareCreateData(): array
     {
-        $departmentsToAssign =  null;
+        $departmentsToAssign = null;
         $user = Auth::user();
 
         if ($user->hasPermission('tasks-createAll')) {
@@ -73,7 +75,7 @@ class EventService
      * @param CreateEventDTO $dto
      * @return void
      */
-    public function update( Event $updateEvent, CreateEventDTO $dto)
+    public function update(Event $updateEvent, CreateEventDTO $dto)
     {
         $this->repository->update($updateEvent, $dto);
     }
@@ -87,5 +89,20 @@ class EventService
     public function delete(Event $event): void
     {
         $this->repository->delete($event);
+    }
+
+    public function markEventAsDone(Event $event)
+    {
+        $user = Auth::user();
+        $relationDtoCollection = collect();
+        $relationDtoCollection->put('eventId', $event->id);
+        $relationDtoCollection->put('userId', $user->id);
+
+        $dto = EventUserRelationDTO::from($relationDtoCollection);
+        if (!$this->repository->checkRelation($dto)) {
+            $this->repository->makeEventUserRelation($dto);
+        } else {
+            $this->repository->deleteEventUserRelation($dto);
+        }
     }
 }

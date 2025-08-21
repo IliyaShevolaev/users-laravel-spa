@@ -20,7 +20,8 @@ class EventResource extends JsonResource
             'start' => $this->start,
             'end' => $this->end,
             'department' => $this->department,
-            'all_vision' => $this->allVision
+            'all_vision' => $this->allVision,
+            'is_done' => $this->isDone
         ];
     }
 }

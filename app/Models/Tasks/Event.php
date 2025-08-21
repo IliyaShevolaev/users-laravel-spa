@@ -2,6 +2,7 @@
 
 namespace App\Models\Tasks;
 
+use App\Models\User;
 use App\Policies\EventPolicy;
 use App\Models\User\Department;
 use Illuminate\Database\Eloquent\Model;
@@ -15,7 +16,7 @@ class Event extends Model
 
     /**
      * Получить отдел соыбтия
-     * 
+     *
      * @return HasOne<Department, $this>
      */
     public function department(): HasOne
