@@ -129,7 +129,7 @@ const add = function () {
         });
 };
 
-const showInfo = function () {
+const requestEditInfo = function () {
     clearFields(formData);
     axios
         .get(`/api/events/${props.editId}`)
@@ -137,6 +137,13 @@ const showInfo = function () {
             console.log(response);
             Object.keys(response.data.data).forEach((key) => {
                 formData[key] = response.data.data[key];
+                if (key === 'department' && response.data.data[key]) {
+                    formData.department_id = response.data.data[key].id
+                }
+
+                if (key === 'all_vision' && response.data.data[key]) {
+                    formData.department_id = -1;
+                }
             });
             dateRange.value = [
                 dayjs(response.data.data.start).format("YYYY-MM-DD"),
@@ -157,25 +164,26 @@ const showInfo = function () {
 };
 
 const update = function (id) {
-    // axios
-    //     .patch(`/api/positions/${id}`, formData)
-    //     .then((response) => {
-    //         modelChangesStore.editPosition(formData.name);
-    //         close(true, "edit");
-    //     })
-    //     .catch((error) => {
-    //         clearFields(formDataErrors);
-    //         if (error.response.status === 422) {
-    //             const errors = error.response.data.errors;
-    //             console.log(errors);
-    //             for (error in errors) {
-    //                 formDataErrors[error] = errors[error][0];
-    //             }
-    //             console.log(formDataErrors);
-    //         } else {
-    //             console.log(error);
-    //         }
-    //     });
+    validateBeforeRequest();
+    axios
+        .patch(`/api/events/${id}`, formData)
+        .then((response) => {
+            modelChangesStore.editEvent(formData.title);
+            close(true, "edit");
+        })
+        .catch((error) => {
+            clearFields(formDataErrors);
+            if (error.response.status === 422) {
+                const errors = error.response.data.errors;
+                console.log(errors);
+                for (error in errors) {
+                    formDataErrors[error] = errors[error][0];
+                }
+                console.log(formDataErrors);
+            } else {
+                console.log(error);
+            }
+        });
 };
 
 watch(
@@ -184,7 +192,7 @@ watch(
         if (newValue === true && oldValue === false) {
             clearFields(formData);
             if (props.editId !== null) {
-                showInfo();
+                requestEditInfo();
             }
         }
     }

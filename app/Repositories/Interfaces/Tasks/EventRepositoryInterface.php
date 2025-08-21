@@ -52,6 +52,14 @@ interface EventRepositoryInterface
     public function find(int $eventId): Event;
 
     /**
+     * Обновить событие
+     * @param Event $updateEvent
+     * @param CreateEventDTO $dto
+     * @return void
+     */
+    public function update(Event $updateEvent, CreateEventDTO $dto);
+
+    /**
      * Удалить событие
      *
      * @param Event $event

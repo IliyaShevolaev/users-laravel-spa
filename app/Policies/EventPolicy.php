@@ -38,8 +38,6 @@ class EventPolicy
      */
     public function store(User $user, CreateEventDTO $createEventDTO): bool
     {
-        debugbar()->info('in permissions');
-
         if (!($user->hasPermission('tasks-createDepartment') || $user->hasPermission('tasks-createAll'))) {
             return false;
         }
@@ -56,7 +54,19 @@ class EventPolicy
      */
     public function update(User $user, Event $event): bool
     {
-        return false;
+        if (!$user->hasPermission('tasks-update')) {
+            return false;
+        }
+
+        if ($event->all_vision && !$user->hasPermission('tasks-createAll')) {
+            return false;
+        }
+
+        if (!$user->hasPermission('tasks-createAll') && $event->department_id !== $user->department_id) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -64,7 +74,19 @@ class EventPolicy
      */
     public function delete(User $user, Event $event): bool
     {
-        return false;
+        if (!$user->hasPermission('tasks-delete')) {
+            return false;
+        }
+
+        if ($event->all_vision && !$user->hasPermission('tasks-createAll')) {
+            return false;
+        }
+
+        if (!$user->hasPermission('tasks-createAll') && $event->department_id !== $user->department_id) {
+            return false;
+        }
+
+        return true;
     }
 
     /**

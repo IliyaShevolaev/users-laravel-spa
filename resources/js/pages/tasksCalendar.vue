@@ -12,6 +12,7 @@ import ViewCalendarEventDialog from "../components/dialog/Calendar/ViewCalendarE
 import AcceptDialog from "../components/alerts/AcceptDialog.vue";
 import { useModelChangesStore } from "../stores/modelChanges";
 import Snackbar from "../components/toaster/Snackbar.vue";
+import AlertDangerDialog from "../components/alerts/AlertDangerDialog.vue";
 
 const modelChangesStore = useModelChangesStore();
 const { t } = useI18n();
@@ -169,8 +170,13 @@ const deleteRow = function (id) {
     showAlertAcceptDialog.value = false;
 };
 
-const closeViewDialog = function (id, name) {
-    console.log(id + " " + name);
+
+const closeViewDialogToEdit = function (id) {
+    showViewDialog.value = false;
+    openDialog(id);
+};
+
+const closeViewDialogToDelete = function (id, name) {
     showViewDialog.value = false;
     askToDeleteRow(id, name);
 };
@@ -188,6 +194,8 @@ const showSnackBar = function (message, color) {
     }, 10);
 };
 
+const showAlertDialog = ref(false);
+const alertText = ref("");
 </script>
 
 <template>
@@ -200,7 +208,8 @@ const showSnackBar = function (message, color) {
 
     <ViewCalendarEventDialog
         @close-dialog="showViewDialog = false"
-        @delete-event="closeViewDialog"
+        @edit-event="closeViewDialogToEdit"
+        @delete-event="closeViewDialogToDelete"
         :is-open="showViewDialog"
         :show-id="showId"
     ></ViewCalendarEventDialog>
@@ -211,6 +220,12 @@ const showSnackBar = function (message, color) {
         :is-open="showAlertAcceptDialog"
         :message="alertAcceptText"
     ></AcceptDialog>
+
+    <AlertDangerDialog
+        @close-dialog="showAlertDialog = false"
+        :is-open="showAlertDialog"
+        :message="alertText"
+    ></AlertDangerDialog>
 
     <Snackbar
         :color="snackbarColor"

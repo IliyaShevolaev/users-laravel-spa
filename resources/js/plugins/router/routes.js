@@ -47,7 +47,7 @@ export const routes = [
             {
                 path: "tasks/calendar",
                 component: () => import("@/pages/tasksCalendar.vue"),
-                //meta: { permission: 'roles-create' },
+                meta: { permission: 'tasks-read' },
             },
         ],
     },

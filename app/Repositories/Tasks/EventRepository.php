@@ -50,6 +50,11 @@ class EventRepository implements EventRepositoryInterface
         return Event::with('department')->findOrFail($eventId);
     }
 
+    public function update(Event $updateEvent, CreateEventDTO $dto)
+    {
+        $updateEvent->update($dto->all());
+    }
+
     public function delete(Event $event): void
     {
         $event->delete();

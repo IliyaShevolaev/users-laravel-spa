@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Services\Tasks;
 
-use App\DTO\User\Department\DepartmentDTO;
-use App\Repositories\Interfaces\User\Department\DepartmentRepositoryInterface;
+use App\Models\Tasks\Event;
 use Illuminate\Support\Facades\Auth;
 use App\DTO\Tasks\Event\CreateEventDTO;
+use App\DTO\User\Department\DepartmentDTO;
 use App\DTO\Tasks\Event\CalendarRequestDTO;
 use Illuminate\Database\Eloquent\Collection;
 use App\Repositories\Interfaces\Tasks\EventRepositoryInterface;
+use App\Repositories\Interfaces\User\Department\DepartmentRepositoryInterface;
 
 class EventService
 {
@@ -66,15 +67,25 @@ class EventService
     }
 
     /**
-     * Удалить событие
-     * 
-     * @param int $eventId
+     * Обновить данные о событии
+     *
+     * @param Event $updateEvent
+     * @param CreateEventDTO $dto
      * @return void
      */
-    public function delete(int $eventId): void
+    public function update( Event $updateEvent, CreateEventDTO $dto)
     {
-        $eventToDetete = $this->repository->find($eventId);
+        $this->repository->update($updateEvent, $dto);
+    }
 
-        $this->repository->delete($eventToDetete);
+    /**
+     * Удалить событие
+     *
+     * @param Event $event
+     * @return void
+     */
+    public function delete(Event $event): void
+    {
+        $this->repository->delete($event);
     }
 }
