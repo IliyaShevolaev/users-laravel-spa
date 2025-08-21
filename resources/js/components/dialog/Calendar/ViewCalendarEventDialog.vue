@@ -28,11 +28,13 @@ const loading = ref(true);
 const eventInfo = ref(null);
 
 const requestInfo = function () {
+    loading.value = true;
     axios
         .get(`/api/events/${props.showId}`)
         .then((response) => {
             console.log(response);
             eventInfo.value = response.data.data;
+            loading.value = false;
         })
         .catch((error) => {
             if (error.status === 404) {
@@ -68,6 +70,7 @@ const deleteButtonHandle = function () {
 };
 
 const markButtonHandle = function (newMarkedValue) {
+    loading.value = true;
     if (eventInfo.value) {
         axios
             .post(`/api/events/mark/${eventInfo.value.id}`)
@@ -75,10 +78,10 @@ const markButtonHandle = function (newMarkedValue) {
                 if (eventInfo.value) {
                     eventInfo.value.is_done = newMarkedValue;
                 }
+                loading.value = false;
             });
     }
 };
-
 
 const showAlertDialog = ref(false);
 const alertText = ref("");

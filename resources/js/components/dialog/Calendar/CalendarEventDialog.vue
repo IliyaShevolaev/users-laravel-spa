@@ -87,18 +87,23 @@ watch(dateRange, (newDate) => {
 });
 
 const close = function (dataChanged, method) {
+    dateRange.value = null;
     clearFields(formData);
     clearFields(formDataErrors);
     emit("closeDialog", dataChanged, method);
 };
 
-const validateBeforeRequest = function () {
-    if (formData.department_id === -1) {
-        formData.department_id = null;
-        formData.all_vision = true;
+const validatedBeforeRequest = function () {
+    const result = { ...formData };
+
+    if (result.department_id === -1) {
+        result.department_id = null;
+        result.all_vision = true;
     } else {
-        formData.all_vision = false;
+        result.all_vision = false;
     }
+
+    return result;
 };
 
 const lockDepartmentSelect = computed(() => {
@@ -106,9 +111,8 @@ const lockDepartmentSelect = computed(() => {
 });
 
 const add = function () {
-    validateBeforeRequest();
     axios
-        .post("/api/events", formData)
+        .post("/api/events", validatedBeforeRequest())
         .then((response) => {
             modelChangesStore.addEvent(formData.title);
             close(true, "add");
@@ -137,11 +141,11 @@ const requestEditInfo = function () {
             console.log(response);
             Object.keys(response.data.data).forEach((key) => {
                 formData[key] = response.data.data[key];
-                if (key === 'department' && response.data.data[key]) {
-                    formData.department_id = response.data.data[key].id
+                if (key === "department" && response.data.data[key]) {
+                    formData.department_id = response.data.data[key].id;
                 }
 
-                if (key === 'all_vision' && response.data.data[key]) {
+                if (key === "all_vision" && response.data.data[key]) {
                     formData.department_id = -1;
                 }
             });
@@ -164,9 +168,8 @@ const requestEditInfo = function () {
 };
 
 const update = function (id) {
-    validateBeforeRequest();
     axios
-        .patch(`/api/events/${id}`, formData)
+        .patch(`/api/events/${id}`, validatedBeforeRequest())
         .then((response) => {
             modelChangesStore.editEvent(formData.title);
             close(true, "edit");
@@ -205,8 +208,6 @@ const clearFields = function (obj) {
         }
         obj[key] = null;
     });
-
-    dateRange.value = null;
 };
 
 const showAlertDialog = ref(false);
@@ -275,6 +276,8 @@ const alertText = ref("");
                     <v-date-input
                         class="mt-2"
                         v-model="dateRange"
+                        :error="!!formDataErrors.start"
+                        :error-messages="formDataErrors.start"
                         :label="t('calendar.select_date_range')"
                         :placeholder="t('calendar.date_placeholder')"
                         multiple="range"

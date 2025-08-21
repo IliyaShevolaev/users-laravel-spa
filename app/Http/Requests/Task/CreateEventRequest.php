@@ -39,6 +39,20 @@ class CreateEventRequest extends FormRequest
     {
         return [
             'title' => trans('main.title'),
+            'start' => trans('main.date_range'),
+            'end' => trans('main.date_range'),
         ];
+    }
+
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            if ($this->input('all_vision') == false && !$this->input('department_id')) {
+                $validator->errors()->add(
+                    'department_id',
+                    trans('validation.assigned_for')
+                );
+            }
+        });
     }
 }
