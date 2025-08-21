@@ -38,7 +38,22 @@ const requestEvents = (start, end) => {
         .then((response) => {
             console.log(response);
             events.value = response.data.data;
+            validateEvents();
         });
+};
+
+const validateEvents = function () {
+    events.value.forEach((event) => {
+        console.log(event)
+        if (event.is_done) {
+            event.backgroundColor = "green";
+            event.borderColor = "green";
+        } else {
+            event.backgroundColor = "#2a90bf";
+            event.borderColor = "#2a90bf";
+        }
+    });
+    console.log(events);
 };
 
 const calendarRef = ref(null);
@@ -50,6 +65,7 @@ const calendarOptions = reactive({
     plugins: [dayGridPlugin, interactionPlugin],
     initialView: "dayGridMonth",
     locale: ruLocale,
+    displayEventTime: false,
 
     headerToolbar: {
         left: "",
@@ -171,7 +187,6 @@ const deleteRow = function (id) {
     showAlertAcceptDialog.value = false;
 };
 
-
 const closeViewDialogToEdit = function (id) {
     showViewDialog.value = false;
     openDialog(id);
@@ -197,6 +212,14 @@ const showSnackBar = function (message, color) {
 
 const showAlertDialog = ref(false);
 const alertText = ref("");
+
+const closeViewDialog = function(eventWasMarked) {
+    console.log('here ' + eventWasMarked)
+    showViewDialog.value = false;
+    if (eventWasMarked) {
+        requestEvents(startStr.value, endStr.value);
+    }
+}
 </script>
 
 <template>
@@ -208,7 +231,7 @@ const alertText = ref("");
     ></CalendarEventDialog>
 
     <ViewCalendarEventDialog
-        @close-dialog="showViewDialog = false"
+        @close-dialog="closeViewDialog"
         @edit-event="closeViewDialogToEdit"
         @delete-event="closeViewDialogToDelete"
         :is-open="showViewDialog"

@@ -19,7 +19,7 @@ const props = defineProps({
 const emit = defineEmits(["closeDialog", "deleteEvent", "editEvent"]);
 
 const close = function () {
-    emit("closeDialog");
+    emit("closeDialog", eventWasMarked.value);
     eventInfo.value = null;
 };
 
@@ -69,8 +69,11 @@ const deleteButtonHandle = function () {
     }
 };
 
+const eventWasMarked = ref(false);
+
 const markButtonHandle = function (newMarkedValue) {
     loading.value = true;
+    eventWasMarked.value = false;
     if (eventInfo.value) {
         axios
             .post(`/api/events/mark/${eventInfo.value.id}`)
@@ -79,6 +82,8 @@ const markButtonHandle = function (newMarkedValue) {
                     eventInfo.value.is_done = newMarkedValue;
                 }
                 loading.value = false;
+                eventWasMarked.value = true;
+                console.log(eventWasMarked.value);
             });
     }
 };
