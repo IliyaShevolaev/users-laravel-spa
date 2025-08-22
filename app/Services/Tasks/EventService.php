@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Tasks;
 
 use App\DTO\Tasks\Event\EventUserRelationDTO;
+use App\DTO\Tasks\Event\PatchEventDTO;
 use App\Models\Tasks\Event;
 use App\Models\Tasks\EventUser;
 use Illuminate\Support\Facades\Auth;
@@ -72,10 +73,10 @@ class EventService
      * Обновить данные о событии
      *
      * @param Event $updateEvent
-     * @param CreateEventDTO $dto
+     * @param PatchEventDTO $dto
      * @return void
      */
-    public function update(Event $updateEvent, CreateEventDTO $dto)
+    public function update(Event $updateEvent, PatchEventDTO $dto)
     {
         $this->repository->update($updateEvent, $dto);
     }

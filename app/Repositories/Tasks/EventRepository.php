@@ -9,6 +9,7 @@ use App\Models\Tasks\Event;
 use App\Models\Tasks\EventUser;
 use App\DTO\Tasks\Event\EventDTO;
 use Illuminate\Support\Facades\Auth;
+use App\DTO\Tasks\Event\PatchEventDTO;
 use App\DTO\Tasks\Event\CreateEventDTO;
 use Illuminate\Database\Eloquent\Collection;
 use App\DTO\Tasks\Event\EventUserRelationDTO;
@@ -64,9 +65,9 @@ class EventRepository implements EventRepositoryInterface
             ->findOrFail($eventId);
     }
 
-    public function update(Event $updateEvent, CreateEventDTO $dto)
+    public function update(Event $updateEvent, PatchEventDTO $dto)
     {
-        $updateEvent->update($dto->all());
+        $updateEvent->update(collect($dto->all())->reject(fn($value) => is_null($value))->toArray());
     }
 
     public function delete(Event $event): void

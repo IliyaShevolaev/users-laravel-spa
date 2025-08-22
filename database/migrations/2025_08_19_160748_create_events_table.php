@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
 
             $table->string('title');
-            $table->dateTime('start');
-            $table->dateTime('end');
+            $table->date('start');
+            $table->date('end');
             $table->boolean('all_vision');
             $table->foreignId('department_id')->nullable()->constrained('departments', 'id')->onDelete('set null');
 

@@ -78,7 +78,6 @@ watch(dateRange, (newDate) => {
     if (newDate && newDate.length > 0) {
         formData.start = dayjs(newDate[0]).format("YYYY-MM-DD");
         formData.end = dayjs(newDate[newDate.length - 1])
-            .add(1, "day")
             .format("YYYY-MM-DD");
     } else {
         formData.start = null;
@@ -152,7 +151,6 @@ const requestEditInfo = function () {
             dateRange.value = [
                 dayjs(response.data.data.start).format("YYYY-MM-DD"),
                 dayjs(response.data.data.end)
-                    .subtract(1, "day")
                     .format("YYYY-MM-DD"),
             ];
             console.log(formData);

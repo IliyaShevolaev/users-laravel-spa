@@ -6,6 +6,7 @@ namespace App\Repositories\Interfaces\Tasks;
 
 use App\Models\User;
 use App\Models\Tasks\Event;
+use App\DTO\Tasks\Event\PatchEventDTO;
 use App\DTO\Tasks\Event\CreateEventDTO;
 use Illuminate\Database\Eloquent\Collection;
 use App\DTO\Tasks\Event\EventUserRelationDTO;
@@ -56,10 +57,10 @@ interface EventRepositoryInterface
     /**
      * Обновить событие
      * @param Event $updateEvent
-     * @param CreateEventDTO $dto
+     * @param PatchEventDTO $dto
      * @return void
      */
-    public function update(Event $updateEvent, CreateEventDTO $dto);
+    public function update(Event $updateEvent, PatchEventDTO $dto);
 
     /**
      * Удалить событие

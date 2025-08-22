@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Tasks;
 
 use App\DTO\Tasks\Event\EventDTO;
+use App\DTO\Tasks\Event\PatchEventDTO;
+use App\Http\Requests\Task\PatchEventRequest;
 use App\Models\Tasks\Event;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
@@ -94,7 +96,18 @@ class EventController extends Controller
 
         $this->authorize('update', $eventToUpdate);
 
-        $dto = CreateEventDTO::from($createEventRequest->validated());
+        $dto = PatchEventDTO::from($createEventRequest->validated());
+
+        $this->service->update($eventToUpdate, $dto);
+    }
+
+    public function patch(PatchEventRequest $patchEventRequest, int $eventId)
+    {
+        $eventToUpdate = $this->repository->find($eventId);
+
+        $this->authorize('update', $eventToUpdate);
+
+        $dto = PatchEventDTO::from($patchEventRequest->validated());
 
         $this->service->update($eventToUpdate, $dto);
     }

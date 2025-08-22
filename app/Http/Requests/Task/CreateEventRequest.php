@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Task;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 class CreateEventRequest extends FormRequest
 {
@@ -44,9 +45,9 @@ class CreateEventRequest extends FormRequest
         ];
     }
 
-    public function withValidator($validator)
+    public function withValidator(Validator $validator)
     {
-        $validator->after(function ($validator) {
+        $validator->after(function (Validator $validator) {
             if ($this->input('all_vision') == false && !$this->input('department_id')) {
                 $validator->errors()->add(
                     'department_id',

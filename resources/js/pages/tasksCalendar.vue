@@ -5,7 +5,6 @@ import interactionPlugin from "@fullcalendar/interaction";
 import ruLocale from "@fullcalendar/core/locales/ru";
 import axios from "axios";
 import CalendarEventDialog from "../components/dialog/Calendar/CalendarEventDialog.vue";
-import ViewCalendarEvent from "../components/dialog/Calendar/ViewCalendarEventDialog.vue";
 import { useI18n } from "vue-i18n";
 import { useAuthStore } from "../stores/auth";
 import ViewCalendarEventDialog from "../components/dialog/Calendar/ViewCalendarEventDialog.vue";
@@ -13,6 +12,7 @@ import AcceptDialog from "../components/alerts/AcceptDialog.vue";
 import { useModelChangesStore } from "../stores/modelChanges";
 import Snackbar from "../components/toaster/Snackbar.vue";
 import AlertDangerDialog from "../components/alerts/AlertDangerDialog.vue";
+import dayjs from "dayjs";
 
 const modelChangesStore = useModelChangesStore();
 const { t } = useI18n();
@@ -44,13 +44,17 @@ const requestEvents = (start, end) => {
 
 const validateEvents = function () {
     events.value.forEach((event) => {
-        console.log(event)
+        console.log(event);
         if (event.is_done) {
             event.backgroundColor = "green";
             event.borderColor = "green";
         } else {
             event.backgroundColor = "#2a90bf";
             event.borderColor = "#2a90bf";
+        }
+
+        if (event.end) {
+            event.end = dayjs(event.end).add(1, "day").format("YYYY-MM-DD");
         }
     });
     console.log(events);
@@ -66,6 +70,7 @@ const calendarOptions = reactive({
     initialView: "dayGridMonth",
     locale: ruLocale,
     displayEventTime: false,
+    editable: authStore.checkPermission("tasks-update"),
 
     headerToolbar: {
         left: "",
@@ -87,7 +92,11 @@ const calendarOptions = reactive({
     eventClick: (info) => {
         console.log("Clicked event:", info.event);
         info.jsEvent.preventDefault();
-        openViewDialog(info.event._def.publicId);
+        openViewDialog(info.event.id);
+    },
+
+    eventDrop: (info) => {
+        handleEventDrop(info);
     },
 });
 
@@ -142,6 +151,49 @@ const closeDialog = function (dataChanged, method) {
 
     isDialogOpen.value = false;
     dialogEditId.value = null;
+};
+
+let patchAbortController = null;
+
+const handleEventDrop = function (info) {
+    if (patchAbortController) {
+        patchAbortController.abort();
+    }
+    patchAbortController = new AbortController();
+
+    modelChangesStore.editEvent(info.event.title);
+    axios
+        .patch(
+            `/api/events/patch/${info.event.id}`,
+            {
+                start: dayjs(info.event.start).format("YYYY-MM-DD"),
+                end: dayjs(info.event.end)
+                    .subtract(1, "day")
+                    .format("YYYY-MM-DD"),
+            },
+            { signal: patchAbortController.signal }
+        )
+        .then(() => {
+            showSnackBar(
+                t("calendar.event") +
+                    " " +
+                    modelChangesStore.getEvent.lastEdit +
+                    " " +
+                    t("calendar.was_edited"),
+                "warning"
+            );
+            requestEvents(startStr.value, endStr.value);
+        })
+        .catch((error) => {
+            info.revert();
+            if (error.response.status === 404) {
+                showAlertDialog.value = true;
+                alertText.value = t("calendar.no_selected");
+            } else if (error.response.status === 403) {
+                showAlertDialog.value = true;
+                alertText.value = t("calendar.no_permission");
+            }
+        });
 };
 
 const showViewDialog = ref(false);
@@ -213,13 +265,13 @@ const showSnackBar = function (message, color) {
 const showAlertDialog = ref(false);
 const alertText = ref("");
 
-const closeViewDialog = function(eventWasMarked) {
-    console.log('here ' + eventWasMarked)
+const closeViewDialog = function (eventWasMarked) {
+    console.log("here " + eventWasMarked);
     showViewDialog.value = false;
     if (eventWasMarked) {
         requestEvents(startStr.value, endStr.value);
     }
-}
+};
 </script>
 
 <template>
