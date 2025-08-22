@@ -4,15 +4,19 @@ declare(strict_types=1);
 
 namespace App\Services\Tasks;
 
-use App\DTO\Tasks\Event\EventUserRelationDTO;
-use App\DTO\Tasks\Event\PatchEventDTO;
+use App\DTO\User\UserDTO;
+use App\Models\User;
 use App\Models\Tasks\Event;
-use App\Models\Tasks\EventUser;
+use App\Enums\Role\SystemRolesEnum;
 use Illuminate\Support\Facades\Auth;
+use App\DTO\Tasks\Event\PatchEventDTO;
 use App\DTO\Tasks\Event\CreateEventDTO;
 use App\DTO\User\Department\DepartmentDTO;
 use App\DTO\Tasks\Event\CalendarRequestDTO;
 use Illuminate\Database\Eloquent\Collection;
+use App\DTO\Tasks\Event\EventUserRelationDTO;
+use App\Repositories\Interfaces\User\UserRepositoryInterface;
+use App\Repositories\Interfaces\Roles\RoleRepositoryInterface;
 use App\Repositories\Interfaces\Tasks\EventRepositoryInterface;
 use App\Repositories\Interfaces\User\Department\DepartmentRepositoryInterface;
 
@@ -20,7 +24,9 @@ class EventService
 {
     public function __construct(
         private EventRepositoryInterface $repository,
-        private DepartmentRepositoryInterface $departmentRepository
+        private DepartmentRepositoryInterface $departmentRepository,
+        private UserRepositoryInterface $userRepository,
+        private RoleRepositoryInterface $roleRepository
     ) {
     }
 
@@ -53,20 +59,13 @@ class EventService
      */
     public function prepareCreateData(): array
     {
-        $departmentsToAssign = null;
         $user = Auth::user();
 
-        if ($user->hasPermission('tasks-createAll')) {
-            $departmentsToAssign = $this->departmentRepository->all();
-        } else {
-            if (isset($user->department_id)) {
-                $departmentsToAssign = DepartmentDTO::collect([$this->departmentRepository->find($user->department_id)]);
-            } else {
-                $departmentsToAssign = DepartmentDTO::collect([]);
-            }
-        }
+        $usersToAssign = $this->getSubordinates($user);
 
-        return ['departments' => $departmentsToAssign];
+        $assigningUser = UserDTO::from($user);
+
+        return ['users' => $usersToAssign, 'user' => $assigningUser];
     }
 
     /**
@@ -105,5 +104,29 @@ class EventService
         } else {
             $this->repository->deleteEventUserRelation($dto);
         }
+    }
+
+    private function getSubordinates(User $user)
+    {
+        $userRoleName = $user->roles()->first()?->name;
+
+        $rolesToAssign = collect();
+
+        if ($userRoleName === SystemRolesEnum::Admin->value) {
+            $rolesToAssign->push(SystemRolesEnum::User->value);
+            $rolesToAssign->push(SystemRolesEnum::Manager->value);
+            $rolesToAssign->push(SystemRolesEnum::Admin->value);
+
+        } else if ($userRoleName === SystemRolesEnum::Manager->value) {
+            $rolesToAssign->push(SystemRolesEnum::User->value);
+        }
+
+        if ($rolesToAssign->isEmpty()) {
+            return collect();
+        }
+
+        return UserDTO::collect(User::whereHas('roles', function ($query) use ($rolesToAssign) {
+            $query->whereIn('name', $rolesToAssign->toArray());
+        })->where('id', '!=', $user->id)->get());
     }
 }

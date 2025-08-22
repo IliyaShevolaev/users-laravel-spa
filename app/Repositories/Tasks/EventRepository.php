@@ -50,8 +50,11 @@ class EventRepository implements EventRepositoryInterface
 
     public function create(CreateEventDTO $dto): void
     {
-        debugbar()->info($dto);
-        Event::create($dto->all());
+        $event = Event::create($dto->all());
+
+        $event->users()->attach(
+            collect($dto->user_id)->mapWithKeys(fn($id) => [$id => ['is_done' => false]])->toArray()
+        );
     }
 
     public function find(int $eventId): Event

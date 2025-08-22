@@ -8,10 +8,11 @@ class CreateEventDTO extends Data
 {
     public function __construct(
         public string $title,
+        public string $description,
         public string $start,
         public string $end,
-        public bool $allVision,
-        public ?int $departmentId,
+        public int $creatorId,
+        public array $user_id,
     ) {
     }
 }

@@ -88,6 +88,7 @@
 
     "calendar": {
         "event": "Событие",
+        "event_description": "Описание",
         "add_button": "Добавить событие",
         "edit_button": "Изменить событие",
         "view_header": "Просмотр события",
@@ -96,7 +97,7 @@
         "today": "Сегодня",
         "create_new": "Создать новое событие",
         "event_for": "Событие для",
-        "all_vision": "Всех",
+        "all_vision": "Всех в подчинении",
         "for_department": "отдела: ",
         "direction": "Длительность",
         "assigned_to_event": "Ответственные за событие",

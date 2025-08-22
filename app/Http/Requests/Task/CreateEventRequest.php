@@ -24,10 +24,11 @@ class CreateEventRequest extends FormRequest
     {
         return [
             'title' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string', 'max:65535'],
             'start' => ['required', 'date'],
             'end' => ['required', 'date'],
-            'department_id' => 'nullable|int|exists:departments,id,deleted_at,NULL',
-            'all_vision' => ['required', 'boolean']
+            'user_id' => ['required', 'array'],
+            'creator_id' => ['required', 'int']
         ];
     }
 
@@ -43,17 +44,5 @@ class CreateEventRequest extends FormRequest
             'start' => trans('main.date_range'),
             'end' => trans('main.date_range'),
         ];
-    }
-
-    public function withValidator(Validator $validator)
-    {
-        $validator->after(function (Validator $validator) {
-            if ($this->input('all_vision') == false && !$this->input('department_id')) {
-                $validator->errors()->add(
-                    'department_id',
-                    trans('validation.assigned_for')
-                );
-            }
-        });
     }
 }

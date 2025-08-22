@@ -10,4 +10,7 @@ namespace App\Enums\Role;
 enum SystemRolesEnum : string
 {
     case System = 'system';
+    case Admin = 'admin';
+    case Manager = 'manager';
+    case User = 'user';
 }

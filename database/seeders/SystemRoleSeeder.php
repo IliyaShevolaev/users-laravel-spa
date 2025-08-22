@@ -21,7 +21,11 @@ class SystemRoleSeeder extends Seeder
     {
         Role::truncate();
 
-        $systemRole = Role::create(['name' => SystemRolesEnum::System, 'display_name' => SystemRolesEnum::System]);
+        foreach (SystemRolesEnum::cases() as $role) {
+            Role::create(['name' => $role->value, 'display_name' => $role->value]);
+        }
+
+        $systemRole = Role::where('name', 'system')->first();
 
         $systemRole->syncPermissions(Permission::all());
 

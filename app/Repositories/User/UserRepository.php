@@ -7,6 +7,7 @@ namespace App\Repositories\User;
 use App\Models\User;
 use App\DTO\User\UserDTO;
 use App\DTO\Roles\RoleDTO;
+use App\Models\Roles\Role;
 use App\DTO\User\CreateUserDTO;
 use App\Models\Scopes\ActiveUserScope;
 use Illuminate\Database\Eloquent\Builder;

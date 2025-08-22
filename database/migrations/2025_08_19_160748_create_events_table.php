@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
 
             $table->string('title');
-            $table->date('start');
-            $table->date('end');
-            $table->boolean('all_vision');
-            $table->foreignId('department_id')->nullable()->constrained('departments', 'id')->onDelete('set null');
+            $table->text('description')->nullable();
+            $table->dateTime('start');
+            $table->dateTime('end');
+            $table->foreignId('creator_id')->constrained('users', 'id')->onDelete('cascade');
 
             $table->timestamps();
         });

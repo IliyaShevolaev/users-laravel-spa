@@ -50,7 +50,7 @@ class EventController extends Controller
      */
     public function create(): JsonResponse
     {
-        $this->authorize('create', Event::class);
+        //$this->authorize('create', Event::class);
 
         $data = $this->service->prepareCreateData();
 
@@ -67,7 +67,7 @@ class EventController extends Controller
     {
         $dto = CreateEventDTO::from($createEventRequest->validated());
 
-        $this->authorize('store', $dto);
+        //$this->authorize('store', $dto);
 
         $this->service->create($dto);
     }
@@ -134,5 +134,11 @@ class EventController extends Controller
         $eventToMark = $this->repository->find($eventId);
 
         $this->service->markEventAsDone($eventToMark);
+    }
+
+    public function getSubordinates()
+    {
+        $this->authorize('check-permission', 'tasks-create');
+
     }
 }

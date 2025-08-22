@@ -13,40 +13,51 @@ import ViewCalendarEventDialog from "./ViewCalendarEventDialog.vue";
 const { t } = useI18n();
 const authStore = useAuthStore();
 
-const departments = ref([]);
-const userDepartmentsComputed = computed(() => {
-    return departments.value.map((department) => ({
-        text: department.name,
-        value: department.id,
-    }));
+const formData = reactive({
+    title: null,
+    start: null,
+    end: null,
+    user_id: null,
+    description: null,
+    creator_id: null
 });
 
-const appendAllVissionDepartment = function () {
-    departments.value.push({
+const users = ref([]);
+const usersComputed = computed(() => {
+    return users.value.map((user) => ({
+        text: user.name,
+        value: user.id,
+    }));
+});
+const currentUser = ref(null);
+
+const appendAllVissionUser = function () {
+    users.value.unshift({
         id: -1,
         name: t("calendar.all_vision"),
     });
 };
 
+const blockUserSelect = ref(false);
+
 const requestCreateUserData = function () {
     axios.get("/api/events/create").then((response) => {
-        console.log(response.data);
-        departments.value = response.data.departments;
-        if (authStore.checkPermission("tasks-createAll")) {
-            appendAllVissionDepartment();
+        users.value = response.data.users;
+        currentUser.value = response.data.user;
+
+        if (response.data.users.length === 0) {
+            formData.user_id = currentUser.value.id;
+            blockUserSelect.value = true;
         } else {
-            formData.department_id = departments.value[0].id;
-            console.log(departments.value[0]);
-            console.log(formData);
+            appendAllVissionUser();
         }
+
+        users.value.unshift(currentUser.value);
+        formData.creator_id = currentUser.value.id;
     });
 };
-if (
-    authStore.hasOneOfEachPermission(
-        "tasks-createDepartment",
-        "tasks-createAll"
-    )
-) {
+
+if (authStore.hasOneOfEachPermission("tasks-create")) {
     requestCreateUserData();
 }
 
@@ -56,20 +67,8 @@ const props = defineProps({
         default: null,
     },
     isOpen: Boolean,
-    dialogViewMode: {
-        type: Boolean,
-        default: false,
-    },
 });
 const emit = defineEmits(["closeDialog"]);
-
-const formData = reactive({
-    title: null,
-    start: null,
-    end: null,
-    department_id: null,
-    all_vision: false,
-});
 
 const formDataErrors = reactive({});
 
@@ -77,8 +76,7 @@ const dateRange = ref(null);
 watch(dateRange, (newDate) => {
     if (newDate && newDate.length > 0) {
         formData.start = dayjs(newDate[0]).format("YYYY-MM-DD");
-        formData.end = dayjs(newDate[newDate.length - 1])
-            .format("YYYY-MM-DD");
+        formData.end = dayjs(newDate[newDate.length - 1]).format("YYYY-MM-DD");
     } else {
         formData.start = null;
         formData.end = null;
@@ -95,11 +93,12 @@ const close = function (dataChanged, method) {
 const validatedBeforeRequest = function () {
     const result = { ...formData };
 
-    if (result.department_id === -1) {
-        result.department_id = null;
-        result.all_vision = true;
+    if (result.user_id === -1) {
+        result.user_id = users.value
+            .map((user) => user.id)
+            .filter((id) => id !== -1);
     } else {
-        result.all_vision = false;
+        result.user_id = [currentUser.value.id];
     }
 
     return result;
@@ -150,8 +149,7 @@ const requestEditInfo = function () {
             });
             dateRange.value = [
                 dayjs(response.data.data.start).format("YYYY-MM-DD"),
-                dayjs(response.data.data.end)
-                    .format("YYYY-MM-DD"),
+                dayjs(response.data.data.end).format("YYYY-MM-DD"),
             ];
             console.log(formData);
         })
@@ -192,6 +190,7 @@ watch(
     (newValue, oldValue) => {
         if (newValue === true && oldValue === false) {
             clearFields(formData);
+            requestCreateUserData()
             if (props.editId !== null) {
                 requestEditInfo();
             }
@@ -201,15 +200,16 @@ watch(
 
 const clearFields = function (obj) {
     Object.keys(obj).forEach((key) => {
-        if (key === "department_id" && lockDepartmentSelect.value) {
-            return;
-        }
         obj[key] = null;
     });
 };
 
 const showAlertDialog = ref(false);
 const alertText = ref("");
+
+const isUserSelectDisabled = computed(() => {
+    return blockUserSelect.value;
+});
 </script>
 
 <template>
@@ -251,15 +251,26 @@ const alertText = ref("");
                         density="default"
                         variant="underlined"
                         color="primary"
-                        name="name"
                         outlined
                         validateOn="blur"
-                        :disabled="props.dialogViewMode"
                     ></v-text-field>
 
+                    <v-textarea
+                        v-model="formData.description"
+                        :label="t('calendar.event_description')"
+                        :error="!!formDataErrors.description"
+                        :error-messages="formDataErrors.description"
+                        clearable
+                        density="default"
+                        variant="underlined"
+                        color="primary"
+                        outlined
+                        validateOn="blur"
+                    ></v-textarea>
+
                     <v-select
-                        v-model="formData.department_id"
-                        :items="userDepartmentsComputed"
+                        v-model="formData.user_id"
+                        :items="usersComputed"
                         :error="!!formDataErrors.department_id"
                         :error-messages="formDataErrors.department_id"
                         class="mt-2"
@@ -268,7 +279,7 @@ const alertText = ref("");
                         item-value="value"
                         :label="t('calendar.event_for')"
                         clearable
-                        :disabled="lockDepartmentSelect || props.dialogViewMode"
+                        :disabled="isUserSelectDisabled"
                     ></v-select>
 
                     <v-date-input
@@ -282,7 +293,6 @@ const alertText = ref("");
                         clearable
                         variant="underlined"
                         prepend-icon=""
-                        :disabled="props.dialogViewMode"
                     ></v-date-input>
                 </v-form>
             </v-card-text>

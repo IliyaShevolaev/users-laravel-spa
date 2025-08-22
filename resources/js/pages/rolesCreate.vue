@@ -73,8 +73,7 @@ const permissionGroups = ref([
         name: t("users.roles.entities.tasks"),
         permissions: {
             read: false,
-            createDepartment: false,
-            createAll: false,
+            create: false,
             update: false,
             delete: false,
         },

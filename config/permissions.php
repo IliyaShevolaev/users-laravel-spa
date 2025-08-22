@@ -32,8 +32,7 @@ return [
 
     'tasks' => [
         'read',
-        'createDepartment',
-        'createAll',
+        'create',
         'update',
         'delete'
     ]

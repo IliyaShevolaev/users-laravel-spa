@@ -116,12 +116,10 @@ const goToday = () => {
 
 const isDialogOpen = ref(false);
 const dialogEditId = ref(null);
-const isDialogViewMode = ref(false);
 
-const openDialog = function (id = null, isViewMode = false) {
+const openDialog = function (id = null) {
     isDialogOpen.value = true;
     dialogEditId.value = id;
-    isDialogViewMode.value = isViewMode;
 };
 
 const closeDialog = function (dataChanged, method) {
@@ -279,7 +277,6 @@ const closeViewDialog = function (eventWasMarked) {
         @close-dialog="closeDialog"
         :isOpen="isDialogOpen"
         :edit-id="dialogEditId"
-        :dialogViewMode="isDialogViewMode"
     ></CalendarEventDialog>
 
     <ViewCalendarEventDialog
@@ -318,8 +315,7 @@ const closeViewDialog = function (eventWasMarked) {
                 @click="openDialog()"
                 v-if="
                     authStore.hasOneOfEachPermission(
-                        'tasks-createDepartment',
-                        'tasks-createAll'
+                        'tasks-create'
                     )
                 "
             >
