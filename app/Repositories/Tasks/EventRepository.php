@@ -63,6 +63,10 @@ class EventRepository implements EventRepositoryInterface
     public function update(Event $updateEvent, PatchEventDTO $dto)
     {
         $updateEvent->update(collect($dto->all())->reject(fn($value) => is_null($value))->toArray());
+
+        if (isset($dto->userId)) {
+            $updateEvent->users()->sync($dto->userId);
+        }
     }
 
     public function delete(Event $event): void

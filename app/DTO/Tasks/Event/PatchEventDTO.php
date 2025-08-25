@@ -15,6 +15,7 @@ class PatchEventDTO extends Data
         public ?string $description,
         public ?array $user_id,
         public ?int $creatorId,
+        public ?array $userId,
     ) {
     }
 }

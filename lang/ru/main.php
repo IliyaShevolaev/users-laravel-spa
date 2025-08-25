@@ -56,6 +56,7 @@ return [
     'edit_button' => 'Изменить',
 
     'id_not_found' => 'Удаление невозможно. Ошибка',
-    
-    'date_range' => 'даты события'
+
+    'date_range' => 'даты события',
+    'must_user_assign' => '"событие для"'
 ];

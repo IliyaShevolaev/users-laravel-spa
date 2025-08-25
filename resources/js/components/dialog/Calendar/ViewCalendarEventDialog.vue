@@ -166,13 +166,13 @@ const isDone = computed(() => {
                         {{ t("calendar.direction") }}:
                         {{
                             eventInfo
-                                ? dayjs(eventInfo.start).format("DD.MM.YYYY")
+                                ? dayjs(eventInfo.start).format("DD.MM.YYYY HH:mm")
                                 : ""
                         }}
                         —
                         {{
                             eventInfo
-                                ? dayjs(eventInfo.end).format("DD.MM.YYYY")
+                                ? dayjs(eventInfo.end).format("DD.MM.YYYY HH:mm")
                                 : ""
                         }}
                     </span>

@@ -25,7 +25,8 @@ class EventViewResource extends JsonResource
             'description' => $this->description,
             'is_done' => $this->users->find($user->id)->pivot->is_done,
             'creator' => $this->creator,
-            'change_permission' => $this->canUserChange($user)
+            'change_permission' => $this->canUserChange($user),
+            'assigned_users' => $this->users
         ];
     }
 }

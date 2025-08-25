@@ -8,6 +8,7 @@ import AlertDangerDialog from "../../alerts/AlertDangerDialog.vue";
 import { VDateInput } from "vuetify/labs/VDateInput";
 const modelChangesStore = useModelChangesStore();
 import { useAuthStore } from "../../../stores/auth";
+import MenuTimePicker from "../../inputs/MenuTimePicker.vue";
 
 const { t } = useI18n();
 const authStore = useAuthStore();
@@ -18,7 +19,7 @@ const formData = reactive({
     end: null,
     user_id: null,
     description: null,
-    creator_id: null
+    creator_id: null,
 });
 
 const users = ref([]);
@@ -72,19 +73,44 @@ const emit = defineEmits(["closeDialog"]);
 
 const formDataErrors = reactive({});
 
+const timeStart = ref("00:00");
+const timeEnd = ref("00:00");
+
 const dateRange = ref(null);
-watch(dateRange, (newDate) => {
-    if (newDate && newDate.length > 0) {
-        formData.start = dayjs(newDate[0]).format("YYYY-MM-DD");
-        formData.end = dayjs(newDate[newDate.length - 1]).format("YYYY-MM-DD");
-    } else {
-        formData.start = null;
-        formData.end = null;
+watch(
+    [dateRange, timeStart, timeEnd],
+    ([newDate, newTimeStart, newTimeEnd]) => {
+        if (newDate && newDate.length > 0) {
+            const startDate = dayjs(newDate[0]);
+            const endDate = dayjs(newDate[newDate.length - 1]);
+
+            const [startHour, startMinute] = newTimeStart
+                .split(":")
+                .map(Number);
+            const [endHour, endMinute] = newTimeEnd.split(":").map(Number);
+
+            formData.start = startDate
+                .hour(startHour)
+                .minute(startMinute)
+                .second(0)
+                .format("YYYY-MM-DD HH:mm:ss");
+
+            formData.end = endDate
+                .hour(endHour)
+                .minute(endMinute)
+                .second(0)
+                .format("YYYY-MM-DD HH:mm:ss");
+        } else {
+            formData.start = null;
+            formData.end = null;
+        }
     }
-});
+);
 
 const close = function (dataChanged, method) {
     dateRange.value = null;
+    timeStart.value = null;
+    timeEnd.value = null;
     clearFields(formData);
     clearFields(formDataErrors);
     emit("closeDialog", dataChanged, method);
@@ -105,7 +131,6 @@ const validatedBeforeRequest = function () {
 };
 
 const add = function () {
-    console.log('validatedBeforeRequest()');
     console.log(validatedBeforeRequest());
     axios
         .post("/api/events", validatedBeforeRequest())
@@ -137,19 +162,20 @@ const requestEditInfo = function () {
             console.log(response);
             Object.keys(response.data.data).forEach((key) => {
                 formData[key] = response.data.data[key];
-                if (key === "department" && response.data.data[key]) {
-                    formData.department_id = response.data.data[key].id;
-                }
-
-                if (key === "all_vision" && response.data.data[key]) {
-                    formData.department_id = -1;
-                }
             });
             dateRange.value = [
                 dayjs(response.data.data.start).format("YYYY-MM-DD"),
                 dayjs(response.data.data.end).format("YYYY-MM-DD"),
             ];
-            console.log(formData);
+
+            timeStart.value = dayjs(response.data.data.start).format("HH:mm");
+            timeEnd.value = dayjs(response.data.data.end).format("HH:mm");
+
+            if (response.data.data.assigned_users.length > 1) {
+                formData.user_id = -1;
+            } else {
+                formData.user_id = response.data.data.assigned_users[0].id;
+            }
         })
         .catch((error) => {
             if (error.status === 404) {
@@ -188,7 +214,7 @@ watch(
     (newValue, oldValue) => {
         if (newValue === true && oldValue === false) {
             clearFields(formData);
-            requestCreateUserData()
+            requestCreateUserData();
             if (props.editId !== null) {
                 requestEditInfo();
             }
@@ -208,6 +234,8 @@ const alertText = ref("");
 const isUserSelectDisabled = computed(() => {
     return blockUserSelect.value;
 });
+
+const showMenu = ref(false);
 </script>
 
 <template>
@@ -269,8 +297,8 @@ const isUserSelectDisabled = computed(() => {
                     <v-select
                         v-model="formData.user_id"
                         :items="usersComputed"
-                        :error="!!formDataErrors.department_id"
-                        :error-messages="formDataErrors.department_id"
+                        :error="!!formDataErrors['user_id.0']"
+                        :error-messages="formDataErrors['user_id.0']"
                         class="mt-2"
                         item-title="text"
                         variant="underlined"
@@ -292,6 +320,17 @@ const isUserSelectDisabled = computed(() => {
                         variant="underlined"
                         prepend-icon=""
                     ></v-date-input>
+
+                    <div class="flex flex-row gap-2 mt-2">
+                        <MenuTimePicker
+                            v-model="timeStart"
+                            :label="t('calendar.time_start')"
+                        ></MenuTimePicker>
+                        <MenuTimePicker
+                            v-model="timeEnd"
+                            :label="t('calendar.time_end')"
+                        ></MenuTimePicker>
+                    </div>
                 </v-form>
             </v-card-text>
             <v-card-actions>

@@ -15,6 +15,7 @@ declare module 'vue' {
     CardStatisticsWithImages: typeof import('./resources/js/@core/components/cards/CardStatisticsWithImages.vue')['default']
     DepartmentDialog: typeof import('./resources/js/components/dialog/DepartmentDialog.vue')['default']
     ErrorHeader: typeof import('./resources/js/components/ErrorHeader.vue')['default']
+    MenuTimePicker: typeof import('./resources/js/components/inputs/MenuTimePicker.vue')['default']
     MoreBtn: typeof import('./resources/js/@core/components/MoreBtn.vue')['default']
     PositionDialog: typeof import('./resources/js/components/dialog/PositionDialog.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

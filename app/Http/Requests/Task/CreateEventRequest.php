@@ -27,7 +27,8 @@ class CreateEventRequest extends FormRequest
             'description' => ['required', 'string', 'max:65535'],
             'start' => ['required', 'date'],
             'end' => ['required', 'date'],
-            'user_id' => ['required', 'array'],
+            'user_id' => ['required', 'array', 'min:1'],
+            'user_id.*' => ['required'],
             'creator_id' => ['required', 'int']
         ];
     }
@@ -43,6 +44,7 @@ class CreateEventRequest extends FormRequest
             'title' => trans('main.title'),
             'start' => trans('main.date_range'),
             'end' => trans('main.date_range'),
+            'user_id.*' => trans('main.must_user_assign')
         ];
     }
 }
