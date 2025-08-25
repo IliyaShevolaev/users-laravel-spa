@@ -9,6 +9,8 @@ import { VDateInput } from "vuetify/labs/VDateInput";
 const modelChangesStore = useModelChangesStore();
 import { useAuthStore } from "../../../stores/auth";
 import MenuTimePicker from "../../inputs/MenuTimePicker.vue";
+import VueDatePicker from "@vuepic/vue-datepicker";
+import "@vuepic/vue-datepicker/dist/main.css";
 
 const { t } = useI18n();
 const authStore = useAuthStore();
@@ -74,44 +76,16 @@ const emit = defineEmits(["closeDialog"]);
 
 const formDataErrors = reactive({});
 
-const timeStart = ref("00:00");
-const timeEnd = ref("00:00");
-
 const dateRange = ref(null);
-watch(
-    [dateRange, timeStart, timeEnd],
-    ([newDate, newTimeStart, newTimeEnd]) => {
-        if (newDate && newDate.length > 0) {
-            const startDate = dayjs(newDate[0]);
-            const endDate = dayjs(newDate[newDate.length - 1]);
-
-            const [startHour, startMinute] = newTimeStart
-                .split(":")
-                .map(Number);
-            const [endHour, endMinute] = newTimeEnd.split(":").map(Number);
-
-            formData.start = startDate
-                .hour(startHour)
-                .minute(startMinute)
-                .second(0)
-                .format("YYYY-MM-DD HH:mm:ss");
-
-            formData.end = endDate
-                .hour(endHour)
-                .minute(endMinute)
-                .second(0)
-                .format("YYYY-MM-DD HH:mm:ss");
-        } else {
-            formData.start = null;
-            formData.end = null;
-        }
+watch(dateRange, (newDate) => {
+    if (newDate) {
+        formData.start = dayjs(newDate[0]).format("YYYY-MM-DD HH:mm:ss");
+        formData.end = dayjs(newDate[1]).format("YYYY-MM-DD HH:mm:ss");
     }
-);
+});
 
 const close = function (dataChanged, method) {
     dateRange.value = null;
-    timeStart.value = null;
-    timeEnd.value = null;
     clearFields(formData);
     clearFields(formDataErrors);
     emit("closeDialog", dataChanged, method);
@@ -137,18 +111,10 @@ const validatedBeforeRequest = function () {
 
 const setFullDateFromString = function (start, end) {
     dateRange.value = [
-        dayjs(start).format("YYYY-MM-DD"),
-        dayjs(end).format("YYYY-MM-DD"),
+        dayjs(start).format("YYYY-MM-DD HH:mm"),
+        dayjs(end).format("YYYY-MM-DD HH:mm"),
     ];
-
-    timeStart.value = dayjs(start).format("HH:mm");
-    timeEnd.value = dayjs(end).format("HH:mm");
 };
-
-const setDefaultTime = function() {
-    timeStart.value = "00:00";
-    timeEnd.value = "00:00";
-}
 
 const add = function () {
     console.log(validatedBeforeRequest());
@@ -184,7 +150,10 @@ const requestEditInfo = function () {
                 formData[key] = response.data.data[key];
             });
 
-            setFullDateFromString(response.data.data.start, response.data.data.end)
+            setFullDateFromString(
+                response.data.data.start,
+                response.data.data.end
+            );
 
             if (response.data.data.assigned_users.length > 1) {
                 formData.user_id = -1;
@@ -235,11 +204,9 @@ watch(
             }
 
             if (props.choosenDate !== null) {
-                console.log('props.choosenDate')
-                console.log(props.choosenDate)
+                console.log("props.choosenDate");
+                console.log(props.choosenDate);
                 setFullDateFromString(props.choosenDate, props.choosenDate);
-            } else {
-                setDefaultTime();
             }
         }
     }
@@ -247,6 +214,10 @@ watch(
 
 const clearFields = function (obj) {
     Object.keys(obj).forEach((key) => {
+        if (key === "creator_id") {
+            return;
+        }
+
         obj[key] = null;
     });
 };
@@ -268,7 +239,12 @@ const showMenu = ref(false);
         :message="alertText"
     ></AlertDangerDialog>
 
-    <v-dialog v-model="props.isOpen" persistent max-width="600px">
+    <v-dialog
+        v-model="props.isOpen"
+        persistent
+        max-width="600px"
+        min-height="450"
+    >
         <v-card>
             <v-card-title>
                 <span class="headline flex justify-between">
@@ -331,29 +307,35 @@ const showMenu = ref(false);
                         :disabled="isUserSelectDisabled"
                     ></v-select>
 
-                    <v-date-input
-                        class="mt-2"
+                    <VueDatePicker
+                        class="custom-date-picker mt-5"
                         v-model="dateRange"
-                        :error="!!formDataErrors.start"
-                        :error-messages="formDataErrors.start"
-                        :label="t('calendar.select_date_range')"
-                        :placeholder="t('calendar.date_placeholder')"
-                        multiple="range"
-                        clearable
-                        variant="underlined"
-                        prepend-icon=""
-                    ></v-date-input>
+                        locale="ru"
+                        range
+                        format="dd.MM.yyyy HH:mm"
+                        :enable-time-picker="true"
+                        :auto-apply="false"
+                    >
+                        <template #action-row="{ selectDate, closePicker }">
+                            <div class="flex justify-between w-full">
+                                <v-btn
+                                    variant="outlined"
+                                    size="small"
+                                    @click="closePicker()"
+                                >
+                                    {{ t("calendar.disable_button") }}
+                                </v-btn>
 
-                    <div class="flex flex-row gap-2 mt-2">
-                        <MenuTimePicker
-                            v-model="timeStart"
-                            :label="t('calendar.time_start')"
-                        ></MenuTimePicker>
-                        <MenuTimePicker
-                            v-model="timeEnd"
-                            :label="t('calendar.time_end')"
-                        ></MenuTimePicker>
-                    </div>
+                                <v-btn
+                                    variant="outlined"
+                                    size="small"
+                                    @click="selectDate()"
+                                >
+                                    {{ t("calendar.accept_button") }}
+                                </v-btn>
+                            </div>
+                        </template>
+                    </VueDatePicker>
                 </v-form>
             </v-card-text>
             <v-card-actions>
@@ -382,3 +364,7 @@ const showMenu = ref(false);
         </v-card>
     </v-dialog>
 </template>
+
+<style scoped>
+
+</style>
