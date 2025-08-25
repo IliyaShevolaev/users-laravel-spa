@@ -68,6 +68,7 @@ const props = defineProps({
         default: null,
     },
     isOpen: Boolean,
+    choosenDate: String,
 });
 const emit = defineEmits(["closeDialog"]);
 
@@ -127,8 +128,27 @@ const validatedBeforeRequest = function () {
         result.user_id = [result.user_id];
     }
 
+    if (dayjs(formData.start).isAfter(dayjs(formData.end))) {
+        formData.end = formData.start;
+    }
+
     return result;
 };
+
+const setFullDateFromString = function (start, end) {
+    dateRange.value = [
+        dayjs(start).format("YYYY-MM-DD"),
+        dayjs(end).format("YYYY-MM-DD"),
+    ];
+
+    timeStart.value = dayjs(start).format("HH:mm");
+    timeEnd.value = dayjs(end).format("HH:mm");
+};
+
+const setDefaultTime = function() {
+    timeStart.value = "00:00";
+    timeEnd.value = "00:00";
+}
 
 const add = function () {
     console.log(validatedBeforeRequest());
@@ -163,13 +183,8 @@ const requestEditInfo = function () {
             Object.keys(response.data.data).forEach((key) => {
                 formData[key] = response.data.data[key];
             });
-            dateRange.value = [
-                dayjs(response.data.data.start).format("YYYY-MM-DD"),
-                dayjs(response.data.data.end).format("YYYY-MM-DD"),
-            ];
 
-            timeStart.value = dayjs(response.data.data.start).format("HH:mm");
-            timeEnd.value = dayjs(response.data.data.end).format("HH:mm");
+            setFullDateFromString(response.data.data.start, response.data.data.end)
 
             if (response.data.data.assigned_users.length > 1) {
                 formData.user_id = -1;
@@ -217,6 +232,14 @@ watch(
             requestCreateUserData();
             if (props.editId !== null) {
                 requestEditInfo();
+            }
+
+            if (props.choosenDate !== null) {
+                console.log('props.choosenDate')
+                console.log(props.choosenDate)
+                setFullDateFromString(props.choosenDate, props.choosenDate);
+            } else {
+                setDefaultTime();
             }
         }
     }

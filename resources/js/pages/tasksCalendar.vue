@@ -2,6 +2,7 @@
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import timeGridPlugin from "@fullcalendar/timegrid";
 import ruLocale from "@fullcalendar/core/locales/ru";
 import axios from "axios";
 import CalendarEventDialog from "../components/dialog/Calendar/CalendarEventDialog.vue";
@@ -54,7 +55,7 @@ const validateEvents = function () {
         }
 
         if (event.end) {
-            event.end = dayjs(event.end).add(1, "day").format("YYYY-MM-DD");
+            event.end = dayjs(event.end).format("YYYY-MM-DD HH:mm:ss");
         }
     });
     console.log(events);
@@ -66,17 +67,13 @@ const startStr = ref(null);
 const endStr = ref(null);
 
 const calendarOptions = reactive({
-    plugins: [dayGridPlugin, interactionPlugin],
+    plugins: [dayGridPlugin, interactionPlugin, timeGridPlugin],
     initialView: "dayGridMonth",
     locale: ruLocale,
     displayEventTime: false,
     editable: authStore.checkPermission("tasks-update"),
 
-    headerToolbar: {
-        left: "",
-        center: "",
-        right: "",
-    },
+    headerToolbar: false,
 
     events: events,
 
@@ -95,6 +92,10 @@ const calendarOptions = reactive({
         openViewDialog(info.event.id);
     },
 
+    dateClick: (info) => {
+        openDialog(null, dayjs(info.date).format("YYYY-MM-DD HH:mm:ss"));
+    },
+
     eventDrop: (info) => {
         handleEventDrop(info);
     },
@@ -102,27 +103,35 @@ const calendarOptions = reactive({
 
 const currentViewTitle = ref(null);
 
-const goPrev = () => {
+const goPrev = function () {
     calendarRef.value.getApi().prev();
 };
 
-const goNext = () => {
+const goNext = function () {
     calendarRef.value.getApi().next();
 };
 
-const goToday = () => {
+const goToday = function () {
     calendarRef.value.getApi().today();
+};
+
+const changeViewFormat = function (format) {
+    calendarRef.value.getApi().changeView(format);
 };
 
 const isDialogOpen = ref(false);
 const dialogEditId = ref(null);
+const dialogChoosenDate = ref(null)
 
-const openDialog = function (id = null) {
+const openDialog = function (id = null, choosenDate = null) {
     isDialogOpen.value = true;
     dialogEditId.value = id;
+    dialogChoosenDate.value = choosenDate;
 };
 
 const closeDialog = function (dataChanged, method) {
+    dialogChoosenDate.value = null;
+
     if (dataChanged) {
         requestEvents(startStr.value, endStr.value);
     }
@@ -159,15 +168,24 @@ const handleEventDrop = function (info) {
     }
     patchAbortController = new AbortController();
 
+    console.log(info.event.start);
+    console.log(info.event.end);
+
+    let requestDateStart = info.event.start;
+    let requestDateEnd = info.event.end;
+
+    if (requestDateStart !== null && requestDateEnd === null) {
+        requestDateEnd = requestDateStart;
+    }
+
     modelChangesStore.editEvent(info.event.title);
     axios
         .patch(
             `/api/events/patch/${info.event.id}`,
             {
-                start: dayjs(info.event.start).format("YYYY-MM-DD"),
-                end: dayjs(info.event.end)
-                    .subtract(1, "day")
-                    .format("YYYY-MM-DD"),
+                start: dayjs(requestDateStart).format("YYYY-MM-DD HH:mm:ss"),
+                end: dayjs(requestDateEnd)
+                    .format("YYYY-MM-DD HH:mm:ss"),
             },
             { signal: patchAbortController.signal }
         )
@@ -277,6 +295,7 @@ const closeViewDialog = function (eventWasMarked) {
         @close-dialog="closeDialog"
         :isOpen="isDialogOpen"
         :edit-id="dialogEditId"
+        :choosen-date="dialogChoosenDate"
     ></CalendarEventDialog>
 
     <ViewCalendarEventDialog
@@ -307,21 +326,39 @@ const closeViewDialog = function (eventWasMarked) {
         @close-snackbar="isSnackbarOpen = false"
     ></Snackbar>
 
+    <div class="mb-3">
+        <v-btn
+            color="success"
+            prepend-icon="ri-add-line"
+            @click="openDialog()"
+            v-if="authStore.hasOneOfEachPermission('tasks-create')"
+        >
+            {{ t("main.append_button") }}
+        </v-btn>
+    </div>
+
     <div class="flex justify-between">
-        <div>
+        <div class="flex gap-2 mb-4 items-center">
             <v-btn
-                color="success"
-                prepend-icon="ri-add-line"
-                @click="openDialog()"
-                v-if="
-                    authStore.hasOneOfEachPermission(
-                        'tasks-create'
-                    )
-                "
+                variant="outlined"
+                @click="changeViewFormat('dayGridMonth')"
             >
-                {{ t("main.append_button") }}
+                Месяц
+            </v-btn>
+            <v-btn
+                variant="outlined"
+                @click="changeViewFormat('timeGridWeek')"
+            >
+                Неделя
+            </v-btn>
+            <v-btn
+                variant="outlined"
+                @click="changeViewFormat('timeGridDay')"
+            >
+                День
             </v-btn>
         </div>
+
         <div>
             <p class="text-2xl font-bold">{{ currentViewTitle }}</p>
         </div>
