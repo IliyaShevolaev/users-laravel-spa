@@ -30,42 +30,34 @@ class EventRepository implements EventRepositoryInterface
     }
 
 
-    public function getCurrentVisible(string $start, string $end, int|null $department_id): Collection
+    public function getCurrentVisible(string $start, string $end): Collection
     {
-        return EventDTO::collect(
-            Event::whereDate('start', '<=', $end)
-                ->whereDate('end', '>=', $start)
-                ->where(function ($query) use ($department_id) {
-                    $query->where('all_vision', true)
-                        ->orWhere('department_id', $department_id);
-                })
-                ->addSelect([
-                    'is_done' => EventUser::selectRaw('COUNT(*) > 0')
-                        ->whereColumn('event_id', 'events.id')
-                        ->where('user_id', Auth::id())
-                ])
-                ->get()
-        );
+        $events = Auth::user()->events()
+            ->whereDate('start', '<=', $end)
+            ->whereDate('end', '>=', $start)
+            ->get();
+
+        return EventDTO::collect($events);
     }
 
     public function create(CreateEventDTO $dto): void
     {
         $event = Event::create($dto->all());
 
-        $event->users()->attach(
-            collect($dto->user_id)->mapWithKeys(fn($id) => [$id => ['is_done' => false]])->toArray()
-        );
+        $event->users()->attach($dto->userId);
     }
 
     public function find(int $eventId): Event
     {
-        return Event::with('department')
-            ->addSelect([
-                'is_done' => EventUser::selectRaw('COUNT(*) > 0')
-                    ->whereColumn('event_id', 'events.id')
-                    ->where('user_id', Auth::id())
-            ])
-            ->findOrFail($eventId);
+        $event = Event::with('creator')->findOrFail($eventId);
+
+        return $event;
+    }
+
+
+    public function findModel(int $eventId): Event
+    {
+        return Event::findOrFail($eventId);
     }
 
     public function update(Event $updateEvent, PatchEventDTO $dto)

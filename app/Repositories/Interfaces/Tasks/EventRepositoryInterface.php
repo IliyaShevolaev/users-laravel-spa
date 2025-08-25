@@ -34,10 +34,9 @@ interface EventRepositoryInterface
      *
      * @param string $start
      * @param string $end
-     * @param int|null $department_id
      * @return Collection
      */
-    public function getCurrentVisible(string $start, string $end, int|null $department_id): Collection;
+    public function getCurrentVisible(string $start, string $end): Collection;
 
     /**
      * Создать новое событие
@@ -100,4 +99,11 @@ interface EventRepositoryInterface
      * @param EventUserRelationDTO $dto
      */
     public function checkRelation(EventUserRelationDTO $dto);
+
+    /**
+     * Summary of findModel
+     * @param int $eventId
+     * @return Event
+     */
+    public function findModel(int $eventId): Event;
 }

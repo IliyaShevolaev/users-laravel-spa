@@ -8,7 +8,6 @@ import AlertDangerDialog from "../../alerts/AlertDangerDialog.vue";
 import { VDateInput } from "vuetify/labs/VDateInput";
 const modelChangesStore = useModelChangesStore();
 import { useAuthStore } from "../../../stores/auth";
-import ViewCalendarEventDialog from "./ViewCalendarEventDialog.vue";
 
 const { t } = useI18n();
 const authStore = useAuthStore();
@@ -52,6 +51,7 @@ const requestCreateUserData = function () {
             appendAllVissionUser();
         }
 
+        currentUser.value.name = `Вы — ${currentUser.value.name}`;
         users.value.unshift(currentUser.value);
         formData.creator_id = currentUser.value.id;
     });
@@ -98,17 +98,15 @@ const validatedBeforeRequest = function () {
             .map((user) => user.id)
             .filter((id) => id !== -1);
     } else {
-        result.user_id = [currentUser.value.id];
+        result.user_id = [result.user_id];
     }
 
     return result;
 };
 
-const lockDepartmentSelect = computed(() => {
-    return !authStore.checkPermission("tasks-createAll");
-});
-
 const add = function () {
+    console.log('validatedBeforeRequest()');
+    console.log(validatedBeforeRequest());
     axios
         .post("/api/events", validatedBeforeRequest())
         .then((response) => {

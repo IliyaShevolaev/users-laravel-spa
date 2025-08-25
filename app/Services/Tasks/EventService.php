@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Services\Tasks;
 
-use App\DTO\User\UserDTO;
 use App\Models\User;
+use App\DTO\User\UserDTO;
 use App\Models\Tasks\Event;
+use App\Models\Tasks\EventUser;
 use App\Enums\Role\SystemRolesEnum;
 use Illuminate\Support\Facades\Auth;
 use App\DTO\Tasks\Event\PatchEventDTO;
@@ -38,7 +39,7 @@ class EventService
      */
     public function getBetween(CalendarRequestDTO $calendarRequestDTO): Collection
     {
-        return $this->repository->getCurrentVisible($calendarRequestDTO->start, $calendarRequestDTO->end, Auth::user()->department_id);
+        return $this->repository->getCurrentVisible($calendarRequestDTO->start, $calendarRequestDTO->end);
     }
 
     /**
@@ -91,21 +92,26 @@ class EventService
         $this->repository->delete($event);
     }
 
+    /**
+     * Пометить задачу выполненной
+     *
+     * @param Event $event
+     * @return void
+     */
     public function markEventAsDone(Event $event)
     {
-        $user = Auth::user();
-        $relationDtoCollection = collect();
-        $relationDtoCollection->put('eventId', $event->id);
-        $relationDtoCollection->put('userId', $user->id);
+        $markRelation = EventUser::where('user_id', Auth::id())->where('event_id', $event->id)->firstOrFail();
 
-        $dto = EventUserRelationDTO::from($relationDtoCollection);
-        if (!$this->repository->checkRelation($dto)) {
-            $this->repository->makeEventUserRelation($dto);
-        } else {
-            $this->repository->deleteEventUserRelation($dto);
-        }
+        $markRelation->is_done = !$markRelation->is_done;
+        $markRelation->save();
     }
 
+    /**
+     * Получить коллекцию подчиненных
+     *
+     * @param User $user
+     * @return Collection
+     */
     private function getSubordinates(User $user)
     {
         $userRoleName = $user->roles()->first()?->name;

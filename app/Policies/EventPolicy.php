@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\DTO\Tasks\Event\CreateEventDTO;
+use App\Enums\Role\SystemRolesEnum;
 use App\Models\User;
 use App\Models\Tasks\Event;
 use Illuminate\Auth\Access\Response;
@@ -26,23 +27,21 @@ class EventPolicy
     }
 
     /**
-     * Determine whether the user can create the model.
-     */
-    public function create(User $user): bool
-    {
-        return $user->hasPermission('tasks-createDepartment') || $user->hasPermission('tasks-createAll');
-    }
-
-    /**
      * Determine whether the user can store models.
      */
     public function store(User $user, CreateEventDTO $createEventDTO): bool
     {
-        if (!($user->hasPermission('tasks-createDepartment') || $user->hasPermission('tasks-createAll'))) {
+        if (!$user->hasPermission('tasks-create')) {
             return false;
         }
 
-        if ($createEventDTO->allVision && !$user->hasPermission('tasks-createAll')) {
+        $userRoleName = $user->roles()->first()->name;
+        $roleNamesMultyAssignAccess = collect([
+            SystemRolesEnum::Admin->value,
+            SystemRolesEnum::Manager->value
+        ]);
+
+        if ($roleNamesMultyAssignAccess->doesntContain($userRoleName) && count($createEventDTO->userId) > 1) {
             return false;
         }
 
@@ -58,15 +57,7 @@ class EventPolicy
             return false;
         }
 
-        if ($event->all_vision && !$user->hasPermission('tasks-createAll')) {
-            return false;
-        }
-
-        if (!$user->hasPermission('tasks-createAll') && $event->department_id !== $user->department_id) {
-            return false;
-        }
-
-        return true;
+        return $event->canUserChange($user);
     }
 
     /**
@@ -78,30 +69,6 @@ class EventPolicy
             return false;
         }
 
-        if ($event->all_vision && !$user->hasPermission('tasks-createAll')) {
-            return false;
-        }
-
-        if (!$user->hasPermission('tasks-createAll') && $event->department_id !== $user->department_id) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Event $event): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, Event $event): bool
-    {
-        return false;
+        return $event->canUserChange($user);
     }
 }

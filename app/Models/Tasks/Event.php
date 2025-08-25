@@ -5,6 +5,7 @@ namespace App\Models\Tasks;
 use App\Models\User;
 use App\Policies\EventPolicy;
 use App\Models\User\Department;
+use App\Enums\Role\SystemRolesEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Attributes\UsePolicy;
@@ -25,8 +26,54 @@ class Event extends Model
         return $this->hasOne(Department::class, 'id', 'department_id');
     }
 
+    /**
+     * Получить пользователей с этой задачей
+     *
+     * @return BelongsToMany<User, Event, \Illuminate\Database\Eloquent\Relations\Pivot>
+     */
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'event_users')->withPivot('is_done');
+        return $this->belongsToMany(User::class, 'event_user')->withPivot('is_done');
+    }
+
+    /**
+     * Получить создателя этой задачи
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<User, Event>
+     */
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'creator_id');
+    }
+
+    /**
+     * Проверить может ли пользователь менять события в календаре
+     *
+     * @param User $user
+     * @return bool
+     */
+    public function canUserChange(User $user)
+    {
+        $userRole = $user->roles()->first();
+        if ($userRole->name === SystemRolesEnum::Admin->value) {
+            return true;
+        }
+
+        $this->loadMissing('creator.roles');
+
+        $creatorRole = $this->creator->roles()->first();
+        if (
+            $userRole->name === SystemRolesEnum::Manager->value &&
+            $creatorRole->name !== SystemRolesEnum::Admin->value
+        ) {
+            return true;
+        }
+
+        return $this->creator_id === $user->id;
+    }
+
+    public function getIsDoneAttribute(): bool
+    {
+        return $this->pivot->is_done;
     }
 }

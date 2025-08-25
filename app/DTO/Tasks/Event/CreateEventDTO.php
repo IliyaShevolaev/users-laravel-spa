@@ -12,7 +12,7 @@ class CreateEventDTO extends Data
         public string $start,
         public string $end,
         public int $creatorId,
-        public array $user_id,
+        public array $userId,
     ) {
     }
 }

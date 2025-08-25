@@ -84,6 +84,8 @@ const markButtonHandle = function (newMarkedValue) {
                 loading.value = false;
                 eventWasMarked.value = true;
                 console.log(eventWasMarked.value);
+            }).catch(error => {
+                console.log(error)
             });
     }
 };
@@ -93,16 +95,9 @@ const alertText = ref("");
 
 const checkDeleteButtonViewPermission = computed(() => {
     if (eventInfo.value) {
-        if (
-            eventInfo.value.all_vision &&
-            authStore.checkPermission("tasks-createAll")
-        ) {
-            return true;
-        }
-
         return (
             authStore.checkPermission("tasks-delete") &&
-            !eventInfo.value.all_vision
+            eventInfo.value.change_permission
         );
     }
 
@@ -111,16 +106,9 @@ const checkDeleteButtonViewPermission = computed(() => {
 
 const checkEditButtonViewPermission = computed(() => {
     if (eventInfo.value) {
-        if (
-            eventInfo.value.all_vision &&
-            authStore.checkPermission("tasks-createAll")
-        ) {
-            return true;
-        }
-
         return (
             authStore.checkPermission("tasks-update") &&
-            !eventInfo.value.all_vision
+            eventInfo.value.change_permission
         );
     }
 
@@ -166,6 +154,14 @@ const isDone = computed(() => {
                         {{ t("main.title") }}:
                         {{ eventInfo ? eventInfo.title : "" }}
                     </span>
+                    <span class="text-l mt-2 font-semibold">
+                        {{ t("main.description") }}:
+                        {{ eventInfo ? eventInfo.description : "" }}
+                    </span>
+                    <span class="text-l mt-2 font-semibold">
+                        {{ t("calendar.task_was_assigned_by") }}:
+                        {{ eventInfo ? eventInfo.creator.name : "" }}
+                    </span>
                     <span class="text-l mt-2">
                         {{ t("calendar.direction") }}:
                         {{
@@ -180,7 +176,7 @@ const isDone = computed(() => {
                                 : ""
                         }}
                     </span>
-                    <span class="text-l mt-2">
+                    <!-- <span class="text-l mt-2">
                         {{ t("calendar.assigned_to_event") }}:
                         {{
                             eventInfo
@@ -190,7 +186,7 @@ const isDone = computed(() => {
                                       eventInfo.department.name
                                 : ""
                         }}
-                    </span>
+                    </span> -->
                 </div>
             </v-card-text>
             <v-card-actions>

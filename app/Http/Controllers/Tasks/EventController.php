@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Tasks;
 use App\DTO\Tasks\Event\EventDTO;
 use App\DTO\Tasks\Event\PatchEventDTO;
 use App\Http\Requests\Task\PatchEventRequest;
+use App\Http\Resources\Tasks\EventViewResource;
 use App\Models\Tasks\Event;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
@@ -50,7 +51,7 @@ class EventController extends Controller
      */
     public function create(): JsonResponse
     {
-        //$this->authorize('create', Event::class);
+        $this->authorize('check-permission', 'tasks-create');
 
         $data = $this->service->prepareCreateData();
 
@@ -67,7 +68,7 @@ class EventController extends Controller
     {
         $dto = CreateEventDTO::from($createEventRequest->validated());
 
-        //$this->authorize('store', $dto);
+        $this->authorize('store', $dto);
 
         $this->service->create($dto);
     }
@@ -76,11 +77,13 @@ class EventController extends Controller
      * Найти информацию о событии
      *
      * @param int $eventid
-     * @return EventResource
+     * @return EventViewResource
      */
-    public function show(int $eventid)
+    public function show(int $eventid): EventViewResource
     {
-        return new EventResource(EventDTO::from($this->repository->find($eventid)));
+        $this->authorize('check-permission', 'tasks-read');
+
+        return new EventViewResource($this->repository->find($eventid));
     }
 
     /**
@@ -92,7 +95,7 @@ class EventController extends Controller
      */
     public function update(CreateEventRequest $createEventRequest, int $eventId): void
     {
-        $eventToUpdate = $this->repository->find($eventId);
+        $eventToUpdate = $this->repository->findModel($eventId);
 
         $this->authorize('update', $eventToUpdate);
 
@@ -103,7 +106,7 @@ class EventController extends Controller
 
     public function patch(PatchEventRequest $patchEventRequest, int $eventId)
     {
-        $eventToUpdate = $this->repository->find($eventId);
+        $eventToUpdate = $this->repository->findModel($eventId);
 
         $this->authorize('update', $eventToUpdate);
 
@@ -134,11 +137,5 @@ class EventController extends Controller
         $eventToMark = $this->repository->find($eventId);
 
         $this->service->markEventAsDone($eventToMark);
-    }
-
-    public function getSubordinates()
-    {
-        $this->authorize('check-permission', 'tasks-create');
-
     }
 }

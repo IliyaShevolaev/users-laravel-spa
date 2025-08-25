@@ -125,13 +125,13 @@ class User extends Authenticatable implements LaratrustUser
     }
 
     /**
-     * Получить выполненные задачи пользователем
+     * Получить задачи пользователя
      *
      * @return BelongsToMany<Event, User, \Illuminate\Database\Eloquent\Relations\Pivot>
      */
-    public function completedEvents()
+    public function events()
     {
-        return $this->belongsToMany(Event::class, 'event_users');
+        return $this->belongsToMany(Event::class, 'event_user')->withPivot('is_done');
     }
 
     public function getUserRolePermissionsCollection(): Collection
