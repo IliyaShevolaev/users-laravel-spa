@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Models\User;
 
 use App\Models\User;
+use Spatie\Activitylog\LogOptions;
 use App\Policies\User\PositionPolicy;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -24,6 +26,7 @@ use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 class Position extends Model
 {
     use SoftDeletes;
+    use LogsActivity;
 
     /**
      * Автозаполняемые атрибуты
@@ -42,5 +45,10 @@ class Position extends Model
     public function users(): HasMany
     {
         return $this->hasMany(User::class, 'position_id', 'id');
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()->logFillable();
     }
 }

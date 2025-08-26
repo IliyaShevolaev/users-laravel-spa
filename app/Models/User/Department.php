@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Models\User;
 
 use App\Models\User;
+use Spatie\Activitylog\LogOptions;
 use App\Policies\User\DepartmentPolicy;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Attributes\UsePolicy;
@@ -24,6 +26,7 @@ class Department extends Model
 {
     use SoftDeletes;
     use HasFactory;
+    use LogsActivity;
 
     /**
      * Автозаполняемые атрибуты
@@ -42,5 +45,10 @@ class Department extends Model
     public function users(): HasMany
     {
         return $this->hasMany(User::class, 'department_id', 'id');
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()->logFillable();
     }
 }

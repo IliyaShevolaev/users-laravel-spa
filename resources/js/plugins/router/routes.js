@@ -30,6 +30,12 @@ export const routes = [
                 meta: { permission: 'roles-read' },
             },
             {
+                path: "activity-logs/:id",
+                component: () => import("@/pages/activityLogs.vue"),
+                props: route => ({ id: Number(route.params.id) }),
+                meta: { permission: 'roles-read' },
+            },
+            {
                 path: "roles/create",
                 component: () => import("@/pages/rolesCreate.vue"),
                 meta: { permission: 'roles-create' },
@@ -41,13 +47,13 @@ export const routes = [
                 meta: { permission: 'roles-update' },
             },
             {
-                path: "/:pathMatch(.*)*",
-                component: () => import("@/pages/[...error].vue"),
-            },
-            {
                 path: "tasks/calendar",
                 component: () => import("@/pages/tasksCalendar.vue"),
                 meta: { permission: 'tasks-read' },
+            },
+            {
+                path: "/:pathMatch(.*)*",
+                component: () => import("@/pages/[...error].vue"),
             },
         ],
     },

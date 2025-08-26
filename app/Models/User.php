@@ -9,21 +9,21 @@ use App\Models\User\Position;
 use App\Enums\User\GenderEnum;
 use App\Enums\User\StatusEnum;
 use App\Models\User\Department;
-use App\Policies\User\UserPolicy;
 use Illuminate\Support\Collection;
+use Spatie\Activitylog\LogOptions;
 use Database\Factories\UserFactory;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Scopes\ActiveUserScope;
-use App\Models\Scopes\SystemUserScope;
 use Laratrust\Contracts\LaratrustUser;
+use Spatie\Activitylog\Models\Activity;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Builder;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Laratrust\Traits\HasRolesAndPermissions;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
-use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -48,6 +48,7 @@ class User extends Authenticatable implements LaratrustUser
     use Notifiable;
     use SoftDeletes;
     use HasRolesAndPermissions;
+    use LogsActivity;
 
     /**
      * The attributes that are mass assignable.
@@ -102,8 +103,60 @@ class User extends Authenticatable implements LaratrustUser
     protected function password(): Attribute
     {
         return Attribute::make(
-            set: fn (string|null $value) => $value === null ? $this->password : Hash::make($value),
+            set: fn(string|null $value) => $value === null ? $this->password : Hash::make($value),
         );
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()->logFillable();
+    }
+
+    public function tapActivity(Activity $activity, string $eventName)
+    {
+        $properties = $activity->properties;
+
+        $attributes = collect($properties->get('attributes', []));
+
+        if ($attributes->has('department_id')) {
+            $departmentId = $attributes->get('department_id');
+            $departmentName = optional(Department::find($departmentId))->name;
+
+            $attributes->put('department', $departmentName);
+            $attributes->forget('department_id');
+        }
+
+        if ($attributes->has('position_id')) {
+            $positionId = $attributes->get('position_id');
+            $positionName = optional(Position::find($positionId))->name;
+
+            $attributes->put('position', $positionName);
+            $attributes->forget('position_id');
+        }
+
+        $properties->put('attributes', $attributes);
+
+        $old = collect($properties->get('old', []));
+
+        if ($old->has('department_id')) {
+            $oldDepartmentId = $old->get('department_id');
+            $oldDepartmentName = optional(Department::find($oldDepartmentId))->name;
+
+            $old->put('department', $oldDepartmentName);
+            $old->forget('department_id');
+        }
+
+        if ($old->has('position_id')) {
+            $oldPositionId = $old->get('position_id');
+            $oldPositionName = optional(Position::find($oldPositionId))->name;
+
+            $old->put('position', $oldPositionName);
+            $old->forget('position_id');
+        }
+
+        $properties->put('old', $old);
+
+        $activity->properties = $properties;
     }
 
     /**

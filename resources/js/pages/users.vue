@@ -10,11 +10,13 @@ import { useDisplay } from "vuetify";
 import { useModelChangesStore } from "../stores/modelChanges";
 import { useAuthStore } from "../stores/auth";
 import AlertDangerDialog from "../components/alerts/AlertDangerDialog.vue";
+import { useRouter } from "vue-router";
 
 const authStore = useAuthStore();
 const modelChangesStore = useModelChangesStore();
 const { t } = useI18n();
 const { mobile } = useDisplay();
+const router = useRouter();
 
 const users = ref([]);
 
@@ -82,7 +84,9 @@ const requestData = function ({ page, itemsPerPage, sortBy }) {
     console.log("Request:", params);
 
     axios
-        .post("/api/users/datatable", params, {signal: abortController.signal})
+        .post("/api/users/datatable", params, {
+            signal: abortController.signal,
+        })
         .then((response) => {
             console.log(response);
             users.value = response.data.data.original.data;
@@ -231,6 +235,12 @@ const alertText = ref("");
 
 const showAlertAcceptDialog = ref(false);
 const alertAcceptText = ref("");
+
+const viewLog = function (id) {
+    router.push({
+        path: `/activity-logs/${id}`,
+    });
+};
 </script>
 
 <template>
@@ -298,6 +308,13 @@ const alertAcceptText = ref("");
         </template>
 
         <template v-slot:item.actions="{ item }">
+            <v-btn
+                v-if="authStore.checkPermission('users-update')"
+                icon="ri-news-line"
+                class="me-3 !bg-teal-500"
+                size="small"
+                @click="viewLog(item.id)"
+            ></v-btn>
             <v-btn
                 v-if="authStore.checkPermission('users-update')"
                 icon="ri-edit-line"

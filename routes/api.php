@@ -6,6 +6,7 @@ declare(strict_types=1);
 // php vendor/bin/phpcs
 
 use App\Events\ChatMessage;
+use App\Http\Controllers\ActivityLogs\ActivityLogsController;
 use App\Http\Controllers\Tasks\EventController;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\User;
@@ -38,6 +39,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/events/patch/{event}', [EventController::class, 'patch']);
     Route::post('/events/mark/{event}', [EventController::class, 'mark']);
     Route::resource('events', EventController::class);
+
+    Route::post('/activity-logs/datatable/{user}', [ActivityLogsController::class, 'datatable']);
+    Route::resource('activity-logs', ActivityLogsController::class);
 });
 
 Route::get('/user', AuthController::class);

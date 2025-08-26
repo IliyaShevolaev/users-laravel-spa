@@ -119,6 +119,37 @@
         "accept_button": "Применить"
     },
 
+    "logs": {
+        "at": "Время",
+        "action": "Действие",
+        "message": "Сообщение",
+        "subject_type": "Объект",
+        "subject_name": "Имя",
+
+        "fields": {
+            "user": {
+                "name": "Имя",
+                "email": "Почта",
+                "department": "Отдел",
+                "position_id": "Должность",
+                "gender": "Пол",
+                "status": "Статус"
+            }
+        },
+
+        "models": {
+            "User": "Пользователь",
+            "Department": "Отдел",
+            "Position": "Должность"
+        },
+
+        "actions": {
+            "created": "Создание",
+            "updated": "Обнвление",
+            "deleted": "Удаление"
+        }
+    },
+
     "main": {
         "append_button": "Добавить",
         "cancel_button": "Отмена",

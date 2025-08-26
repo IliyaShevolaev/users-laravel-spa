@@ -33,14 +33,12 @@ class AuthProvider extends ServiceProvider
             return $user->hasPermission('users-create') || $user->hasPermission('users-update');
         });
         Gate::define('delete-user', function (User $user, User $deleteUser) {
-            $user = $deleteUser->roles()->first();
-            return !$user || !collect(SystemRolesEnum::cases())
-                ->pluck('value')
-                ->contains($user->name);
+            return $user->hasPermission('users-delete') &&
+                $deleteUser->roles()->first()->name !== SystemRolesEnum::System->value;
         });
         Gate::define('delete-role', function (User $user, Role $role) {
-            return $user->hasPermission('roles-delete')
-                && collect(SystemRolesEnum::cases())->pluck('value')->doesntContain($role->name);
+            return $user->hasPermission('roles-delete') &&
+                collect(SystemRolesEnum::cases())->pluck('value')->doesntContain($role->name);
         });
         // Gate::define('create-event', function (User $user, CreateEventDTO $dto) {
         //     if (!($user->hasPermission('tasks-createDepartment') || $user->hasPermission('tasks-createAll'))) {
@@ -53,7 +51,7 @@ class AuthProvider extends ServiceProvider
 
         //     return true;
         // });
-        
+
         Gate::guessPolicyNamesUsing(function (string $class) {
             if ($class === CreateEventDTO::class) {
                 return EventPolicy::class;

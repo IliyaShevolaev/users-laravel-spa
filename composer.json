@@ -13,6 +13,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
         "santigarcor/laratrust": "^8.5",
+        "spatie/laravel-activitylog": "^4.10",
         "spatie/laravel-data": "^4.17",
         "yajra/laravel-datatables": "^12.0"
     },
