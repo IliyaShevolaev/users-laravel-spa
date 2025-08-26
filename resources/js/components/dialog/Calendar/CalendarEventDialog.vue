@@ -5,13 +5,13 @@ import { computed, reactive, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useModelChangesStore } from "../../../stores/modelChanges";
 import AlertDangerDialog from "../../alerts/AlertDangerDialog.vue";
-import { VDateInput } from "vuetify/labs/VDateInput";
 const modelChangesStore = useModelChangesStore();
 import { useAuthStore } from "../../../stores/auth";
-import MenuTimePicker from "../../inputs/MenuTimePicker.vue";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
+import { useTheme } from "vuetify";
 
+const vuetifyTheme = useTheme();
 const { t } = useI18n();
 const authStore = useAuthStore();
 
@@ -247,7 +247,7 @@ const showMenu = ref(false);
     >
         <v-card>
             <v-card-title>
-                <span class="headline flex justify-between">
+                <span class="headline flex justify-between mt-3">
                     {{
                         props.editId
                             ? t("calendar.edit_button")
@@ -290,6 +290,7 @@ const showMenu = ref(false);
                         variant="underlined"
                         color="primary"
                         outlined
+                        rows="6"
                         validateOn="blur"
                     ></v-textarea>
 
@@ -307,14 +308,14 @@ const showMenu = ref(false);
                         :disabled="isUserSelectDisabled"
                     ></v-select>
 
+                    <p class="mt-5">{{ t("calendar.time_event") }}</p>
                     <VueDatePicker
-                        class="custom-date-picker mt-5"
+                        :dark="vuetifyTheme.global.name.value === 'dark'"
                         v-model="dateRange"
                         locale="ru"
                         range
                         format="dd.MM.yyyy HH:mm"
                         :enable-time-picker="true"
-                        :auto-apply="false"
                     >
                         <template #action-row="{ selectDate, closePicker }">
                             <div class="flex justify-between w-full">
@@ -365,6 +366,64 @@ const showMenu = ref(false);
     </v-dialog>
 </template>
 
-<style scoped>
+<style>
+.dp__theme_light {
+    --dp-background-color: #fff;
+    --dp-text-color: #212121;
+    --dp-hover-color: #f3f3f3;
+    --dp-hover-text-color: #212121;
+    --dp-hover-icon-color: #959595;
+    --dp-primary-color: #7c4dff;
+    --dp-primary-disabled-color: #a186ff;
+    --dp-primary-text-color: #f8f5f5;
+    --dp-secondary-color: #c0c4cc;
+    --dp-border-color: #ddd;
+    --dp-menu-border-color: #ddd;
+    --dp-border-color-hover: #7c4dff;
+    --dp-border-color-focus: #7c4dff;
+    --dp-disabled-color: #f6f6f6;
+    --dp-scroll-bar-background: #f3f3f3;
+    --dp-scroll-bar-color: #959595;
+    --dp-success-color: #76d275;
+    --dp-success-color-disabled: #a3d9b1;
+    --dp-icon-color: #959595;
+    --dp-danger-color: #ff6f60;
+    --dp-marker-color: #ff6f60;
+    --dp-tooltip-color: #fafafa;
+    --dp-disabled-color-text: #8e8e8e;
+    --dp-highlight-color: rgb(25 118 210 / 10%);
+    --dp-range-between-dates-background-color: var(--dp-hover-color, #f3f3f3);
+    --dp-range-between-dates-text-color: var(--dp-hover-text-color, #212121);
+    --dp-range-between-border-color: var(--dp-hover-color, #f3f3f3);
+}
 
+.dp__theme_dark {
+    --dp-background-color: #312d4b;
+    --dp-text-color: #e0d7f2;
+    --dp-hover-color: #3a3150;
+    --dp-hover-text-color: #ffffff;
+    --dp-hover-icon-color: #b0a7d6;
+    --dp-primary-color: #7c4dff;
+    --dp-primary-disabled-color: #a186ff;
+    --dp-primary-text-color: #ffffff;
+    --dp-secondary-color: #9e9e9e;
+    --dp-border-color: #3a3150;
+    --dp-menu-border-color: #3a3150;
+    --dp-border-color-hover: #7c4dff;
+    --dp-border-color-focus: #7c4dff;
+    --dp-disabled-color: #555072;
+    --dp-disabled-color-text: #aaa0d4;
+    --dp-scroll-bar-background: #1e1b2e;
+    --dp-scroll-bar-color: #3a3150;
+    --dp-success-color: #00e676;
+    --dp-success-color-disabled: #66ffa6;
+    --dp-icon-color: #b0a7d6;
+    --dp-danger-color: #ff1744;
+    --dp-marker-color: #ff1744;
+    --dp-tooltip-color: #2b2440;
+    --dp-highlight-color: rgba(124, 77, 255, 0.2);
+    --dp-range-between-dates-background-color: var(--dp-hover-color);
+    --dp-range-between-dates-text-color: var(--dp-text-color);
+    --dp-range-between-border-color: var(--dp-primary-color);
+}
 </style>

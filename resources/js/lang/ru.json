@@ -114,6 +114,7 @@
         "task_was_assigned_by": "Задачу назначил",
         "time_start": "Время начала",
         "time_end": "Время окончания",
+        "time_event": "Дата события",
         "disable_button": "Отмена",
         "accept_button": "Применить"
     },
