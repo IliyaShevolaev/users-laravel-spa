@@ -50,6 +50,31 @@ return [
         ],
     ],
 
+    'logs' => [
+        "fields" => [
+            "default" => [
+                "name" => "Название",
+                "department" => "Отдел",
+                "position" => "Должность",
+            ],
+
+            "user" => [
+                "name" => "Имя",
+                "email" => "Почта",
+                "department" => "Отдел",
+                "position" => "Должность",
+                "gender" => "Пол",
+                'field_values' => [
+                    'male' => 'мужчина',
+                    'female' => 'женщина',
+                    'active' => 'активен',
+                    'unactive' => 'неактивен',
+                ],
+                "status" => "Статус"
+            ]
+        ]
+    ],
+
     'title' => 'название',
     'title_placeholder' => 'Введите название',
     'add_button' => 'Добавить',

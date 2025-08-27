@@ -6,6 +6,7 @@ use Spatie\Activitylog\Models\Activity;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Services\DataTable;
 use App\DTO\DataTable\DatatableRequestDTO;
+use App\Utilities\LogResolvers\LogResolver;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use App\Repositories\Interfaces\ActivityLogs\ActivityLogRepositoryInterface;
 
@@ -31,6 +32,9 @@ class ActivityLogDataTable extends DataTable
             })
             ->editColumn('updated_at', function (Activity $log) {
                 return $log->updated_at->format('d.m.Y H:i');
+            })
+            ->editColumn('description', function (Activity $log) {
+                return LogResolver::resolveLogMessage($log);
             })
             ->addColumn('subject_name', function (Activity $log) {
                 return $log->properties['attributes']['name'] ?? '-';

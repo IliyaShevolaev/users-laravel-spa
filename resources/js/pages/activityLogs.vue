@@ -24,6 +24,7 @@ const headers = computed(() => {
         { title: t("logs.subject_type"), key: "subject_type" },
         { title: t("logs.subject_name"), key: "subject_name" },
         { title: t("logs.message"), key: "message" },
+        { title: t("logs.message"), key: "description" },
         { title: t("logs.at"), key: "created_at" },
     ];
 
@@ -93,6 +94,8 @@ const requestData = function ({ page, itemsPerPage, sortBy }) {
 
 const prepareLogs = function () {
     activityLogs.value.forEach((log) => {
+        log.description = log.description.join("<br>");
+
         if (log.event === "updated") {
             log.message = prepraredUpdateLogMessages(log.properties);
         } else if (log.event === "created") {
@@ -193,6 +196,9 @@ watch(search, () => {
     >
         <template v-slot:item.message="{ item }">
             <div v-html="item.message"></div>
+        </template>
+        <template v-slot:item.description="{ item }">
+            <div v-html="item.description"></div>
         </template>
     </v-data-table-server>
 </template>
