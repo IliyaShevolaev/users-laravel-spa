@@ -9,6 +9,11 @@ use Spatie\Activitylog\Models\Activity;
 
 class UserLogResolver implements EntityLogResolverInterface
 {
+    public static function getSubjectName(Activity $log): string
+    {
+        return $log->properties['attributes']['name'] ?? $log->properties['old']['name'];;
+    }
+
     public static function resolve(Activity $log): array
     {
         $properties = $log->properties;

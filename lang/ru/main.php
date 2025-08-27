@@ -64,13 +64,41 @@ return [
                 "department" => "Отдел",
                 "position" => "Должность",
                 "gender" => "Пол",
+                "status" => "Статус",
                 'field_values' => [
                     'male' => 'мужчина',
                     'female' => 'женщина',
                     'active' => 'активен',
                     'unactive' => 'неактивен',
                 ],
-                "status" => "Статус"
+            ],
+
+            "role" => [
+                'display_name' => 'Название',
+                'permissions' => [
+                    'entity' => [
+                        'users' => 'Пользователи',
+                        'departments' => 'Отделы',
+                        'positions' => 'Должности',
+                        'roles' => 'Роли',
+                        'tasks' => 'Задачи',
+                    ],
+                    'action' => [
+                        'read' => 'Просмотр',
+                        'create' => 'Создание',
+                        'update' => 'Редактирование',
+                        'delete' => 'Удаление',
+                        'find' => 'Поиск',
+                    ],
+                ]
+            ],
+
+            'event' => [
+                'title' => 'Название',
+                'description' => 'Описание',
+                'start' => 'Начало',
+                'end' => 'Окончание',
+                'assigned_for' => 'Ответсвенный'
             ]
         ]
     ],

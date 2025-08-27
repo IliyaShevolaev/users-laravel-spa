@@ -23,7 +23,6 @@ const headers = computed(() => {
         { title: t("logs.action"), key: "event" },
         { title: t("logs.subject_type"), key: "subject_type" },
         { title: t("logs.subject_name"), key: "subject_name" },
-        { title: t("logs.message"), key: "message" },
         { title: t("logs.message"), key: "description" },
         { title: t("logs.at"), key: "created_at" },
     ];
@@ -64,15 +63,12 @@ const requestData = function ({ page, itemsPerPage, sortBy }) {
             signal: abortController.signal,
         })
         .then((response) => {
-            console.log(response);
             activityLogs.value = response.data.data.original.data;
             currentPage.value = response.data.input.page;
             totalItems.value = response.data.recordsFiltered;
             console.log("Response:", response.data);
 
             prepareLogs();
-            console.log("activityLogs.value");
-            console.log(activityLogs.value);
         })
         .catch((error) => {
             if (error.status === 403) {
@@ -94,81 +90,46 @@ const requestData = function ({ page, itemsPerPage, sortBy }) {
 
 const prepareLogs = function () {
     activityLogs.value.forEach((log) => {
-        log.description = log.description.join("<br>");
+        //log.description = log.description.join("<br>");
+        let description = log.description.join("<br>");
 
-        if (log.event === "updated") {
-            log.message = prepraredUpdateLogMessages(log.properties);
-        } else if (log.event === "created") {
-            log.message = prepraredCreateLogMessages(log.properties);
-        } else if (log.event === "deleted") {
-            log.subject_name = log.properties.old.name;
-            log.message = prepraredDeleteLogMessages(log.properties);
-        }
+        description = description
+            .split("<br>")
+            .map((line) => {
+                if (line.length <= 70) return line;
+
+                const words = line.split(" ");
+                let newLine = "";
+                let currentLength = 0;
+                const result = [];
+
+                words.forEach((word) => {
+                    if (currentLength + word.length + 1 > 70) {
+                        result.push(newLine.trim());
+                        newLine = "";
+                        currentLength = 0;
+                    }
+                    newLine += word + " ";
+                    currentLength += word.length + 1;
+                });
+
+                if (newLine.trim()) {
+                    result.push(newLine.trim());
+                }
+
+                return result.join("<br>");
+            })
+            .join("<br>");
+
+        log.description = description;
+
+        log.description = description;
 
         log.subject_type = t(
             `logs.models.${log.subject_type.split("\\").pop()}`
         );
         log.event = t(`logs.actions.${log.event}`);
     });
-};
-
-const prepraredCreateLogMessages = function (properties) {
-    const attributes = properties.attributes;
-    const logs = [];
-
-    for (const key in attributes) {
-        const value = attributes[key];
-
-        if (!value) {
-            continue;
-        }
-
-        if (key === 'password') {
-            continue;
-        }
-
-        let message = `${t(
-            `logs.fields.user.${key}`
-        )} установленно на "${value}"`;
-
-        logs.push(message);
-    }
-
-    return logs.join("<br>");
-};
-
-const prepraredUpdateLogMessages = function (properties) {
-    const { attributes, old } = properties;
-    const logs = [];
-
-    for (const key in attributes) {
-        const oldValue = old[key];
-        const newValue = attributes[key];
-
-        if (oldValue === newValue) continue;
-
-        if (key === 'password') {
-            logs.push('Пароль был изменен');
-            continue;
-        }
-
-        let message = `${t(`logs.fields.user.${key}`)} изменено`;
-        if (oldValue === null) {
-            message += ` на "${newValue}"`;
-        } else if (newValue === null) {
-            message += ` с "${oldValue}" на пустое значение`;
-        } else {
-            message += ` с "${oldValue}" на "${newValue}"`;
-        }
-
-        logs.push(message);
-    }
-
-    return logs.join("<br>");
-};
-
-const prepraredDeleteLogMessages = function (properties) {
-    return "Запись была удалена";
 };
 
 const debouncedSearch = debounce(() => {
@@ -194,9 +155,6 @@ watch(search, () => {
         :loading="loadingTable"
         @update:options="requestData"
     >
-        <template v-slot:item.message="{ item }">
-            <div v-html="item.message"></div>
-        </template>
         <template v-slot:item.description="{ item }">
             <div v-html="item.description"></div>
         </template>

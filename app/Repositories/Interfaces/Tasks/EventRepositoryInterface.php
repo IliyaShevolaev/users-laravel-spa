@@ -41,9 +41,9 @@ interface EventRepositoryInterface
     /**
      * Создать новое событие
      * @param CreateEventDTO $dto
-     * @return void
+     * @return Event
      */
-    public function create(CreateEventDTO $dto): void;
+    public function create(CreateEventDTO $dto): Event;
 
     /**
      * Найти событие по id
@@ -57,9 +57,9 @@ interface EventRepositoryInterface
      * Обновить событие
      * @param Event $updateEvent
      * @param PatchEventDTO $dto
-     * @return void
+     * @return Event
      */
-    public function update(Event $updateEvent, PatchEventDTO $dto);
+    public function update(Event $updateEvent, PatchEventDTO $dto): Event;
 
     /**
      * Удалить событие

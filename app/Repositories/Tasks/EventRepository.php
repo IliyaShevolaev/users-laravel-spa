@@ -40,11 +40,9 @@ class EventRepository implements EventRepositoryInterface
         return EventDTO::collect($events);
     }
 
-    public function create(CreateEventDTO $dto): void
+    public function create(CreateEventDTO $dto): Event
     {
-        $event = Event::create($dto->all());
-
-        $event->users()->attach($dto->userId);
+        return Event::create($dto->all());
     }
 
     public function find(int $eventId): Event
@@ -60,13 +58,15 @@ class EventRepository implements EventRepositoryInterface
         return Event::findOrFail($eventId);
     }
 
-    public function update(Event $updateEvent, PatchEventDTO $dto)
+    public function update(Event $updateEvent, PatchEventDTO $dto): Event
     {
         $updateEvent->update(collect($dto->all())->reject(fn($value) => is_null($value))->toArray());
 
         if (isset($dto->userId)) {
             $updateEvent->users()->sync($dto->userId);
         }
+
+        return $updateEvent;
     }
 
     public function delete(Event $event): void

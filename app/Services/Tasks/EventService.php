@@ -50,7 +50,11 @@ class EventService
      */
     public function create(CreateEventDTO $dto): void
     {
-        $this->repository->create($dto);
+        $createdEvent = $this->repository->create($dto);
+
+        $createdEvent->users()->attach($dto->userId);
+
+        $createdEvent->logAssignedUsersActivity('created');
     }
 
     /**
@@ -76,9 +80,15 @@ class EventService
      * @param PatchEventDTO $dto
      * @return void
      */
-    public function update(Event $updateEvent, PatchEventDTO $dto)
+    public function update(Event $updateEvent, PatchEventDTO $dto): void
     {
-        $this->repository->update($updateEvent, $dto);
+        $oldEvent = $updateEvent->getOriginal();
+        $oldAssignedIds = $updateEvent->users->pluck('id')->toArray();
+
+        $event = $this->repository->update($updateEvent, $dto);
+
+        $event->logAssignedUsersActivity('updated', $oldEvent, $oldAssignedIds);
+
     }
 
     /**
@@ -104,6 +114,8 @@ class EventService
 
         $markRelation->is_done = !$markRelation->is_done;
         $markRelation->save();
+
+        $event->logEventMark($markRelation->is_done, $event->title);
     }
 
     /**

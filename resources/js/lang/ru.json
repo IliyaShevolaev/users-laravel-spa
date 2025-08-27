@@ -140,13 +140,16 @@
         "models": {
             "User": "Пользователь",
             "Department": "Отдел",
-            "Position": "Должность"
+            "Position": "Должность",
+            "Role": "Роль",
+            "Event": "Событие"
         },
 
         "actions": {
             "created": "Создание",
             "updated": "Обнвление",
-            "deleted": "Удаление"
+            "deleted": "Удаление",
+            "event_mark": "Отметка задачи"
         }
     },
 

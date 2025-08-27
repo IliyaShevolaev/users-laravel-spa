@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace App\Utilities\LogResolvers;
 
 use App\Utilities\LogResolvers\Interfaces\EntityLogResolverInterface;
+use Carbon\Carbon;
 use Spatie\Activitylog\Models\Activity;
 
-class DefaultLogResolver implements EntityLogResolverInterface
+class EventLogResolver implements EntityLogResolverInterface
 {
     public static function getSubjectName(Activity $log): string
     {
-        return $log->properties['attributes']['name'] ?? $log->properties['old']['name'];;
+        return $log->properties['attributes']['title'] ?? $log->properties['old']['title'];;
     }
 
     public static function resolve(Activity $log): array
@@ -26,11 +27,21 @@ class DefaultLogResolver implements EntityLogResolverInterface
         $attributes = collect($properties['attributes'] ?? []);
         $old = collect($properties['old'] ?? []);
 
+        if ($log->event === 'event_mark') {
+            return $attributes['mark'] ? ['Отметил исполненным'] : ['Отметил неисполненным'];
+        }
+
         foreach ($attributes as $key => $newValue) {
+
             $oldValue = $old[$key] ?? null;
 
             if ($oldValue === $newValue)
                 continue;
+
+            if ($key === 'start' || $key === 'end') {
+                $newValue = Carbon::parse($newValue)->format('d.m.Y H:i');
+                $oldValue = Carbon::parse($oldValue)->format('d.m.Y H:i');
+            }
 
             $messages[] = self::getDefaultMessage($key, $newValue, $oldValue);
         }
@@ -40,7 +51,7 @@ class DefaultLogResolver implements EntityLogResolverInterface
 
     private static function getDefaultMessage(string $key, ?string $new, ?string $old = null): string
     {
-        $fieldName = trans("main.logs.fields.default." . $key);
+        $fieldName = trans("main.logs.fields.event." . $key);
 
         if ($old === null) {
             return $fieldName . " установлено на $new";

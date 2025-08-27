@@ -10,11 +10,21 @@ class LogResolver
 {
     public static function resolveLogMessage(Activity $log): array
     {
-        $subjectType = class_basename($log->subject_type);
+        return self::getResolver($log)::resolve($log);
+    }
 
-        return match ($subjectType) {
-            'User' => UserLogResolver::resolve($log),
-            default => DefaultLogResolver::resolve($log),
+    public static function getSubjectName(Activity $log)
+    {
+        return self::getResolver($log)::getSubjectName($log);
+    }
+
+    private static function getResolver(Activity $log): string
+    {
+        return match (class_basename($log->subject_type)) {
+            'User' => UserLogResolver::class,
+            'Role' => RoleLogResolver::class,
+            'Event' => EventLogResolver::class,
+            default => DefaultLogResolver::class,
         };
     }
 }
