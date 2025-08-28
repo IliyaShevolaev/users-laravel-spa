@@ -4,27 +4,65 @@ declare(strict_types=1);
 
 namespace App\Utilities\LogResolvers;
 
+use Illuminate\Support\Str;
 use Spatie\Activitylog\Models\Activity;
 
 class LogResolver
 {
     public static function resolveLogMessage(Activity $log): array
     {
-        return self::getResolver($log)::resolve($log);
+        $properties = $log->properties;
+        $messages = [];
+
+        $attributes = collect($properties['attributes'] ?? []);
+        $old = collect($properties['old'] ?? []);
+
+        if ($log->event === 'created') {
+            foreach ($attributes as $key => $value) {
+                $messages[] = self::getDefaultMessage($log, $key, $value);
+            }
+        }
+
+        if ($log->event === 'updated') {
+            foreach ($attributes as $key => $newValue) {
+                $oldValue = $old[$key] ?? null;
+
+                $messages[] = self::getDefaultMessage($log, $key, $newValue, $oldValue);
+            }
+        }
+
+        if ($log->event === 'deleted') {
+            $messages[] = __('main.logs.deleted_row');
+        }
+
+        return $messages;
     }
 
-    public static function getSubjectName(Activity $log)
-    {
-        return self::getResolver($log)::getSubjectName($log);
-    }
+    private static function getDefaultMessage(
+        Activity $log,
+        string $key,
+        string|bool|null $new,
+        string|bool|null $old = null
+    ): string {
+        $entityName = Str::afterLast($log->subject_type, '\\');
 
-    private static function getResolver(Activity $log): string
-    {
-        return match (class_basename($log->subject_type)) {
-            'User' => UserLogResolver::class,
-            'Role' => RoleLogResolver::class,
-            'Event' => EventLogResolver::class,
-            default => DefaultLogResolver::class,
-        };
+        $fieldName = __("main.logs.fields." . $entityName . '.' . $key);
+
+        $new = __("main.logs.values.{$new}") !== "main.logs.values.{$new}" ?
+            __("main.logs.values.{$new}") :
+            $new;
+
+        $old = __("main.logs.values.{$old}") !== "main.logs.values.{$old}" ?
+            __("main.logs.values.{$old}") :
+            $old;
+
+        if ($old === null) {
+            return $fieldName . ' ' . __('main.logs.set_at') . " $new";
+        }
+        if ($new === null) {
+            return $fieldName . ' ' . __('main.logs.changed_from') . ' ' . $old . ' ' . __('main.logs.on_empty_value');
+        }
+
+        return $fieldName. ' ' . __('main.logs.changed_from'). ' ' . $old . __('main.logs.to') .  $new;
     }
 }

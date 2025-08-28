@@ -33,7 +33,7 @@ export const routes = [
                 path: "activity-logs/:id",
                 component: () => import("@/pages/activityLogs.vue"),
                 props: route => ({ id: Number(route.params.id) }),
-                meta: { permission: 'roles-read' },
+                meta: { permission: 'users-logs' },
             },
             {
                 path: "roles/create",

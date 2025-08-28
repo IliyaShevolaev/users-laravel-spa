@@ -51,18 +51,30 @@ return [
     ],
 
     'logs' => [
-        "fields" => [
-            "default" => [
-                "name" => "Название",
-                "department" => "Отдел",
-                "position" => "Должность",
-            ],
+        "values" => [
+            'male' => 'мужчина',
+            'female' => 'женщина',
+            'active' => 'активен',
+            'unactive' => 'неактивен',
+        ],
 
-            "user" => [
+        'set_at' => 'установлено на',
+        'changed_from' => 'изменено с',
+        'on_empty_value' => 'на пустое значение',
+        'to' => ' на ',
+        'deleted_row' => "Запись была удалена",
+
+        "fields" => [
+            "Department" => ["name" => "Название"],
+            "Position" => ["name" => "Название"],
+
+
+            "User" => [
                 "name" => "Имя",
                 "email" => "Почта",
-                "department" => "Отдел",
-                "position" => "Должность",
+                "department" => ["name" => "Отдел"],
+                "position" => ["name" => "Должность"],
+                "role_name" => "Роль",
                 "gender" => "Пол",
                 "status" => "Статус",
                 'field_values' => [
@@ -73,7 +85,7 @@ return [
                 ],
             ],
 
-            "role" => [
+            "Role" => [
                 'display_name' => 'Название',
                 'permissions' => [
                     'entity' => [
@@ -89,16 +101,21 @@ return [
                         'update' => 'Редактирование',
                         'delete' => 'Удаление',
                         'find' => 'Поиск',
+                        'logs' => 'Просмотр логов',
                     ],
                 ]
             ],
 
-            'event' => [
+            'Event' => [
                 'title' => 'Название',
                 'description' => 'Описание',
                 'start' => 'Начало',
                 'end' => 'Окончание',
                 'assigned_for' => 'Ответсвенный'
+            ],
+
+            'EventUser' => [
+                'is_done' => 'Сообщение о выполнении',
             ]
         ]
     ],

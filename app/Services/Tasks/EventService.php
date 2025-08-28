@@ -53,8 +53,6 @@ class EventService
         $createdEvent = $this->repository->create($dto);
 
         $createdEvent->users()->attach($dto->userId);
-
-        $createdEvent->logAssignedUsersActivity('created');
     }
 
     /**
@@ -82,13 +80,7 @@ class EventService
      */
     public function update(Event $updateEvent, PatchEventDTO $dto): void
     {
-        $oldEvent = $updateEvent->getOriginal();
-        $oldAssignedIds = $updateEvent->users->pluck('id')->toArray();
-
         $event = $this->repository->update($updateEvent, $dto);
-
-        $event->logAssignedUsersActivity('updated', $oldEvent, $oldAssignedIds);
-
     }
 
     /**

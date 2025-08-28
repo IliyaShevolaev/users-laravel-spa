@@ -309,7 +309,7 @@ const viewLog = function (id) {
 
         <template v-slot:item.actions="{ item }">
             <v-btn
-                v-if="authStore.checkPermission('users-update')"
+                v-if="authStore.checkPermission('users-logs')"
                 icon="ri-news-line"
                 class="me-3 !bg-teal-500"
                 size="small"

@@ -36,6 +36,7 @@ const permissionGroups = ref([
             update: false,
             delete: false,
             find: false,
+            logs: false
         },
     },
     {

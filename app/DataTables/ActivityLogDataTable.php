@@ -37,7 +37,7 @@ class ActivityLogDataTable extends DataTable
                 return LogResolver::resolveLogMessage($log);
             })
             ->addColumn('subject_name', function (Activity $log) {
-                return LogResolver::getSubjectName($log);
+                return $log->log_name;
             })
             ->setRowId('id');
     }

@@ -20,7 +20,6 @@ class Event extends Model
     use LogsActivity;
 
     protected $fillable = ['title', 'description', 'start', 'end', 'creator_id'];
-    protected static $recordEvents = ['deleted'];
 
     /**
      * Получить отдел соыбтия
@@ -80,85 +79,7 @@ class Event extends Model
 
     public function getActivitylogOptions(): LogOptions
     {
-        return LogOptions::defaults()->logFillable()->logExcept(['creator_id']);
-    }
-
-    /**
-     * Логирование назначения пользователей на событие
-     *
-     * @param string $eventName
-     * @param array|null $oldAssignedUserIds
-     * @return void
-     */
-    public function logAssignedUsersActivity(string $eventName, ?array $oldEvent = null, ?array $oldAssignedUserIds = null): void
-    {
-        $this->load('users');
-        $assignedUserIds = $this->users->pluck('id')->toArray();
-
-        $assignedFor = null;
-        if (count($assignedUserIds) > 1) {
-            $assignedFor = 'всех в подчинении';
-        } elseif (count($assignedUserIds) === 1) {
-            $assignedFor = User::find($assignedUserIds[0])->name;
-        }
-
-        $properties = [
-            'attributes' => [
-                'title' => $this->title,
-                'description' => $this->description,
-                'start' => $this->start,
-                'end' => $this->end,
-                'assigned_for' => $assignedFor
-            ]
-        ];
-
-        if ($oldAssignedUserIds) {
-            $oldAssignedFor = [];
-
-            if (count($oldAssignedUserIds) > 1) {
-                $oldAssignedFor = 'всех в подчинении';
-            } elseif (count($oldAssignedUserIds) === 1) {
-                $oldAssignedFor = User::find($oldAssignedUserIds[0])->name;
-            }
-
-            $properties['old'] = [
-                'title' => $oldEvent['title'],
-                'description' => $oldEvent['description'],
-                'start' => $oldEvent['start'],
-                'end' => $oldEvent['end'],
-                'assigned_for' => $oldAssignedFor
-            ];
-        }
-
-        activity()
-            ->causedBy(auth()->user())
-            ->performedOn($this)
-            ->withProperties($properties)
-            ->event($eventName)
-            ->log($eventName);
-    }
-
-
-    /**
-     * Логировать изменение статуса выполнения задачи
-     *
-     * @param bool $old
-     * @param bool $new
-     * @return void
-     */
-    public function logEventMark(bool $mark, string $title): void
-    {
-        activity()
-            ->causedBy(Auth::user())
-            ->performedOn($this)
-            ->withProperties([
-                'attributes' => [
-                    'title' => $title,
-                    'mark' => $mark
-                ]
-            ])
-            ->event('event_mark')
-            ->log('event_mark');
+        return LogOptions::defaults()->logFillable()->logExcept(['creator_id'])->logOnlyDirty()->useLogName($this->title);
     }
 
     public function getIsDoneAttribute(): bool

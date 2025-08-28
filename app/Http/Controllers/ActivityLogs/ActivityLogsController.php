@@ -19,7 +19,7 @@ class ActivityLogsController extends Controller
         DataTableRequest $dataTableRequest,
         ActivityLogDataTable $logDataTable
     ): JsonResponse {
-        $this->authorize('check-permission', 'users-read');
+        $this->authorize('check-permission', 'users-logs');
 
         $dto = DatatableRequestDTO::from($dataTableRequest->validated());
 

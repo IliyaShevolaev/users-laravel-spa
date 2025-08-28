@@ -23,7 +23,7 @@ const headers = computed(() => {
         { title: t("logs.action"), key: "event" },
         { title: t("logs.subject_type"), key: "subject_type" },
         { title: t("logs.subject_name"), key: "subject_name" },
-        { title: t("logs.message"), key: "description" },
+        { title: t("logs.message"), key: "description", sortable: false },
         { title: t("logs.at"), key: "created_at" },
     ];
 
@@ -32,7 +32,7 @@ const headers = computed(() => {
 
 const itemsPerPage = ref(10);
 const currentPage = ref(1);
-const currentSortBy = ref([]);
+const currentSortBy = ref([{ key: "created_at", order: "desc" }]);
 const totalItems = ref(0);
 const search = ref("");
 
@@ -46,13 +46,15 @@ const requestData = function ({ page, itemsPerPage, sortBy }) {
     abortController = new AbortController();
 
     loadingTable.value = true;
-    currentSortBy.value = sortBy;
+
+    const requestSortBy = sortBy?.length ? sortBy : currentSortBy.value;
+    currentSortBy.value = requestSortBy;
 
     const params = {
         page: page,
         per_page: itemsPerPage,
-        sort_by: sortBy.length ? sortBy[0].key : null,
-        sort_order: sortBy.length ? sortBy[0].order : null,
+        sort_by: requestSortBy[0].key,
+        sort_order: requestSortBy[0].order,
         search: search.value,
     };
 

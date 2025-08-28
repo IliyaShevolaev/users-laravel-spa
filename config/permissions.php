@@ -6,7 +6,8 @@ return [
         'create',
         'update',
         'delete',
-        'find'
+        'find',
+        'logs'
     ],
 
     'departments' => [

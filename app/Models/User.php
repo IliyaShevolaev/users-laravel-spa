@@ -109,54 +109,13 @@ class User extends Authenticatable implements LaratrustUser
 
     public function getActivitylogOptions(): LogOptions
     {
-        return LogOptions::defaults()->logFillable();
-    }
-
-    public function tapActivity(Activity $activity, string $eventName)
-    {
-        $properties = $activity->properties;
-
-        $attributes = collect($properties->get('attributes', []));
-
-        if ($attributes->has('department_id')) {
-            $departmentId = $attributes->get('department_id');
-            $departmentName = optional(Department::find($departmentId))->name;
-
-            $attributes->put('department', $departmentName);
-            $attributes->forget('department_id');
-        }
-
-        if ($attributes->has('position_id')) {
-            $positionId = $attributes->get('position_id');
-            $positionName = optional(Position::find($positionId))->name;
-
-            $attributes->put('position', $positionName);
-            $attributes->forget('position_id');
-        }
-
-        $properties->put('attributes', $attributes);
-
-        $old = collect($properties->get('old', []));
-
-        if ($old->has('department_id')) {
-            $oldDepartmentId = $old->get('department_id');
-            $oldDepartmentName = optional(Department::find($oldDepartmentId))->name;
-
-            $old->put('department', $oldDepartmentName);
-            $old->forget('department_id');
-        }
-
-        if ($old->has('position_id')) {
-            $oldPositionId = $old->get('position_id');
-            $oldPositionName = optional(Position::find($oldPositionId))->name;
-
-            $old->put('position', $oldPositionName);
-            $old->forget('position_id');
-        }
-
-        $properties->put('old', $old);
-
-        $activity->properties = $properties;
+        return LogOptions::defaults()
+            ->logFillable()
+            ->logOnly(['department.name', 'position.name'])
+            ->logExcept(['password', 'department_id', 'position_id'])
+            ->dontLogIfAttributesChangedOnly(['password', 'updated_at'])
+            ->logOnlyDirty()
+            ->useLogName($this->name);
     }
 
     /**
@@ -206,5 +165,10 @@ class User extends Authenticatable implements LaratrustUser
         }
 
         return collect();
+    }
+
+    public function getRoleNameAttribute(): ?string
+    {
+        return $this->roles->first()?->name;
     }
 }

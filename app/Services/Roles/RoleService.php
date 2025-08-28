@@ -36,8 +36,6 @@ class RoleService
         if (!empty($createRoleDTO->permissions)) {
             $createdRole->givePermissions($createRoleDTO->permissions);
         }
-        
-        $createdRole->logRoleActivity('created');
     }
 
     /**
@@ -60,12 +58,8 @@ class RoleService
      */
     public function update(CreateRoleDTO $createRoleDTO, Role $role)
     {
-        $oldRole = $role->getOriginal();
-        $oldPermissions = $role->permissions->pluck('name')->toArray();
-
         $this->repository->update($createRoleDTO, $role);
         $role->syncPermissions($createRoleDTO->permissions);
-        $role->logRoleActivity('updated', $oldRole, $oldPermissions);
 
         broadcast(new ChangeRolePermissions($role->id));
     }
