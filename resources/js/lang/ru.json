@@ -125,7 +125,7 @@
         "action": "Действие",
         "message": "Сообщение",
         "subject_type": "Объект",
-        "subject_name": "Имя",
+        "subject_name": "Автор",
 
         "fields": {
             "user": {

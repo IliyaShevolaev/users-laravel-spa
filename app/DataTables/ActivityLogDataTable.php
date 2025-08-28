@@ -36,8 +36,8 @@ class ActivityLogDataTable extends DataTable
             ->editColumn('description', function (Activity $log) {
                 return LogResolver::resolveLogMessage($log);
             })
-            ->addColumn('subject_name', function (Activity $log) {
-                return $log->log_name;
+            ->addColumn('causer_name', function (Activity $log) {
+                return $log->causer?->name ?? 'Система';
             })
             ->setRowId('id');
     }
@@ -68,7 +68,8 @@ class ActivityLogDataTable extends DataTable
     {
         $query = $this->repository->getQuery();
 
-        $query->where('causer_id', $userId);
+        $query->with('causer');
+        $query->where('subject_id', $userId);
 
         if (isset($dto->sortBy) && isset($dto->sortOrder)) {
             $query->orderBy($dto->sortBy, $dto->sortOrder);

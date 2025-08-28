@@ -4,6 +4,7 @@ namespace App\Models\Tasks;
 
 use App\Models\User;
 use App\Policies\EventPolicy;
+use App\Models\Tasks\EventUser;
 use App\Models\User\Department;
 use Spatie\Activitylog\LogOptions;
 use App\Enums\Role\SystemRolesEnum;
@@ -17,8 +18,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 #[UsePolicy(EventPolicy::class)]
 class Event extends Model
 {
-    use LogsActivity;
-
     protected $fillable = ['title', 'description', 'start', 'end', 'creator_id'];
 
     /**
@@ -38,7 +37,7 @@ class Event extends Model
      */
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'event_user')->withPivot('is_done');
+        return $this->belongsToMany(User::class, 'event_user')->using(EventUser::class)->withPivot('is_done');
     }
 
     /**
@@ -75,11 +74,6 @@ class Event extends Model
         }
 
         return $this->creator_id === $user->id;
-    }
-
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults()->logFillable()->logExcept(['creator_id'])->logOnlyDirty()->useLogName($this->title);
     }
 
     public function getIsDoneAttribute(): bool

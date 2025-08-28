@@ -9,7 +9,6 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class Role extends RoleModel
 {
-    use LogsActivity;
 
     protected $fillable = ['name', 'display_name'];
 
@@ -22,10 +21,5 @@ class Role extends RoleModel
                 $role->name = $role->getOriginal('name');
             }
         });
-    }
-
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults()->logFillable()->logExcept(['name'])->logOnlyDirty()->useLogName($this->display_name);
     }
 }

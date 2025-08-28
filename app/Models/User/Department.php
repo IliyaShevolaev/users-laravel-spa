@@ -26,7 +26,6 @@ class Department extends Model
 {
     use SoftDeletes;
     use HasFactory;
-    use LogsActivity;
 
     /**
      * Автозаполняемые атрибуты
@@ -45,13 +44,5 @@ class Department extends Model
     public function users(): HasMany
     {
         return $this->hasMany(User::class, 'department_id', 'id');
-    }
-
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults()
-            ->logFillable()
-            ->logOnlyDirty()
-            ->useLogName($this->name);
     }
 }

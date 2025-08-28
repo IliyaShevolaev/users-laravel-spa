@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Roles\Role;
 use App\Models\Tasks\Event;
 use App\Models\User\Position;
 use App\Enums\User\GenderEnum;
@@ -12,6 +13,7 @@ use App\Models\User\Department;
 use Illuminate\Support\Collection;
 use Spatie\Activitylog\LogOptions;
 use Database\Factories\UserFactory;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Scopes\ActiveUserScope;
 use Laratrust\Contracts\LaratrustUser;
@@ -116,6 +118,38 @@ class User extends Authenticatable implements LaratrustUser
             ->dontLogIfAttributesChangedOnly(['password', 'updated_at'])
             ->logOnlyDirty()
             ->useLogName($this->name);
+    }
+
+    public function logAssignedRole(Role $newRole = null, ?Role $oldRole = null)
+    {
+        if (!isset($oldRole)) {
+            activity()
+                ->performedOn($this)
+                ->causedBy(Auth::user())
+                ->withProperties([
+                    'attributes' => [
+                        'role' => $newRole->name,
+                    ]
+                ])
+                ->event('created')
+                ->log("default");
+        } else {
+            if ($newRole?->name !== $oldRole->name) {
+                activity()
+                    ->performedOn($this)
+                    ->causedBy(Auth::user())
+                    ->withProperties([
+                        'attributes' => [
+                            'role' => $newRole?->display_name,
+                        ],
+                        'old' => [
+                            'role' => $oldRole->display_name,
+                        ]
+                    ])
+                    ->event('updated')
+                    ->log("default");
+            }
+        }
     }
 
     /**

@@ -21,8 +21,7 @@ const activityLogs = ref([]);
 const headers = computed(() => {
     const baseHeaders = [
         { title: t("logs.action"), key: "event" },
-        { title: t("logs.subject_type"), key: "subject_type" },
-        { title: t("logs.subject_name"), key: "subject_name" },
+        { title: t("logs.subject_name"), key: "causer_name" },
         { title: t("logs.message"), key: "description", sortable: false },
         { title: t("logs.at"), key: "created_at" },
     ];

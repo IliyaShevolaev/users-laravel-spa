@@ -26,7 +26,6 @@ use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 class Position extends Model
 {
     use SoftDeletes;
-    use LogsActivity;
 
     /**
      * Автозаполняемые атрибуты
@@ -47,11 +46,4 @@ class Position extends Model
         return $this->hasMany(User::class, 'position_id', 'id');
     }
 
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults()
-            ->logFillable()
-            ->logOnlyDirty()
-            ->useLogName($this->name);
-    }
 }

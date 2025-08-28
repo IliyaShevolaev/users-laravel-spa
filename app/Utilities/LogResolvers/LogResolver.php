@@ -19,6 +19,10 @@ class LogResolver
 
         if ($log->event === 'created') {
             foreach ($attributes as $key => $value) {
+                if (!$value) {
+                    continue;
+                }
+
                 $messages[] = self::getDefaultMessage($log, $key, $value);
             }
         }
@@ -57,12 +61,15 @@ class LogResolver
             $old;
 
         if ($old === null) {
+            if ($key === 'event.title') {
+                return $fieldName . ' ' . $new;
+            }
             return $fieldName . ' ' . __('main.logs.set_at') . " $new";
         }
         if ($new === null) {
             return $fieldName . ' ' . __('main.logs.changed_from') . ' ' . $old . ' ' . __('main.logs.on_empty_value');
         }
 
-        return $fieldName. ' ' . __('main.logs.changed_from'). ' ' . $old . __('main.logs.to') .  $new;
+        return $fieldName . ' ' . __('main.logs.changed_from') . ' ' . $old . __('main.logs.to') . $new;
     }
 }

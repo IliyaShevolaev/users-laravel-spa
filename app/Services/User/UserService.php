@@ -55,7 +55,9 @@ class UserService
         $createdUser = $this->repository->create($dto);
 
         if (isset($dto->role)) {
-            $createdUser->addRole($this->roleRepository->find($dto->role));
+            $role = $this->roleRepository->find($dto->role);
+            $createdUser->addRole($role);
+            $createdUser->logAssignedRole($role);
         }
     }
 
@@ -74,12 +76,17 @@ class UserService
     public function update(CreateUserDTO $dto, int $userId): void
     {
         $updatedUser = $this->repository->update($userId, $dto);
+        $oldUserRole = $updatedUser->roles()->first();
 
         if (Auth::user()->getUserRolePermissionsCollection()->contains('roles-update')) {
             if (isset($dto->role)) {
-                $updatedUser->syncRoles([$this->roleRepository->find($dto->role)]);
+                $newRole = $this->roleRepository->find($dto->role);
+                $updatedUser->syncRoles([$newRole]);
+                $updatedUser->logAssignedRole($newRole, $oldUserRole);
             } else {
                 $updatedUser->syncRoles([]);
+                $updatedUser->logAssignedRole(null, $oldUserRole);
+
             }
             broadcast(new ChangeUserRole($updatedUser->id));
         }
