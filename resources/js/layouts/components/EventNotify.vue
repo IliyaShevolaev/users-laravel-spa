@@ -1,7 +1,6 @@
 <script setup>
 import { computed, ref } from "vue";
 import { useEventNotifyStore } from "../../stores/eventNotifies";
-import { storeToRefs } from "pinia";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();

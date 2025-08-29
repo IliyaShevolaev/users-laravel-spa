@@ -7,14 +7,14 @@ import ruLocale from "@fullcalendar/core/locales/ru";
 import axios from "axios";
 import CalendarEventDialog from "../components/dialog/Calendar/CalendarEventDialog.vue";
 import { useI18n } from "vue-i18n";
-import { useAuthStore } from "../stores/auth";
 import ViewCalendarEventDialog from "../components/dialog/Calendar/ViewCalendarEventDialog.vue";
 import AcceptDialog from "../components/alerts/AcceptDialog.vue";
 import { useModelChangesStore } from "../stores/modelChanges";
 import Snackbar from "../components/toaster/Snackbar.vue";
 import AlertDangerDialog from "../components/alerts/AlertDangerDialog.vue";
 import dayjs from "dayjs";
-import { listenCalendarChangesEvent } from "../composables/events/calendarEventsChange";
+import { useAuthStore } from "../stores/auth";
+import { listenCalendarUpdates } from "../composables/events/calendarEventsChange";
 
 const modelChangesStore = useModelChangesStore();
 const { t } = useI18n();
@@ -64,9 +64,7 @@ const handleCalendarChange = function () {
     requestEvents(startStr.value, endStr.value);
 };
 
-if (authStore.checkPermission("tasks-read")) {
-    listenCalendarChangesEvent(handleCalendarChange);
-}
+listenCalendarUpdates(handleCalendarChange);
 
 const calendarRef = ref(null);
 
