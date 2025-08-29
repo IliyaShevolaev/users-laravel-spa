@@ -52,10 +52,14 @@ class LogResolver
 
         $fieldName = __("main.logs.fields." . $entityName . '.' . $key);
 
+        $new === true ? $new = 'mark' : $new;
+        $new === false ? $new = 'unmark' : $new;
         $new = __("main.logs.values.{$new}") !== "main.logs.values.{$new}" ?
             __("main.logs.values.{$new}") :
             $new;
 
+        $old === true ? $old = 'mark' : $old;
+        $old === false ? $old = 'unmark' : $old;
         $old = __("main.logs.values.{$old}") !== "main.logs.values.{$old}" ?
             __("main.logs.values.{$old}") :
             $old;

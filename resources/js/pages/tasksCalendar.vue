@@ -14,6 +14,7 @@ import { useModelChangesStore } from "../stores/modelChanges";
 import Snackbar from "../components/toaster/Snackbar.vue";
 import AlertDangerDialog from "../components/alerts/AlertDangerDialog.vue";
 import dayjs from "dayjs";
+import { listenCalendarChangesEvent } from "../composables/events/calendarEventsChange";
 
 const modelChangesStore = useModelChangesStore();
 const { t } = useI18n();
@@ -60,6 +61,12 @@ const validateEvents = function () {
     });
     console.log(events);
 };
+
+const handleCalendarChange = function() {
+    requestEvents(startStr.value, endStr.value);
+}
+
+listenCalendarChangesEvent(handleCalendarChange);
 
 const calendarRef = ref(null);
 

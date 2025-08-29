@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Tasks;
 
+use App\Events\ChangeCalendarEvent;
 use App\Models\User;
 use App\DTO\User\UserDTO;
 use App\Models\Tasks\Event;
@@ -52,7 +53,11 @@ class EventService
     {
         $createdEvent = $this->repository->create($dto);
 
-        $createdEvent->users()->attach($dto->userId);
+        $createdEventUsers = $createdEvent->users();
+        $createdEventUsers->attach($dto->userId);
+        $createdEventUsers->get()->each(function(User $user) {
+            broadcast(new ChangeCalendarEvent($user->id));
+        });
     }
 
     /**
@@ -81,6 +86,10 @@ class EventService
     public function update(Event $updateEvent, PatchEventDTO $dto): void
     {
         $event = $this->repository->update($updateEvent, $dto);
+
+        $event->users()->get()->each(function(User $user) {
+            broadcast(new ChangeCalendarEvent($user->id));
+        });
     }
 
     /**
@@ -91,6 +100,10 @@ class EventService
      */
     public function delete(Event $event): void
     {
+        $event->users()->get()->each(function(User $user) {
+            broadcast(new ChangeCalendarEvent($user->id));
+        });
+
         $this->repository->delete($event);
     }
 
@@ -106,8 +119,6 @@ class EventService
 
         $markRelation->is_done = !$markRelation->is_done;
         $markRelation->save();
-
-        $event->logEventMark($markRelation->is_done, $event->title);
     }
 
     /**
