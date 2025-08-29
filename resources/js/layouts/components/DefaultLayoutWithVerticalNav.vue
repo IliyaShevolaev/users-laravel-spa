@@ -24,9 +24,9 @@ import EventNotify from './EventNotify.vue'
 
         <VSpacer />
 
-        <EventNotify class="me-2"/>
+        <EventNotify class="me-4"/>
 
-        <NavbarThemeSwitcher class="me-2" />
+        <NavbarThemeSwitcher class="me-4" />
 
         <UserProfile />
       </div>

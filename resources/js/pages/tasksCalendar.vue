@@ -46,7 +46,6 @@ const requestEvents = (start, end) => {
 
 const validateEvents = function () {
     events.value.forEach((event) => {
-        console.log(event);
         if (event.is_done) {
             event.backgroundColor = "green";
             event.borderColor = "green";
@@ -59,14 +58,15 @@ const validateEvents = function () {
             event.end = dayjs(event.end).format("YYYY-MM-DD HH:mm:ss");
         }
     });
-    console.log(events);
 };
 
-const handleCalendarChange = function() {
+const handleCalendarChange = function () {
     requestEvents(startStr.value, endStr.value);
-}
+};
 
-listenCalendarChangesEvent(handleCalendarChange);
+if (authStore.checkPermission("tasks-read")) {
+    listenCalendarChangesEvent(handleCalendarChange);
+}
 
 const calendarRef = ref(null);
 
@@ -94,7 +94,6 @@ const calendarOptions = reactive({
     },
 
     eventClick: (info) => {
-        console.log("Clicked event:", info.event);
         info.jsEvent.preventDefault();
         openViewDialog(info.event.id);
     },
@@ -128,7 +127,7 @@ const changeViewFormat = function (format) {
 
 const isDialogOpen = ref(false);
 const dialogEditId = ref(null);
-const dialogChoosenDate = ref(null)
+const dialogChoosenDate = ref(null);
 
 const openDialog = function (id = null, choosenDate = null) {
     isDialogOpen.value = true;
@@ -175,9 +174,6 @@ const handleEventDrop = function (info) {
     }
     patchAbortController = new AbortController();
 
-    console.log(info.event.start);
-    console.log(info.event.end);
-
     let requestDateStart = info.event.start;
     let requestDateEnd = info.event.end;
 
@@ -191,8 +187,7 @@ const handleEventDrop = function (info) {
             `/api/events/patch/${info.event.id}`,
             {
                 start: dayjs(requestDateStart).format("YYYY-MM-DD HH:mm:ss"),
-                end: dayjs(requestDateEnd)
-                    .format("YYYY-MM-DD HH:mm:ss"),
+                end: dayjs(requestDateEnd).format("YYYY-MM-DD HH:mm:ss"),
             },
             { signal: patchAbortController.signal }
         )
@@ -289,7 +284,6 @@ const showAlertDialog = ref(false);
 const alertText = ref("");
 
 const closeViewDialog = function (eventWasMarked) {
-    console.log("here " + eventWasMarked);
     showViewDialog.value = false;
     if (eventWasMarked) {
         requestEvents(startStr.value, endStr.value);
@@ -346,22 +340,13 @@ const closeViewDialog = function (eventWasMarked) {
 
     <div class="flex justify-between">
         <div class="flex gap-2 mb-4 items-center">
-            <v-btn
-                variant="outlined"
-                @click="changeViewFormat('dayGridMonth')"
-            >
+            <v-btn variant="outlined" @click="changeViewFormat('dayGridMonth')">
                 Месяц
             </v-btn>
-            <v-btn
-                variant="outlined"
-                @click="changeViewFormat('timeGridWeek')"
-            >
+            <v-btn variant="outlined" @click="changeViewFormat('timeGridWeek')">
                 Неделя
             </v-btn>
-            <v-btn
-                variant="outlined"
-                @click="changeViewFormat('timeGridDay')"
-            >
+            <v-btn variant="outlined" @click="changeViewFormat('timeGridDay')">
                 День
             </v-btn>
         </div>

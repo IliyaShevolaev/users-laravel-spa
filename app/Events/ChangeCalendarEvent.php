@@ -2,22 +2,26 @@
 
 namespace App\Events;
 
+use App\Models\Tasks\Event;
+use App\DTO\Tasks\Event\EventDTO;
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use App\Http\Resources\Tasks\EventResource;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Foundation\Events\Dispatchable;
+use App\Http\Resources\Tasks\EventNotifyResource;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
 class ChangeCalendarEvent implements ShouldBroadcast
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable, InteractsWithSockets;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(public int $userId)
+    public function __construct(public int $userId, public EventDTO $event, public bool $isNewAssign)
     {
         $this->dontBroadcastToCurrentUser();
     }
@@ -37,5 +41,14 @@ class ChangeCalendarEvent implements ShouldBroadcast
     public function broadcastAs()
     {
         return 'change.calendar.events';
+    }
+
+    public function broadcastWith(): array
+    {
+        return [
+            'userId' => $this->userId,
+            'event' => new EventNotifyResource($this->event),
+            'isNewAssign' => $this->isNewAssign
+        ];
     }
 }

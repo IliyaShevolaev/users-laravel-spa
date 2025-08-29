@@ -62,10 +62,6 @@ class EventRepository implements EventRepositoryInterface
     {
         $updateEvent->update(collect($dto->all())->reject(fn($value) => is_null($value))->toArray());
 
-        if (isset($dto->userId)) {
-            $updateEvent->users()->sync($dto->userId);
-        }
-
         return $updateEvent;
     }
 

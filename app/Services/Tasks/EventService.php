@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\Tasks;
 
+use App\DTO\Tasks\Event\EventDTO;
 use App\Events\ChangeCalendarEvent;
+use App\Http\Resources\Tasks\EventNotifyResource;
 use App\Models\User;
 use App\DTO\User\UserDTO;
 use App\Models\Tasks\Event;
@@ -55,8 +57,11 @@ class EventService
 
         $createdEventUsers = $createdEvent->users();
         $createdEventUsers->attach($dto->userId);
-        $createdEventUsers->get()->each(function(User $user) {
-            broadcast(new ChangeCalendarEvent($user->id));
+
+        $createdEvent->load('creator');
+        $eventDto = EventDTO::from($createdEvent);
+        $createdEventUsers->get()->each(function(User $user) use ($eventDto) {
+            broadcast(new ChangeCalendarEvent($user->id, $eventDto, true));
         });
     }
 
@@ -87,8 +92,20 @@ class EventService
     {
         $event = $this->repository->update($updateEvent, $dto);
 
-        $event->users()->get()->each(function(User $user) {
-            broadcast(new ChangeCalendarEvent($user->id));
+        $oldUsers = $updateEvent->users()->get();
+
+        if (!empty($dto->userId)) {
+            $event->users()->sync($dto->userId);
+        }
+
+        $allUsers = $updateEvent->users()->get();
+        $newUserIds = $allUsers->pluck('id')->diff($oldUsers->pluck('id'));
+
+        $event->load('creator');
+        $eventDto = EventDTO::from($event);
+
+        $allUsers->each(function(User $user) use ($eventDto, $newUserIds) {
+            broadcast(new ChangeCalendarEvent($user->id, $eventDto, $newUserIds->contains($user->id)));
         });
     }
 
@@ -100,8 +117,13 @@ class EventService
      */
     public function delete(Event $event): void
     {
-        $event->users()->get()->each(function(User $user) {
-            broadcast(new ChangeCalendarEvent($user->id));
+        $users = $event->users()->get();
+
+        $event->load('creator');
+        $eventDto = EventDTO::from($event);
+
+        $users->each(function(User $user) use ($eventDto) {
+            broadcast(new ChangeCalendarEvent($user->id, $eventDto, false));
         });
 
         $this->repository->delete($event);

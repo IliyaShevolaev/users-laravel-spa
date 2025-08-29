@@ -76,8 +76,8 @@ class Event extends Model
         return $this->creator_id === $user->id;
     }
 
-    public function getIsDoneAttribute(): bool
+    public function getIsDoneAttribute(): bool | null
     {
-        return $this->pivot->is_done;
+        return $this->pivot?->is_done;
     }
 }

@@ -5,7 +5,7 @@ namespace App\Http\Resources\Tasks;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class EventResource extends JsonResource
+class EventNotifyResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -19,7 +19,7 @@ class EventResource extends JsonResource
             'title' => $this->title,
             'start' => $this->start,
             'end' => $this->end,
-            'is_done' => $this?->isDone,
+            'creator' => $this->creator
         ];
     }
 }

@@ -117,7 +117,10 @@
         "time_end": "Время окончания",
         "time_event": "Дата события",
         "disable_button": "Отмена",
-        "accept_button": "Применить"
+        "accept_button": "Применить",
+        "yours_new_event": "Вам назначенно новое событие",
+        "event_creator": "Создатель",
+        "no_new_events": "Нет новых уведомлений"
     },
 
     "logs": {
