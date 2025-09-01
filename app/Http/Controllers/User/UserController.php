@@ -49,7 +49,7 @@ class UserController extends Controller
     {
         $this->authorize('check-permission', 'users-read');
 
-        return UserResource::collection($this->repository->allWithRelations());
+        return UserResource::collection($this->repository->all());
     }
 
     public function datatable(DataTableRequest $dataTableRequest, UsersDataTable $usersDataTable): JsonResponse

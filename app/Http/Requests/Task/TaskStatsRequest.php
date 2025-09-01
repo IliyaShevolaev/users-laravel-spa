@@ -24,6 +24,7 @@ class TaskStatsRequest extends FormRequest
         return [
             'start' => ['required', 'date'],
             'end' => ['required', 'date'],
+            'user_id' => ['nullable', 'int'],
         ];
     }
 }

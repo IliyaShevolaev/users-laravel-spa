@@ -12,7 +12,17 @@ const { t } = useI18n();
 
 const chartRef = ref(null);
 
+const users = ref([]);
+
+const appendAllUserOption = function () {
+    users.value.unshift({
+        id: -1,
+        name: "Все",
+    });
+};
+
 const formData = reactive({
+    user_id: -1,
     start: null,
     end: null,
 });
@@ -27,12 +37,39 @@ watch(dateRange, (newDate) => {
     }
 });
 
+watch(() => formData.user_id, (newId) => {
+    requestStatsData();
+});
+
+const requestStartData = function () {
+    axios.get("/api/users").then((response) => {
+        console.log(response.data.data);
+        users.value = response.data.data;
+        appendAllUserOption();
+    });
+};
+requestStartData();
+
 const loading = ref(false);
+
+const validatedBeforeRequest = function () {
+    const result = { ...formData };
+
+    if (result.user_id === -1) {
+        result.user_id = null;
+    }
+
+    if (dayjs(formData.start).isAfter(dayjs(formData.end))) {
+        formData.end = formData.start;
+    }
+
+    return result;
+};
 
 const requestStatsData = function () {
     loading.value = true;
     axios
-        .get("/api/events/stats", { params: formData })
+        .get("/api/events/stats", { params: validatedBeforeRequest() })
         .then((response) => {
             console.log(response);
             series.value[0].data = response.data.data;
@@ -80,8 +117,12 @@ const options = reactive({
         >
             <v-col cols="12" sm="3" md="2">
                 <v-select
-                    label="Тип данных"
-                    :items="['Вариант 1', 'Вариант 2']"
+                    label="Пользователь"
+                    v-model="formData.user_id"
+                    :items="users"
+                    item-title="name"
+                    variant="underlined"
+                    item-value="id"
                     density="comfortable"
                 />
             </v-col>

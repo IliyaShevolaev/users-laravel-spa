@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Tasks;
 
 use App\DTO\Tasks\Stats\RequestStatsDTO;
+use App\DTO\Tasks\Stats\StatsChartDTO;
 use Carbon\Carbon;
 use App\Models\User;
 use App\DTO\User\UserDTO;
@@ -16,12 +17,8 @@ use App\Events\ChangeCalendarEvent;
 use Illuminate\Support\Facades\Auth;
 use App\DTO\Tasks\Event\PatchEventDTO;
 use App\DTO\Tasks\Event\CreateEventDTO;
-use App\DTO\User\Department\DepartmentDTO;
 use App\DTO\Tasks\Event\CalendarRequestDTO;
-use App\Http\Requests\Task\TaskStatsRequest;
 use Illuminate\Database\Eloquent\Collection;
-use App\DTO\Tasks\Event\EventUserRelationDTO;
-use App\Http\Resources\Tasks\EventNotifyResource;
 use App\Repositories\Interfaces\User\UserRepositoryInterface;
 use App\Repositories\Interfaces\Roles\RoleRepositoryInterface;
 use App\Repositories\Interfaces\Tasks\EventRepositoryInterface;
@@ -181,9 +178,12 @@ class EventService
         $rangeStart = Carbon::parse($requestStatsDTO->start)->startOfDay();
         $rangeEnd = Carbon::parse($requestStatsDTO->end)->endOfDay();
 
-        $events = Event::where('start', '<=', $rangeEnd)
-            ->where('end', '>=', $rangeStart)
-            ->get();
+        if (isset($requestStatsDTO->userId)) {
+            $currentUser = $this->userRepository->find($requestStatsDTO->userId);
+            $events = $this->repository->betweenByUser($rangeStart->toDateTimeString(), $rangeEnd->toDateTimeString(), $currentUser);
+        } else {
+            $events = $this->repository->between($rangeStart->toDateTimeString(), $rangeEnd->toDateTimeString());
+        }
 
         $daysCount = $events->flatMap(function ($event) use ($rangeStart, $rangeEnd) {
             $eventStart = Carbon::parse($event->start)->startOfDay();
@@ -206,9 +206,9 @@ class EventService
             ->countBy()
             ->sortKeys();
 
-        return [
+        return StatsChartDTO::from([
             'categories' => $daysCount->keys()->all(),
             'data' => $daysCount->values()->all(),
-        ];
+        ]);
     }
 }

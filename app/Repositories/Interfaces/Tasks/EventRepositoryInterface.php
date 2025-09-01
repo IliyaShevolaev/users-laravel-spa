@@ -30,6 +30,16 @@ interface EventRepositoryInterface
     public function between(string $start, string $end): Collection;
 
     /**
+     * Получить события по датам определенного пользователя
+     *
+     * @param string $start
+     * @param string $end
+     * @param \App\Models\User $user
+     * @return Collection<int, Event>
+     */
+    public function betweenByUser(string $start, string $end, User $user): Collection;
+
+    /**
      * Получить текущие видимые события
      *
      * @param string $start

@@ -147,8 +147,11 @@ class EventController extends Controller
     {
         $requestStatsDto = RequestStatsDTO::from($taskStatsRequest->validated());
 
-        $data = $this->service->getStats($requestStatsDto);
+        $statsChartDTO = $this->service->getStats($requestStatsDto);
 
-        return response()->json($data);
+        return response()->json([
+            'categories' => $statsChartDTO->categories,
+            'data' => $statsChartDTO->data
+        ]);
     }
 }

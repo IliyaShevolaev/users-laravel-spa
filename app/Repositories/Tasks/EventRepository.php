@@ -29,6 +29,14 @@ class EventRepository implements EventRepositoryInterface
             ->get());
     }
 
+    public function betweenByUser(string $start, string $end, User $user): Collection
+    {
+        return $user->events()
+            ->where('start', '<=', $end)
+            ->where('end', '>=', $start)
+            ->get();
+    }
+
 
     public function getCurrentVisible(string $start, string $end): Collection
     {

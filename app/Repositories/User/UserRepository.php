@@ -19,7 +19,7 @@ class UserRepository implements UserRepositoryInterface
 
     public function all(): Collection
     {
-        return User::all();
+        return User::where('name' , '!=', 'system')->get();
     }
 
     public function allWithRelations(): Collection

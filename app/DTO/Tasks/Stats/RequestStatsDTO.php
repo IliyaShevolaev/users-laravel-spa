@@ -9,6 +9,7 @@ class RequestStatsDTO extends Data
     public function __construct(
         public string $start,
         public string $end,
+        public ?int $userId = null,
     ) {
     }
 }
