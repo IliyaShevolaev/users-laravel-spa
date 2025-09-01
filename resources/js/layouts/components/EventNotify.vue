@@ -32,24 +32,14 @@ const hasNotifications = computed(() => eventNotifyStore.badge > 0);
                     :key="index"
                     class="hover:bg-gray-100 rounded-lg mb-1"
                 >
-                    <v-list-item-content>
-                        <v-list-item-title class="font-medium">
-                            {{
-                                `${t("calendar.yours_new_event")}: ${
-                                    item.title
-                                } `
-                            }}
-                        </v-list-item-title>
-                        <v-list-item-subtitle class="text-sm">
-                            {{
-                                `${t("calendar.event_creator")}: ${
-                                    item.creator
-                                } `
-                            }}
+                    <v-list-item-title class="font-medium">
+                        {{ `${t("calendar.yours_new_event")}: ${item.title} ` }}
+                    </v-list-item-title>
+                    <v-list-item-subtitle class="text-sm">
+                        {{ `${t("calendar.event_creator")}: ${item.creator} ` }}
 
-                            Создатель: {{ item.creator }}
-                        </v-list-item-subtitle>
-                    </v-list-item-content>
+                        Создатель: {{ item.creator }}
+                    </v-list-item-subtitle>
                 </v-list-item>
 
                 <v-list-item

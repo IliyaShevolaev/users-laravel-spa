@@ -47,6 +47,7 @@
             "delete": "Удалять",
             "find": "Искать",
             "logs": "Просматривать логи",
+            "stats": "Просматривать статистику",
             "createDepartment": "Создавать подчиненным",
             "createAll": "Создавать всем",
             "entities": {
@@ -76,7 +77,8 @@
         "positions": "Должности",
         "roles": "Роли",
         "tasks": "Задачи",
-        "tasks_schedule": "Расписание задач"
+        "tasks_schedule": "Расписание",
+        "tasks_stats": "Статистика"
     },
 
     "auth": {

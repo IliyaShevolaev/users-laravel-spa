@@ -71,4 +71,12 @@ const { t } = useI18n();
             to: '/tasks/calendar',
         }"
     />
+    <VerticalNavLink
+        v-if="authStore.checkPermission('tasks-stats')"
+        :item="{
+            title: t('nav.tasks_stats'),
+            icon: 'ri-line-chart-line',
+            to: '/tasks/stats',
+        }"
+    />
 </template>

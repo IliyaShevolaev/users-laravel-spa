@@ -11,7 +11,6 @@ import '@layouts/styles/index.scss'
 // Create vue app
 const app = createApp(App)
 
-
 // Register plugins
 registerPlugins(app)
 

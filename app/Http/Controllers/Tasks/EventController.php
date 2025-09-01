@@ -2,19 +2,22 @@
 
 namespace App\Http\Controllers\Tasks;
 
-use App\DTO\Tasks\Event\EventDTO;
-use App\DTO\Tasks\Event\PatchEventDTO;
-use App\Http\Requests\Task\PatchEventRequest;
-use App\Http\Resources\Tasks\EventViewResource;
+use App\DTO\Tasks\Stats\RequestStatsDTO;
+use App\Http\Requests\Task\TaskStatsRequest;
+use Carbon\Carbon;
 use App\Models\Tasks\Event;
+use App\DTO\Tasks\Event\EventDTO;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Services\Tasks\EventService;
+use App\DTO\Tasks\Event\PatchEventDTO;
 use App\DTO\Tasks\Event\CreateEventDTO;
 use App\Http\Requests\Task\EventRequest;
 use App\DTO\Tasks\Event\CalendarRequestDTO;
 use App\Http\Resources\Tasks\EventResource;
+use App\Http\Requests\Task\PatchEventRequest;
 use App\Http\Requests\Task\CreateEventRequest;
+use App\Http\Resources\Tasks\EventViewResource;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Repositories\Interfaces\Tasks\EventRepositoryInterface;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -137,5 +140,15 @@ class EventController extends Controller
         $eventToMark = $this->repository->find($eventId);
 
         $this->service->markEventAsDone($eventToMark);
+    }
+
+
+    public function stats(TaskStatsRequest $taskStatsRequest)
+    {
+        $requestStatsDto = RequestStatsDTO::from($taskStatsRequest->validated());
+
+        $data = $this->service->getStats($requestStatsDto);
+
+        return response()->json($data);
     }
 }

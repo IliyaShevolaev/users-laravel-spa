@@ -4,21 +4,24 @@ declare(strict_types=1);
 
 namespace App\Services\Tasks;
 
-use App\DTO\Tasks\Event\EventDTO;
-use App\Events\ChangeCalendarEvent;
-use App\Http\Resources\Tasks\EventNotifyResource;
+use App\DTO\Tasks\Stats\RequestStatsDTO;
+use Carbon\Carbon;
 use App\Models\User;
 use App\DTO\User\UserDTO;
 use App\Models\Tasks\Event;
 use App\Models\Tasks\EventUser;
+use App\DTO\Tasks\Event\EventDTO;
 use App\Enums\Role\SystemRolesEnum;
+use App\Events\ChangeCalendarEvent;
 use Illuminate\Support\Facades\Auth;
 use App\DTO\Tasks\Event\PatchEventDTO;
 use App\DTO\Tasks\Event\CreateEventDTO;
 use App\DTO\User\Department\DepartmentDTO;
 use App\DTO\Tasks\Event\CalendarRequestDTO;
+use App\Http\Requests\Task\TaskStatsRequest;
 use Illuminate\Database\Eloquent\Collection;
 use App\DTO\Tasks\Event\EventUserRelationDTO;
+use App\Http\Resources\Tasks\EventNotifyResource;
 use App\Repositories\Interfaces\User\UserRepositoryInterface;
 use App\Repositories\Interfaces\Roles\RoleRepositoryInterface;
 use App\Repositories\Interfaces\Tasks\EventRepositoryInterface;
@@ -60,7 +63,7 @@ class EventService
 
         $createdEvent->load('creator');
         $eventDto = EventDTO::from($createdEvent);
-        $createdEventUsers->get()->each(function(User $user) use ($eventDto) {
+        $createdEventUsers->get()->each(function (User $user) use ($eventDto) {
             broadcast(new ChangeCalendarEvent($user->id, $eventDto, true));
         });
     }
@@ -104,7 +107,7 @@ class EventService
         $event->load('creator');
         $eventDto = EventDTO::from($event);
 
-        $allUsers->each(function(User $user) use ($eventDto, $newUserIds) {
+        $allUsers->each(function (User $user) use ($eventDto, $newUserIds) {
             broadcast(new ChangeCalendarEvent($user->id, $eventDto, $newUserIds->contains($user->id)));
         });
     }
@@ -122,7 +125,7 @@ class EventService
         $event->load('creator');
         $eventDto = EventDTO::from($event);
 
-        $users->each(function(User $user) use ($eventDto) {
+        $users->each(function (User $user) use ($eventDto) {
             broadcast(new ChangeCalendarEvent($user->id, $eventDto, false));
         });
 
@@ -171,5 +174,41 @@ class EventService
         return UserDTO::collect(User::whereHas('roles', function ($query) use ($rolesToAssign) {
             $query->whereIn('name', $rolesToAssign->toArray());
         })->where('id', '!=', $user->id)->get());
+    }
+
+    public function getStats(RequestStatsDTO $requestStatsDTO)
+    {
+        $rangeStart = Carbon::parse($requestStatsDTO->start)->startOfDay();
+        $rangeEnd = Carbon::parse($requestStatsDTO->end)->endOfDay();
+
+        $events = Event::where('start', '<=', $rangeEnd)
+            ->where('end', '>=', $rangeStart)
+            ->get();
+
+        $daysCount = $events->flatMap(function ($event) use ($rangeStart, $rangeEnd) {
+            $eventStart = Carbon::parse($event->start)->startOfDay();
+            $eventEnd = Carbon::parse($event->end)->startOfDay();
+
+            if ($eventStart < $rangeStart) {
+                $eventStart = $rangeStart;
+            }
+            if ($eventEnd > $rangeEnd) {
+                $eventEnd = $rangeEnd;
+            }
+
+            $dates = collect();
+            for ($date = $eventStart; $date->lte($eventEnd); $date->addDay()) {
+                $dates->push($date->format('d-m-Y'));
+            }
+
+            return $dates;
+        })
+            ->countBy()
+            ->sortKeys();
+
+        return [
+            'categories' => $daysCount->keys()->all(),
+            'data' => $daysCount->values()->all(),
+        ];
     }
 }

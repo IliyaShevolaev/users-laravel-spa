@@ -77,6 +77,7 @@ const permissionGroups = ref([
             create: false,
             update: false,
             delete: false,
+            stats: false,
         },
     },
 ]);
