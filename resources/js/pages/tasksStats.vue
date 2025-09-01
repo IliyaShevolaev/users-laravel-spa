@@ -10,7 +10,8 @@ import dayjs from "dayjs";
 const vuetifyTheme = useTheme();
 const { t } = useI18n();
 
-const chartRef = ref(null);
+const chartAmountRef = ref(null);
+const chartTimeRef = ref(null);
 
 const users = ref([]);
 
@@ -72,12 +73,32 @@ const validatedBeforeRequest = function () {
 const requestStatsData = function () {
     loading.value = true;
     axios
-        .get('/api/events/amount-stats', { params: validatedBeforeRequest() })
+        .get("/api/events/amount-stats", { params: validatedBeforeRequest() })
         .then((response) => {
             console.log(response);
-            series.value[0].data = response.data.data;
-            if (chartRef.value) {
-                chartRef.value.updateOptions({
+            seriesAmount.value[0].data = response.data.data;
+            if (chartAmountRef.value) {
+                chartAmountRef.value.updateOptions({
+                    xaxis: {
+                        type: "category",
+                        categories: response.data.categories,
+                    },
+                });
+            }
+
+            loading.value = false;
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+
+    axios
+        .get("/api/events/time-stats", { params: validatedBeforeRequest() })
+        .then((response) => {
+            console.log(response);
+            seriesTime.value[0].data = response.data.data;
+            if (chartTimeRef.value) {
+                chartTimeRef.value.updateOptions({
                     xaxis: {
                         type: "category",
                         categories: response.data.categories,
@@ -92,18 +113,36 @@ const requestStatsData = function () {
         });
 };
 
-const series = ref([
+const seriesAmount = ref([
     {
         name: "Задачи",
         data: [],
     },
 ]);
 
-const options = reactive({
+const optionsAmount = reactive({
     chart: {
-        id: "tasks-statistics",
+        id: "tasks-amount",
         toolbar: { show: false },
-        //zoom: { enabled: false },
+        zoom: { enabled: false },
+    },
+    xaxis: {
+        categories: [],
+    },
+});
+
+const seriesTime = ref([
+    {
+        name: "Задачи",
+        data: [],
+    },
+]);
+
+const optionsTime = reactive({
+    chart: {
+        id: "tasks-time",
+        toolbar: { show: false },
+        zoom: { enabled: false },
     },
     xaxis: {
         categories: [],
@@ -168,10 +207,10 @@ const options = reactive({
                     <v-card-title>Количество событий</v-card-title>
                     <div class="w-full h-[70vh] rounded-2xl">
                         <apexchart
-                            ref="chartRef"
+                            ref="chartAmountRef"
                             type="bar"
-                            :options="options"
-                            :series="series"
+                            :options="optionsAmount"
+                            :series="seriesAmount"
                             width="100%"
                             height="100%"
                         />
@@ -184,10 +223,10 @@ const options = reactive({
                     <v-card-title>Время выполнения событий</v-card-title>
                     <div class="w-full h-[70vh] rounded-2xl">
                         <apexchart
-                            ref="chartRef"
+                            ref="chartTimeRef"
                             type="bar"
-                            :options="options"
-                            :series="series"
+                            :options="optionsTime"
+                            :series="seriesTime"
                             width="100%"
                             height="100%"
                         />
