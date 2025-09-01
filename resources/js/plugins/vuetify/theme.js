@@ -42,6 +42,7 @@ export const themes = {
       'expansion-panel-text-custom-bg': '#fafafa',
       'track-bg': '#F0F2F8',
       'chat-bg': '#F7F6FA',
+      'purple': '#915FFF',
     },
     variables: {
       'code-color': '#d400ff',
@@ -111,6 +112,7 @@ export const themes = {
       'expansion-panel-text-custom-bg': '#373350',
       'track-bg': '#474360',
       'chat-bg': '#373452',
+      'purple': '#915FFF',
     },
     variables: {
       'code-color': '#d400ff',

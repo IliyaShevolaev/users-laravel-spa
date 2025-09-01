@@ -36,7 +36,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/roles/datatable', [RoleController::class, 'datatable']);
     Route::resource('roles', RoleController::class);
 
-    Route::get('/events/stats', [EventController::class, 'stats']);
+    Route::get('/events/amount-stats', [EventController::class, 'stats']);
+    Route::get('/events/time-stats', [EventController::class, 'amountTimeStats']);
     Route::patch('/events/patch/{event}', [EventController::class, 'patch']);
     Route::post('/events/mark/{event}', [EventController::class, 'mark']);
     Route::resource('events', EventController::class);

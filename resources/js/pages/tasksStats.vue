@@ -37,9 +37,12 @@ watch(dateRange, (newDate) => {
     }
 });
 
-watch(() => formData.user_id, (newId) => {
-    requestStatsData();
-});
+watch(
+    () => formData.user_id,
+    (newId) => {
+        requestStatsData();
+    }
+);
 
 const requestStartData = function () {
     axios.get("/api/users").then((response) => {
@@ -69,7 +72,7 @@ const validatedBeforeRequest = function () {
 const requestStatsData = function () {
     loading.value = true;
     axios
-        .get("/api/events/stats", { params: validatedBeforeRequest() })
+        .get('/api/events/amount-stats', { params: validatedBeforeRequest() })
         .then((response) => {
             console.log(response);
             series.value[0].data = response.data.data;
@@ -100,6 +103,7 @@ const options = reactive({
     chart: {
         id: "tasks-statistics",
         toolbar: { show: false },
+        //zoom: { enabled: false },
     },
     xaxis: {
         categories: [],
@@ -158,16 +162,39 @@ const options = reactive({
             </v-col>
         </v-row>
 
-        <div class="w-full h-[70vh] rounded-2xl">
-            <apexchart
-                ref="chartRef"
-                type="bar"
-                :options="options"
-                :series="series"
-                width="100%"
-                height="100%"
-            />
-        </div>
+        <v-row class="flex justify-between">
+            <v-col cols="12" sm="12" md="6">
+                <v-card>
+                    <v-card-title>Количество событий</v-card-title>
+                    <div class="w-full h-[70vh] rounded-2xl">
+                        <apexchart
+                            ref="chartRef"
+                            type="bar"
+                            :options="options"
+                            :series="series"
+                            width="100%"
+                            height="100%"
+                        />
+                    </div>
+                </v-card>
+            </v-col>
+
+            <v-col cols="12" sm="12" md="6">
+                <v-card>
+                    <v-card-title>Время выполнения событий</v-card-title>
+                    <div class="w-full h-[70vh] rounded-2xl">
+                        <apexchart
+                            ref="chartRef"
+                            type="bar"
+                            :options="options"
+                            :series="series"
+                            width="100%"
+                            height="100%"
+                        />
+                    </div>
+                </v-card>
+            </v-col>
+        </v-row>
     </div>
 </template>
 

@@ -185,30 +185,104 @@ class EventService
             $events = $this->repository->between($rangeStart->toDateTimeString(), $rangeEnd->toDateTimeString());
         }
 
-        $daysCount = $events->flatMap(function ($event) use ($rangeStart, $rangeEnd) {
+        $daysCount = collect();
+
+        foreach ($events as $event) {
             $eventStart = Carbon::parse($event->start)->startOfDay();
             $eventEnd = Carbon::parse($event->end)->startOfDay();
 
             if ($eventStart < $rangeStart) {
-                $eventStart = $rangeStart;
+                $eventStart = $rangeStart->copy();
             }
             if ($eventEnd > $rangeEnd) {
-                $eventEnd = $rangeEnd;
+                $eventEnd = $rangeEnd->copy();
             }
 
-            $dates = collect();
-            for ($date = $eventStart; $date->lte($eventEnd); $date->addDay()) {
-                $dates->push($date->format('d-m-Y'));
+            for ($date = $eventStart->copy(); $date->lte($eventEnd); $date->addDay()) {
+                $daysCount->push($date->format('d-m-Y'));
             }
+        }
 
-            return $dates;
-        })
-            ->countBy()
-            ->sortKeys();
+        $daysCount = $daysCount->countBy()->sortKeys();
 
         return StatsChartDTO::from([
             'categories' => $daysCount->keys()->all(),
             'data' => $daysCount->values()->all(),
         ]);
     }
+
+    public function getAmountTimeStats(RequestStatsDTO $requestStatsDTO)
+    {
+        $rangeStart = Carbon::parse($requestStatsDTO->start)->startOfDay();
+        $rangeEnd = Carbon::parse($requestStatsDTO->end)->endOfDay();
+
+        $events = collect();
+
+        if (isset($requestStatsDTO->userId)) {
+            $currentUser = $this->userRepository->find($requestStatsDTO->userId);
+
+            $events = $currentUser->events()
+                ->where('start', '<=', $rangeEnd)
+                ->where('end', '>=', $rangeStart)
+                ->wherePivot('is_done', true)
+                ->get();
+        } else {
+            $allUsers = User::all();
+            $events = collect();
+
+            foreach ($allUsers as $user) {
+                $userEvents = $user->events()
+                    ->where('start', '<=', $rangeEnd)
+                    ->where('end', '>=', $rangeStart)
+                    ->wherePivot('is_done', true)
+                    ->get();
+
+                $events = $events->merge($userEvents);
+            }
+        }
+
+        $daysCount = collect();
+
+        foreach ($events as $event) {
+            $eventStart = Carbon::parse($event->start);
+            $eventEnd = Carbon::parse($event->end);
+
+            for ($date = $eventStart->copy()->startOfDay(); $date->lte($eventEnd->copy()->startOfDay()); $date->addDay()) {
+                $dayKey = $date->format('d-m-Y');
+
+                if ($eventStart < $rangeStart) {
+                    $eventStart = $rangeStart->copy();
+                }
+                if ($eventEnd > $rangeEnd) {
+                    $eventEnd = $rangeEnd->copy();
+                }
+
+                $dayStart = $date->copy();
+                $dayEnd = $date->copy()->endOfDay();
+
+                if ($eventStart > $dayStart) {
+                    $dayStart = $eventStart->copy();
+                }
+                if ($eventEnd < $dayEnd) {
+                    $dayEnd = $eventEnd->copy();
+                }
+
+                $hours = $dayEnd->diffInHours($dayStart);
+
+                if (!isset($daysCount[$dayKey])) {
+                    $daysCount[$dayKey] = 0;
+                }
+
+                $daysCount[$dayKey] = ceil($daysCount[$dayKey] - $hours);
+            }
+        }
+
+        $daysCount = $daysCount->sortKeys();
+
+        return StatsChartDTO::from([
+            'categories' => $daysCount->keys()->all(),
+            'data' => $daysCount->values()->all(),
+        ]);
+    }
+
 }

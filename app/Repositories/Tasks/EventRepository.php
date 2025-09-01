@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repositories\Tasks;
 
 use App\Models\User;
+use App\DTO\User\UserDTO;
 use App\Models\Tasks\Event;
 use App\Models\Tasks\EventUser;
 use App\DTO\Tasks\Event\EventDTO;
@@ -31,10 +32,10 @@ class EventRepository implements EventRepositoryInterface
 
     public function betweenByUser(string $start, string $end, User $user): Collection
     {
-        return $user->events()
+        return EventDTO::collect($user->events()
             ->where('start', '<=', $end)
             ->where('end', '>=', $start)
-            ->get();
+            ->get());
     }
 
 

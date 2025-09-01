@@ -9,6 +9,8 @@ import { ru } from 'vuetify/locale'
 import "@core/scss/template/libs/vuetify/index.scss";
 import "vuetify/styles";
 
+import colors from 'vuetify/util/colors'
+
 export default function (app) {
     const vuetify = createVuetify({
         aliases: {

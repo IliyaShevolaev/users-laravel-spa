@@ -366,5 +366,7 @@ const closeViewDialog = function (eventWasMarked) {
         </div>
     </div>
 
-    <FullCalendar :options="calendarOptions" ref="calendarRef" />
+    <v-card class="px-3 py-2">
+        <FullCalendar :options="calendarOptions" ref="calendarRef" />
+    </v-card>
 </template>

@@ -154,4 +154,16 @@ class EventController extends Controller
             'data' => $statsChartDTO->data
         ]);
     }
+
+    public function amountTimeStats(TaskStatsRequest $taskStatsRequest)
+    {
+        $requestStatsDto = RequestStatsDTO::from($taskStatsRequest->validated());
+
+        $statsChartDTO = $this->service->getAmountTimeStats($requestStatsDto);
+
+        return response()->json([
+            'categories' => $statsChartDTO->categories,
+            'data' => $statsChartDTO->data
+        ]);
+    }
 }
