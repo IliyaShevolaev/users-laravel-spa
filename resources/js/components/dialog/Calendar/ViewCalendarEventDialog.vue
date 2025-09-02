@@ -1,11 +1,14 @@
 <script setup>
 import axios from "axios";
 import dayjs from "dayjs";
-import { computed, watch } from "vue";
+import { computed, reactive, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useAuthStore } from "../../../stores/auth";
 import AlertDangerDialog from "../../alerts/AlertDangerDialog.vue";
+import { useTheme } from "vuetify";
+import VueDatePicker from "@vuepic/vue-datepicker";
 
+const vuetifyTheme = useTheme();
 const { t } = useI18n();
 const authStore = useAuthStore();
 
@@ -21,6 +24,7 @@ const emit = defineEmits(["closeDialog", "deleteEvent", "editEvent"]);
 const close = function () {
     emit("closeDialog", eventWasMarked.value);
     eventInfo.value = null;
+    dateRange.value = null;
 };
 
 const loading = ref(true);
@@ -55,6 +59,8 @@ watch(
     }
 );
 
+const dateRange = ref(null);
+
 const editButtonHandle = function () {
     if (eventInfo.value) {
         emit("editEvent", eventInfo.value.id);
@@ -65,18 +71,30 @@ const editButtonHandle = function () {
 const deleteButtonHandle = function () {
     if (eventInfo.value) {
         emit("deleteEvent", eventInfo.value.id, eventInfo.value.title);
-        eventInfo.value = null;
     }
 };
 
 const eventWasMarked = ref(false);
+
+const formData = reactive({
+    end_time: null,
+});
+
+watch(
+    dateRange,
+    (newDate) => {
+        if (newDate) {
+            formData.end_time = dayjs(newDate).format("YYYY-MM-DD HH:mm:ss");
+        }
+    },
+);
 
 const markButtonHandle = function (newMarkedValue) {
     loading.value = true;
     eventWasMarked.value = false;
     if (eventInfo.value) {
         axios
-            .post(`/api/events/mark/${eventInfo.value.id}`)
+            .post(`/api/events/mark/${eventInfo.value.id}`, formData)
             .then((response) => {
                 if (eventInfo.value) {
                     eventInfo.value.is_done = newMarkedValue;
@@ -84,8 +102,9 @@ const markButtonHandle = function (newMarkedValue) {
                 loading.value = false;
                 eventWasMarked.value = true;
                 console.log(eventWasMarked.value);
-            }).catch(error => {
-                console.log(error)
+            })
+            .catch((error) => {
+                console.log(error);
             });
     }
 };
@@ -121,6 +140,20 @@ const isDone = computed(() => {
     }
     return false;
 });
+
+const minEventDoneDate = computed(() => {
+    if (eventInfo.value) {
+        return eventInfo.value.start;
+    }
+    return null;
+});
+
+const maxEventDoneDate = computed(() => {
+    if (eventInfo.value) {
+        return eventInfo.value.end;
+    }
+    return null;
+});
 </script>
 
 <template>
@@ -129,6 +162,7 @@ const isDone = computed(() => {
         :is-open="showAlertDialog"
         :message="alertText"
     ></AlertDangerDialog>
+
     <v-dialog v-model="props.isOpen" persistent max-width="600px">
         <v-skeleton-loader v-if="loading" type="card"></v-skeleton-loader>
 
@@ -166,27 +200,55 @@ const isDone = computed(() => {
                         {{ t("calendar.direction") }}:
                         {{
                             eventInfo
-                                ? dayjs(eventInfo.start).format("DD.MM.YYYY HH:mm")
+                                ? dayjs(eventInfo.start).format(
+                                      "DD.MM.YYYY HH:mm"
+                                  )
                                 : ""
                         }}
                         —
                         {{
                             eventInfo
-                                ? dayjs(eventInfo.end).format("DD.MM.YYYY HH:mm")
+                                ? dayjs(eventInfo.end).format(
+                                      "DD.MM.YYYY HH:mm"
+                                  )
                                 : ""
                         }}
                     </span>
-                    <!-- <span class="text-l mt-2">
-                        {{ t("calendar.assigned_to_event") }}:
-                        {{
-                            eventInfo
-                                ? eventInfo.all_vision
-                                    ? t("calendar.all_vision_task_assigned")
-                                    : t("calendar.department_assigned") +
-                                      eventInfo.department.name
-                                : ""
-                        }}
-                    </span> -->
+                    <span class="flex gap-3 text-l mt-2">
+                        <p>Время исполнения:</p>
+                        <VueDatePicker
+                            :dark="vuetifyTheme.global.name.value === 'dark'"
+                            v-model="dateRange"
+                            locale="ru"
+                            format="dd.MM.yyyy HH:mm"
+                            :enable-time-picker="true"
+                            :teleport="true"
+                            teleport-center
+                            :min-date="minEventDoneDate"
+                            :max-date="maxEventDoneDate"
+                            prevent-min-max-navigation
+                        >
+                            <template #action-row="{ selectDate, closePicker }">
+                                <div class="flex justify-between w-full">
+                                    <v-btn
+                                        variant="outlined"
+                                        size="small"
+                                        @click="closePicker()"
+                                    >
+                                        {{ t("calendar.disable_button") }}
+                                    </v-btn>
+
+                                    <v-btn
+                                        variant="outlined"
+                                        size="small"
+                                        @click="selectDate()"
+                                    >
+                                        {{ t("calendar.accept_button") }}
+                                    </v-btn>
+                                </div>
+                            </template>
+                        </VueDatePicker>
+                    </span>
                 </div>
             </v-card-text>
             <v-card-actions>
@@ -218,6 +280,7 @@ const isDone = computed(() => {
                 >
                     {{ t("calendar.is_done") }}
                 </v-btn>
+
                 <v-btn
                     v-else
                     color="success"

@@ -9,6 +9,7 @@ use App\Models\Tasks\Event;
 use App\Models\User\Position;
 use App\Enums\User\GenderEnum;
 use App\Enums\User\StatusEnum;
+use App\Models\Tasks\EventUser;
 use App\Models\User\Department;
 use Illuminate\Support\Collection;
 use Spatie\Activitylog\LogOptions;
@@ -177,7 +178,11 @@ class User extends Authenticatable implements LaratrustUser
      */
     public function events()
     {
-        return $this->belongsToMany(Event::class, 'event_user')->withPivot('is_done');
+        return $this
+            ->belongsToMany(Event::class, 'event_user')
+            ->using(EventUser::class)
+            ->withPivot('is_done', 'end_time')
+            ->withTimestamps();
     }
 
     public function getUserRolePermissionsCollection(): Collection

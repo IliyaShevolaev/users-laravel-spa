@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Tasks;
 
+use App\DTO\Tasks\Event\MarkEventDTO;
 use App\DTO\Tasks\Stats\RequestStatsDTO;
+use App\Http\Requests\Task\MarkEventRequest;
 use App\Http\Requests\Task\TaskStatsRequest;
 use Carbon\Carbon;
 use App\Models\Tasks\Event;
@@ -133,13 +135,15 @@ class EventController extends Controller
         $this->service->delete($eventToDelete);
     }
 
-    public function mark(int $eventId)
+    public function mark(MarkEventRequest $markEventRequest, int $eventId)
     {
         $this->authorize('check-permission', 'tasks-read');
 
+        $dto = MarkEventDTO::from($markEventRequest->validated());
+
         $eventToMark = $this->repository->find($eventId);
 
-        $this->service->markEventAsDone($eventToMark);
+        $this->service->markEventAsDone($eventToMark, $dto->endTime);
     }
 
 

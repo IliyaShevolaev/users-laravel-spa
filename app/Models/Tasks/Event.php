@@ -37,7 +37,11 @@ class Event extends Model
      */
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'event_user')->using(EventUser::class)->withPivot('is_done');
+        return $this
+            ->belongsToMany(User::class, 'event_user')
+            ->using(EventUser::class)
+            ->withPivot('is_done', 'end_time')
+            ->withTimestamps();
     }
 
     /**
@@ -76,7 +80,7 @@ class Event extends Model
         return $this->creator_id === $user->id;
     }
 
-    public function getIsDoneAttribute(): bool | null
+    public function getIsDoneAttribute(): bool|null
     {
         return $this->pivot?->is_done;
     }

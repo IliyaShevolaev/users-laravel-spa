@@ -135,11 +135,12 @@ class EventService
      * @param Event $event
      * @return void
      */
-    public function markEventAsDone(Event $event)
+    public function markEventAsDone(Event $event, string $endTime)
     {
         $markRelation = EventUser::where('user_id', Auth::id())->where('event_id', $event->id)->firstOrFail();
 
         $markRelation->is_done = !$markRelation->is_done;
+        $markRelation->end_time = $endTime;
         $markRelation->save();
     }
 

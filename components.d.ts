@@ -22,6 +22,7 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     Snackbar: typeof import('./resources/js/components/toaster/Snackbar.vue')['default']
     ThemeSwitcher: typeof import('./resources/js/@core/components/ThemeSwitcher.vue')['default']
+    TimePickerDialog: typeof import('./resources/js/components/dialog/Calendar/TimePickerDialog.vue')['default']
     UpgradeToPro: typeof import('./resources/js/components/UpgradeToPro.vue')['default']
     UserDialog: typeof import('./resources/js/components/dialog/UserDialog.vue')['default']
     ViewCalendarEvent: typeof import('./resources/js/components/dialog/Calendar/ViewCalendarEvent.vue')['default']

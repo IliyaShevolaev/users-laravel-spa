@@ -16,6 +16,7 @@ class EventViewResource extends JsonResource
     public function toArray(Request $request): array
     {
         $user = Auth::user();
+        $pivot = $this->users->firstWhere('id', $user->id)?->pivot;
 
         return [
             'id' => $this->id,
@@ -23,7 +24,8 @@ class EventViewResource extends JsonResource
             'start' => $this->start,
             'end' => $this->end,
             'description' => $this->description,
-            'is_done' => $this->users->find($user->id)->pivot->is_done,
+            'is_done' => $pivot->is_done,
+            'end_time' => $pivot?->end_time,
             'creator' => $this->creator,
             'change_permission' => $this->canUserChange($user),
             'assigned_users' => $this->users
