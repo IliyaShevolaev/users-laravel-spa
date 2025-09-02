@@ -28,33 +28,18 @@ const formData = reactive({
     end: null,
 });
 
-const dateRange = ref(null);
-watch(dateRange, (newDate) => {
-    if (newDate) {
-        formData.start = dayjs(newDate[0]).format("YYYY-MM-DD");
-        formData.end = dayjs(newDate[1]).format("YYYY-MM-DD");
-        console.log(formData);
-        requestStatsData();
-    }
-});
-
-watch(
-    () => formData.user_id,
-    (newId) => {
-        requestStatsData();
-    }
-);
+const loadingUsers = ref(true);
+const loading = ref(false);
 
 const requestStartData = function () {
     axios.get("/api/users").then((response) => {
         console.log(response.data.data);
         users.value = response.data.data;
         appendAllUserOption();
+        loadingUsers.value = false;
     });
 };
 requestStartData();
-
-const loading = ref(false);
 
 const validatedBeforeRequest = function () {
     const result = { ...formData };
@@ -113,6 +98,32 @@ const requestStatsData = function () {
         });
 };
 
+const dateRange = ref([
+    dayjs().startOf("month").format("YYYY-MM-DD"),
+    dayjs().endOf("month").format("YYYY-MM-DD"),
+]);
+
+watch(
+    dateRange,
+    (newDate) => {
+        if (newDate) {
+            console.log(dateRange.value);
+            formData.start = dayjs(newDate[0]).format("YYYY-MM-DD");
+            formData.end = dayjs(newDate[1]).format("YYYY-MM-DD");
+            console.log(formData);
+            requestStatsData();
+        }
+    },
+    { immediate: true }
+);
+
+watch(
+    () => formData.user_id,
+    (newId) => {
+        requestStatsData();
+    }
+);
+
 const seriesAmount = ref([
     {
         name: "Задачи",
@@ -128,12 +139,27 @@ const optionsAmount = reactive({
     },
     xaxis: {
         categories: [],
+        title: {
+            text: "Дата",
+            style: {
+                fontSize: "20px",
+            },
+        },
+    },
+
+    yaxis: {
+        title: {
+            text: "Количество задач",
+            style: {
+                fontSize: "20px",
+            },
+        },
     },
 });
 
 const seriesTime = ref([
     {
-        name: "Задачи",
+        name: "Время",
         data: [],
     },
 ]);
@@ -146,6 +172,21 @@ const optionsTime = reactive({
     },
     xaxis: {
         categories: [],
+        title: {
+            text: "Дата",
+            style: {
+                fontSize: "20px",
+            },
+        },
+    },
+
+    yaxis: {
+        title: {
+            text: "Время выполнения (ч)",
+            style: {
+                fontSize: "20px",
+            },
+        },
     },
 });
 </script>
@@ -153,13 +194,18 @@ const optionsTime = reactive({
 <template>
     <div>
         <v-row
-            class="px-4 py-6 mb-5 rounded-2xl"
+            class="px-4 py-6 rounded-2xl"
             align="center"
             justify="start"
             dense
         >
             <v-col cols="12" sm="3" md="2">
+                <v-skeleton-loader
+                    v-if="loadingUsers"
+                    type="list-item"
+                ></v-skeleton-loader>
                 <v-select
+                    v-else
                     label="Пользователь"
                     v-model="formData.user_id"
                     :items="users"

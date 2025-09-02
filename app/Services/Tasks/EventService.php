@@ -199,7 +199,7 @@ class EventService
             }
 
             for ($date = $eventStart->copy(); $date->lte($eventEnd); $date->addDay()) {
-                $daysCount->push($date->format('d-m-Y'));
+                $daysCount->push($date->format('d.m.Y'));
             }
         }
 
@@ -248,7 +248,7 @@ class EventService
             $eventEnd = Carbon::parse($event->end);
 
             for ($date = $eventStart->copy()->startOfDay(); $date->lte($eventEnd->copy()->startOfDay()); $date->addDay()) {
-                $dayKey = $date->format('d-m-Y');
+                $dayKey = $date->format('d.m.Y');
 
                 if ($eventStart < $rangeStart) {
                     $eventStart = $rangeStart->copy();
