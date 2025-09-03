@@ -224,6 +224,7 @@ const optionsTime = reactive({
                     locale="ru"
                     range
                     format="dd.MM.yyyy"
+                    :clearable="false"
                 >
                     <template #action-row="{ selectDate, closePicker }">
                         <div class="flex justify-between w-full">

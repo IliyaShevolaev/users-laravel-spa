@@ -248,6 +248,7 @@ const maxEventDoneDate = computed(() => {
                             :max-date="maxEventDoneDate"
                             prevent-min-max-navigation
                             :disabled="isDatePickerEnabled"
+                            :clearable="false"
                         >
                             <template #action-row="{ selectDate, closePicker }">
                                 <div class="flex justify-between w-full">

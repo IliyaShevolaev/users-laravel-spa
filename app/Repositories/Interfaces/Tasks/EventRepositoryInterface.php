@@ -40,6 +40,24 @@ interface EventRepositoryInterface
     public function betweenByUser(string $start, string $end, User $user): Collection;
 
     /**
+     * Получить выполненные задачи по пользователю
+     * @param string $start
+     * @param string $end
+     * @param User $user
+     * @return Collection
+     */
+    public function betweenByUserIsDone(string $start, string $end, User $user): Collection;
+
+    /**
+     * Получить выполненные события всех пользователей в диапазоне
+     *
+     * @param string $start
+     * @param string $end
+     * @return \Illuminate\Support\Collection
+     */
+    public function betweenByAllUsersIsDone(string $start, string $end): \Illuminate\Support\Collection;
+
+    /**
      * Получить текущие видимые события
      *
      * @param string $start

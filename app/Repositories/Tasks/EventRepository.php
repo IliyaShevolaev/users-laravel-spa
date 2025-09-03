@@ -39,6 +39,37 @@ class EventRepository implements EventRepositoryInterface
     }
 
 
+    public function betweenByUserIsDone(string $start, string $end, User $user): Collection
+    {
+        return EventDTO::collect($user->events()
+            ->where('start', '<=', $end)
+            ->where('end', '>=', $start)
+            ->wherePivot('is_done', true)
+            ->get());
+    }
+
+
+    public function betweenByAllUsersIsDone(string $start, string $end): \Illuminate\Support\Collection
+    {
+        $eventsDTO = collect();
+
+        foreach (User::all() as $user) {
+            $userEvents = $user->events()
+                ->where('start', '<=', $end)
+                ->where('end', '>=', $start)
+                ->wherePivot('is_done', true)
+                ->get();
+
+            $eventsDTO = $eventsDTO->merge(
+                $userEvents->map(function ($event) {
+                    return EventDTO::from($event, $event->pivot);
+                })
+            );
+        }
+
+        return $eventsDTO;
+    }
+
     public function getCurrentVisible(string $start, string $end): Collection
     {
         $events = Auth::user()->events()

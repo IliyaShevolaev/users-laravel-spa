@@ -15,6 +15,7 @@ class EventDTO extends Data
         public string $end,
         public ?UserDTO $creator = null,
         public ?bool $isDone = null,
+        public ?string $endTime = null,
         public ?string $description = null,
     ) {
     }

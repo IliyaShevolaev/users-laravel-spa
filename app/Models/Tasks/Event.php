@@ -84,4 +84,10 @@ class Event extends Model
     {
         return $this->pivot?->is_done;
     }
+
+    public function getEndTimeAttribute(): ?string
+    {
+        return $this->pivot?->end_time ?? null;
+    }
+
 }
