@@ -143,7 +143,16 @@ class EventController extends Controller
 
         $eventToMark = $this->repository->find($eventId);
 
-        $this->service->markEventAsDone($eventToMark, $dto->endTime);
+        $this->service->markEvent($eventToMark, $dto->endTime);
+    }
+
+    public function unmark(int $eventId)
+    {
+        $this->authorize('check-permission', 'tasks-read');
+
+        $eventToMark = $this->repository->find($eventId);
+
+        $this->service->markEvent($eventToMark, null);
     }
 
 

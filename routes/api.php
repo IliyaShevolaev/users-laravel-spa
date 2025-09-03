@@ -40,6 +40,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/events/time-stats', [EventController::class, 'amountTimeStats']);
     Route::patch('/events/patch/{event}', [EventController::class, 'patch']);
     Route::post('/events/mark/{event}', [EventController::class, 'mark']);
+    Route::post('/events/unmark/{event}', [EventController::class, 'unmark']);
     Route::resource('events', EventController::class);
 
     Route::post('/activity-logs/datatable/{user}', [ActivityLogsController::class, 'datatable']);

@@ -38,6 +38,11 @@ const requestInfo = function () {
         .then((response) => {
             console.log(response);
             eventInfo.value = response.data.data;
+            if (eventInfo.value.is_done) {
+                dateRange.value = eventInfo.value.end_time;
+            } else {
+                dateRange.value = eventInfo.value.end;
+            }
             loading.value = false;
         })
         .catch((error) => {
@@ -49,6 +54,10 @@ const requestInfo = function () {
             console.log(error);
         });
 };
+
+const isDatePickerEnabled = computed(() => {
+    return eventInfo.value && !!eventInfo.value.end_time;
+});
 
 watch(
     () => props.isOpen,
@@ -80,27 +89,38 @@ const formData = reactive({
     end_time: null,
 });
 
-watch(
-    dateRange,
-    (newDate) => {
-        if (newDate) {
-            formData.end_time = dayjs(newDate).format("YYYY-MM-DD HH:mm:ss");
-        }
-    },
-);
+watch(dateRange, (newDate) => {
+    if (newDate) {
+        formData.end_time = dayjs(newDate).format("YYYY-MM-DD HH:mm:ss");
+    }
+});
 
-const markButtonHandle = function (newMarkedValue) {
+const markButtonHandle = function () {
     loading.value = true;
     eventWasMarked.value = false;
     if (eventInfo.value) {
         axios
             .post(`/api/events/mark/${eventInfo.value.id}`, formData)
             .then((response) => {
-                if (eventInfo.value) {
-                    eventInfo.value.is_done = newMarkedValue;
-                }
-                loading.value = false;
                 eventWasMarked.value = true;
+                close();
+                console.log(eventWasMarked.value);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
+};
+
+const unmarkButtonHandle = function () {
+    loading.value = true;
+    eventWasMarked.value = false;
+    if (eventInfo.value) {
+        axios
+            .post(`/api/events/unmark/${eventInfo.value.id}`)
+            .then((response) => {
+                eventWasMarked.value = true;
+                close();
                 console.log(eventWasMarked.value);
             })
             .catch((error) => {
@@ -227,6 +247,7 @@ const maxEventDoneDate = computed(() => {
                             :min-date="minEventDoneDate"
                             :max-date="maxEventDoneDate"
                             prevent-min-max-navigation
+                            :disabled="isDatePickerEnabled"
                         >
                             <template #action-row="{ selectDate, closePicker }">
                                 <div class="flex justify-between w-full">
@@ -276,7 +297,7 @@ const maxEventDoneDate = computed(() => {
                     color="success"
                     variant="outlined"
                     style="text-transform: none"
-                    @click="markButtonHandle(false)"
+                    @click="unmarkButtonHandle()"
                 >
                     {{ t("calendar.is_done") }}
                 </v-btn>
@@ -286,7 +307,7 @@ const maxEventDoneDate = computed(() => {
                     color="success"
                     variant="elevated"
                     style="text-transform: none"
-                    @click="markButtonHandle(true)"
+                    @click="markButtonHandle()"
                 >
                     {{ t("calendar.set_done") }}
                 </v-btn>

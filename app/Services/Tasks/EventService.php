@@ -133,9 +133,10 @@ class EventService
      * Пометить задачу выполненной
      *
      * @param Event $event
+     * @param string|null $endTime
      * @return void
      */
-    public function markEventAsDone(Event $event, string $endTime)
+    public function markEvent(Event $event, string|null $endTime)
     {
         $markRelation = EventUser::where('user_id', Auth::id())->where('event_id', $event->id)->firstOrFail();
 
