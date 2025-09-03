@@ -126,7 +126,7 @@ watch(
 
 const seriesAmount = ref([
     {
-        name: "Задачи",
+        name: t("task-stats.tasks"),
         data: [],
     },
 ]);
@@ -140,7 +140,7 @@ const optionsAmount = reactive({
     xaxis: {
         categories: [],
         title: {
-            text: "Дата",
+            text: t("task-stats.date"),
             style: {
                 fontSize: "20px",
             },
@@ -149,7 +149,7 @@ const optionsAmount = reactive({
 
     yaxis: {
         title: {
-            text: "Количество задач",
+            text: t("task-stats.task-count"),
             style: {
                 fontSize: "20px",
             },
@@ -159,7 +159,7 @@ const optionsAmount = reactive({
 
 const seriesTime = ref([
     {
-        name: "Время",
+        name: t("task-stats.time"),
         data: [],
     },
 ]);
@@ -173,7 +173,7 @@ const optionsTime = reactive({
     xaxis: {
         categories: [],
         title: {
-            text: "Дата",
+            text: t("task-stats.date"),
             style: {
                 fontSize: "20px",
             },
@@ -182,7 +182,7 @@ const optionsTime = reactive({
 
     yaxis: {
         title: {
-            text: "Время выполнения (ч)",
+            text: t("task-stats.time_to_done"),
             style: {
                 fontSize: "20px",
             },
@@ -206,7 +206,7 @@ const optionsTime = reactive({
                 ></v-skeleton-loader>
                 <v-select
                     v-else
-                    label="Пользователь"
+                    :label="t('users.user')"
                     v-model="formData.user_id"
                     :items="users"
                     item-title="name"
@@ -251,7 +251,9 @@ const optionsTime = reactive({
         <v-row class="flex justify-between">
             <v-col cols="12" sm="12" md="6">
                 <v-card>
-                    <v-card-title>Количество событий</v-card-title>
+                    <v-card-title>
+                        {{ t("task-stats.on_task_count") }}
+                    </v-card-title>
                     <div class="w-full h-[70vh] rounded-2xl">
                         <apexchart
                             ref="chartAmountRef"
@@ -267,7 +269,9 @@ const optionsTime = reactive({
 
             <v-col cols="12" sm="12" md="6">
                 <v-card>
-                    <v-card-title>Время выполнения событий</v-card-title>
+                    <v-card-title>
+                        {{ t("task-stats.on_task_time") }}
+                    </v-card-title>
                     <div class="w-full h-[70vh] rounded-2xl">
                         <apexchart
                             ref="chartTimeRef"

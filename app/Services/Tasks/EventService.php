@@ -179,6 +179,12 @@ class EventService
         })->where('id', '!=', $user->id)->get());
     }
 
+    /**
+     * Получить статистику по количеству событий
+     *
+     * @param RequestStatsDTO $requestStatsDTO
+     * @return StatsChartDTO
+     */
     public function getAmountStats(RequestStatsDTO $requestStatsDTO)
     {
         $rangeStart = Carbon::parse($requestStatsDTO->start)->startOfDay();
@@ -201,6 +207,12 @@ class EventService
         return TaskAmountStats::handle($events, $rangeStart, $rangeEnd);
     }
 
+    /**
+     * Получить статистику по времени событий
+     *
+     * @param RequestStatsDTO $requestStatsDTO
+     * @return StatsChartDTO
+     */
     public function getAmountTimeStats(RequestStatsDTO $requestStatsDTO)
     {
         $rangeStart = Carbon::parse($requestStatsDTO->start)->startOfDay();

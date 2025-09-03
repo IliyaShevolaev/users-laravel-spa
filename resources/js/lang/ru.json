@@ -160,6 +160,16 @@
         }
     },
 
+    "task-stats": {
+        "date": "Дата",
+        "task-count": "Количество задач",
+        "time_to_done": "Время выполнения (ч)",
+        "time": "Время",
+        "tasks": "Задачи",
+        "on_task_count": "По количеству задач",
+        "on_task_time": "По времени выполнения задач"
+    },
+
     "main": {
         "append_button": "Добавить",
         "cancel_button": "Отмена",
