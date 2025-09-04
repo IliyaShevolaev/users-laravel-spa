@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Repositories\Cities\CityRepository;
+use App\Repositories\Interfaces\Cities\CityRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 use App\Repositories\User\UserRepository;
 use App\Repositories\Roles\RoleRepository;
@@ -33,7 +35,8 @@ class RepositoryServiceProvider extends ServiceProvider
         RoleRepositoryInterface::class => RoleRepository::class,
         EventRepositoryInterface::class => EventRepository::class,
         ActivityLogRepositoryInterface::class => ActivityLogRepository::class,
-        RegionRepositoryInterface::class => RegionRepository::class
+        RegionRepositoryInterface::class => RegionRepository::class,
+        CityRepositoryInterface::class => CityRepository::class
     ];
 
     /**

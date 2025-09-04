@@ -6,6 +6,7 @@ declare(strict_types=1);
 // php vendor/bin/phpcs
 
 use App\Events\ChatMessage;
+use App\Http\Controllers\Cities\CityController;
 use App\Http\Controllers\Cities\RegionController;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\User;
@@ -50,6 +51,9 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/regions/datatable', [RegionController::class, 'datatable']);
     Route::resource('regions', RegionController::class);
+
+    Route::post('/cities/datatable', [CityController::class, 'datatable']);
+    Route::resource('cities', CityController::class);
 
 });
 

@@ -168,7 +168,7 @@ const deleteRow = function (id) {
                 sortBy: currentSortBy.value,
             });
             showSnackBar(
-                t("region") +
+                t("regions.region") +
                     " " +
                     modelChangesStore.getRegion.lastDelete +
                     " " +

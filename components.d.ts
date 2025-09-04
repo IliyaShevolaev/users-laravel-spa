@@ -13,6 +13,7 @@ declare module 'vue' {
     CardStatisticsHorizontal: typeof import('./resources/js/@core/components/cards/CardStatisticsHorizontal.vue')['default']
     CardStatisticsVertical: typeof import('./resources/js/@core/components/cards/CardStatisticsVertical.vue')['default']
     CardStatisticsWithImages: typeof import('./resources/js/@core/components/cards/CardStatisticsWithImages.vue')['default']
+    CityDialog: typeof import('./resources/js/components/dialog/CityDialog.vue')['default']
     DepartmentDialog: typeof import('./resources/js/components/dialog/DepartmentDialog.vue')['default']
     ErrorHeader: typeof import('./resources/js/components/ErrorHeader.vue')['default']
     MenuTimePicker: typeof import('./resources/js/components/inputs/MenuTimePicker.vue')['default']
