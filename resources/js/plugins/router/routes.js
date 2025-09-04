@@ -57,6 +57,16 @@ export const routes = [
                 meta: { permission: 'tasks-stats' },
             },
             {
+                path: "cities",
+                component: () => import("@/pages/cities.vue"),
+                meta: { permission: 'tasks-stats' },
+            },
+            {
+                path: "regions",
+                component: () => import("@/pages/regions.vue"),
+                meta: { permission: 'tasks-stats' },
+            },
+            {
                 path: "/:pathMatch(.*)*",
                 component: () => import("@/pages/[...error].vue"),
             },

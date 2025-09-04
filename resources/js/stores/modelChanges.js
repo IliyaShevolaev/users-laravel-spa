@@ -32,6 +32,12 @@ export const useModelChangesStore = defineStore("modelChanges", {
             lastEdit: null,
             lastDelete: null
         },
+
+        region: {
+            lastAdd: null,
+            lastEdit: null,
+            lastDelete: null
+        },
     }),
     getters: {
         getUser() {
@@ -48,6 +54,9 @@ export const useModelChangesStore = defineStore("modelChanges", {
         },
         getEvent() {
             return this.event;
+        },
+        getRegion() {
+            return this.region;
         },
     },
     actions: {
@@ -105,6 +114,16 @@ export const useModelChangesStore = defineStore("modelChanges", {
         },
         deleteEvent(name) {
             this.event.lastDelete = name;
+        },
+
+        addRegion(name) {
+            this.region.lastAdd = name;
+        },
+        editRegion(name) {
+            this.region.lastEdit = name;
+        },
+        deleteRegion(name) {
+            this.region.lastDelete = name;
         },
     },
 });

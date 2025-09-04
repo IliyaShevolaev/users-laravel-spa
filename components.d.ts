@@ -18,6 +18,7 @@ declare module 'vue' {
     MenuTimePicker: typeof import('./resources/js/components/inputs/MenuTimePicker.vue')['default']
     MoreBtn: typeof import('./resources/js/@core/components/MoreBtn.vue')['default']
     PositionDialog: typeof import('./resources/js/components/dialog/PositionDialog.vue')['default']
+    RegionDialog: typeof import('./resources/js/components/dialog/RegionDialog.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Snackbar: typeof import('./resources/js/components/toaster/Snackbar.vue')['default']

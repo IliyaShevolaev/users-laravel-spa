@@ -80,6 +80,16 @@ const permissionGroups = ref([
             stats: false,
         },
     },
+    {
+    key: "cities",
+        name: t("users.roles.entities.cities"),
+        permissions: {
+            read: false,
+            create: false,
+            update: false,
+            delete: false,
+        },
+    }
 ]);
 
 const editRequest = function (id) {

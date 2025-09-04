@@ -79,4 +79,26 @@ const { t } = useI18n();
             to: '/tasks/stats',
         }"
     />
+    <VerticalNavSectionTitle
+        v-if="authStore.hasOneOfEachPermission('cities-read')"
+        :item="{
+            heading: t('nav.cities'),
+        }"
+    />
+    <VerticalNavLink
+        v-if="authStore.checkPermission('cities-read')"
+        :item="{
+            title: t('nav.cities'),
+            icon: 'ri-building-line',
+            to: '/cities',
+        }"
+    />
+    <VerticalNavLink
+        v-if="authStore.checkPermission('cities-read')"
+        :item="{
+            title: t('nav.regions'),
+            icon: 'ri-road-map-line',
+            to: '/regions',
+        }"
+    />
 </template>

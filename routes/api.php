@@ -6,6 +6,7 @@ declare(strict_types=1);
 // php vendor/bin/phpcs
 
 use App\Events\ChatMessage;
+use App\Http\Controllers\Cities\RegionController;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Auth;
@@ -46,12 +47,10 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/activity-logs/datatable/{user}', [ActivityLogsController::class, 'datatable']);
     Route::resource('activity-logs', ActivityLogsController::class);
+
+    Route::post('/regions/datatable', [RegionController::class, 'datatable']);
+    Route::resource('regions', RegionController::class);
+
 });
 
 Route::get('/user', AuthController::class);
-
-Route::get('test', function() {
-    $response = Http::get('');
-
-    return $response->json();
-});

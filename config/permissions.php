@@ -37,5 +37,12 @@ return [
         'update',
         'delete',
         'stats'
+    ],
+
+    'cities' => [
+        'read',
+        'create',
+        'update',
+        'delete',
     ]
 ];
