@@ -6,17 +6,18 @@ declare(strict_types=1);
 // php vendor/bin/phpcs
 
 use App\Events\ChatMessage;
-use App\Http\Controllers\ActivityLogs\ActivityLogsController;
-use App\Http\Controllers\Tasks\EventController;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Role\RoleController;
 use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\Tasks\EventController;
 use App\Http\Controllers\User\PositionController;
 use App\Http\Controllers\User\DepartmentController;
+use App\Http\Controllers\ActivityLogs\ActivityLogsController;
 
 Route::get('/auth/create', '\App\Http\Controllers\Auth\RegisterController@create');
 
@@ -48,3 +49,9 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/user', AuthController::class);
+
+Route::get('test', function() {
+    $response = Http::get('');
+
+    return $response->json();
+});

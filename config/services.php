@@ -35,4 +35,7 @@ return [
         ],
     ],
 
+    'parse_cities' => [
+        'api_url' => env('CITIES_PARSE_API_URL')
+    ]
 ];
