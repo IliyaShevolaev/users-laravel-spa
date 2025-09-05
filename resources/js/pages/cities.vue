@@ -11,9 +11,11 @@ import debounce from "lodash/debounce";
 import { useModelChangesStore } from "../stores/modelChanges";
 import { useAuthStore } from "../stores/auth";
 import { saveAs } from "file-saver";
+import { useEventNotifyStore } from "../stores/eventNotifies";
 
 const authStore = useAuthStore();
 const modelChangesStore = useModelChangesStore();
+const notifyStore = useEventNotifyStore();
 const { t } = useI18n();
 const { mobile } = useDisplay();
 
@@ -214,11 +216,27 @@ const alertText = ref("");
 const showAlertAcceptDialog = ref(false);
 const alertAcceptText = ref("");
 
+const currentFileIsInRequest = ref(false);
+let excelAbortController = null;
+
 const exportData = function () {
+    if (excelAbortController) {
+        excelAbortController.abort();
+    }
+    excelAbortController = new AbortController();
+
+    if (!currentFileIsInRequest.value) {
+        currentFileIsInRequest.value = true;
+        showSnackBar(t("cities.start_export_download"), "dark-green");
+    }
+
     axios
-        .get("/api/cities/export", { responseType: "blob" })
+        .get("/api/cities/export", {
+            signal: excelAbortController.signal,
+        })
         .then((response) => {
-            saveAs(response.data, "downloaded-file.xlsx");
+            console.log(response);
+            currentFileIsInRequest.value = false;
         });
 };
 </script>

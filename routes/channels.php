@@ -14,3 +14,7 @@ Broadcast::channel('change.user.role.{userId}', function (User $user, int $userI
 Broadcast::channel('change.calendar.events.{userId}', function (User $user, int $userId) {
     return $user->id === $userId;
 });
+
+Broadcast::channel('export.file.ready.{userId}', function (User $user, int $userId) {
+    return $user->id === $userId;
+});

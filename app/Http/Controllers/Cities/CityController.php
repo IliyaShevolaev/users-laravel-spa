@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Cities;
 
+use App\Jobs\ExportCitiesJob;
 use Illuminate\Http\Request;
 use App\DTO\Cities\CreateCityDTO;
 use Illuminate\Http\JsonResponse;
@@ -9,6 +10,7 @@ use App\DataTables\CitiesDataTable;
 use App\Exports\Cities\CitiesExport;
 use App\Http\Controllers\Controller;
 use App\Services\Cities\CityService;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\Cities\CityRequest;
 use App\DTO\DataTable\DatatableRequestDTO;
@@ -71,8 +73,10 @@ class CityController extends Controller
         return response()->json(['message' => 'success']);
     }
 
-    public function export()
+    public function export(): void
     {
-        return Excel::download(new CitiesExport, 'users.xlsx');
+        $this->authorize('check-permission', 'cities-read');
+
+        ExportCitiesJob::dispatch(Auth::user());
     }
 }

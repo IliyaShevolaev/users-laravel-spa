@@ -8,6 +8,7 @@ declare(strict_types=1);
 use App\Events\ChatMessage;
 use App\Http\Controllers\Cities\CityController;
 use App\Http\Controllers\Cities\RegionController;
+use App\Http\Controllers\Files\ExportController;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Auth;
@@ -56,6 +57,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/cities/export', [CityController::class, 'export']);
     Route::resource('cities', CityController::class);
 
+    Route::get('/exports/download/{fileName}', [ExportController::class, 'get']);
 });
 
 Route::get('/user', AuthController::class);
