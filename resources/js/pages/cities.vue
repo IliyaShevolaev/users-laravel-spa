@@ -10,6 +10,7 @@ import { useI18n } from "vue-i18n";
 import debounce from "lodash/debounce";
 import { useModelChangesStore } from "../stores/modelChanges";
 import { useAuthStore } from "../stores/auth";
+import { saveAs } from "file-saver";
 
 const authStore = useAuthStore();
 const modelChangesStore = useModelChangesStore();
@@ -72,7 +73,9 @@ const requestData = function ({ page, itemsPerPage, sortBy }) {
     };
 
     axios
-        .post("/api/cities/datatable", params, { signal: abortController.signal })
+        .post("/api/cities/datatable", params, {
+            signal: abortController.signal,
+        })
         .then((response) => {
             cities.value = response.data.data.original.data;
             currentPage.value = response.data.input.page;
@@ -210,14 +213,38 @@ const alertText = ref("");
 
 const showAlertAcceptDialog = ref(false);
 const alertAcceptText = ref("");
+
+const exportData = function () {
+    axios
+        .get("/api/cities/export", { responseType: "blob" })
+        .then((response) => {
+            saveAs(response.data, "downloaded-file.xlsx");
+        });
+};
 </script>
 
 <template>
-    <div class="mb-5" v-if="authStore.checkPermission('cities-create')">
-        <v-btn @click="openDialog()" prepend-icon="ri-add-line" color="success">
-            {{ $t("main.append_button") }}
-        </v-btn>
+    <div class="flex gap-2">
+        <div class="mb-5" v-if="authStore.checkPermission('cities-create')">
+            <v-btn
+                @click="openDialog()"
+                prepend-icon="ri-add-line"
+                color="success"
+            >
+                {{ $t("main.append_button") }}
+            </v-btn>
+        </div>
+        <div class="mb-5" v-if="authStore.checkPermission('cities-read')">
+            <v-btn
+                @click="exportData()"
+                prepend-icon="ri-file-excel-2-line"
+                color="dark-green"
+            >
+                {{ $t("main.export_button") }}
+            </v-btn>
+        </div>
     </div>
+
     <CityDialog
         @close-dialog="closeDialog"
         :isOpen="isDialogOpen"

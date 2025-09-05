@@ -14,7 +14,6 @@ class CitiesImport implements ToCollection, WithChunkReading
 
     public function __construct()
     {
-        // Загружаем кеш всех существующих регионов один раз
         $this->regionsCache = Region::pluck('id', 'name');
     }
 
@@ -65,6 +64,7 @@ class CitiesImport implements ToCollection, WithChunkReading
 
         if (!empty($citiesToInsert)) {
             City::insert($citiesToInsert);
+            
         }
     }
 

@@ -124,6 +124,17 @@ return [
         ]
     ],
 
+    'cities' => [
+        'city' => 'Город',
+        'region' => 'Регион',
+        'regions_sheet' => 'Регионы',
+        'cities_sheet' => 'Города',
+        'ip_start' => 'IP — начало',
+        'ip_end' => 'IP — конец',
+        'created' => 'Создан',
+        'updated' => 'Обновлен',
+    ],
+
     'title' => 'название',
     'title_placeholder' => 'Введите название',
     'add_button' => 'Добавить',

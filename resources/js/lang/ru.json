@@ -173,32 +173,6 @@
         "on_task_time": "По времени выполнения задач"
     },
 
-    "main": {
-        "append_button": "Добавить",
-        "cancel_button": "Отмена",
-        "edit_button": "Изменить",
-        "delete_button": "Удалить",
-        "close_button": "Закрыть",
-        "search": "Поиск",
-        "created": "Создан",
-        "updated": "Обновлен",
-        "actions": "Действия",
-        "title": "Название",
-        "open": "Открыть",
-        "page-not-found": "Страница не найдена⚠️",
-        "back": "Назад",
-        "yes": "Да",
-        "no": "Нет",
-        "ok": "Ок",
-        "error": "Ошибка!",
-        "no_permission": "У вас нет разрешения на просмотр",
-        "unable_system": "Запрещено системой",
-        "bad_request": "Неверный запрос",
-        "server_error": "Ошибка сервера",
-        "no_error_match": "Неизвестная ошибка",
-        "description": "Описание"
-    },
-
     "regions": {
         "region": "Регион",
         "delete": "Удалить регион",
@@ -223,5 +197,32 @@
         "was_append": "был успешно добавлен",
         "was_edited": "был успешно изменен",
         "was_deleted": "был успешно удален"
+    },
+
+    "main": {
+        "append_button": "Добавить",
+        "cancel_button": "Отмена",
+        "edit_button": "Изменить",
+        "delete_button": "Удалить",
+        "close_button": "Закрыть",
+        "export_button": "Экспорт",
+        "search": "Поиск",
+        "created": "Создан",
+        "updated": "Обновлен",
+        "actions": "Действия",
+        "title": "Название",
+        "open": "Открыть",
+        "page-not-found": "Страница не найдена⚠️",
+        "back": "Назад",
+        "yes": "Да",
+        "no": "Нет",
+        "ok": "Ок",
+        "error": "Ошибка!",
+        "no_permission": "У вас нет разрешения на просмотр",
+        "unable_system": "Запрещено системой",
+        "bad_request": "Неверный запрос",
+        "server_error": "Ошибка сервера",
+        "no_error_match": "Неизвестная ошибка",
+        "description": "Описание"
     }
 }

@@ -63,6 +63,7 @@
         "@vueuse/math": "^10.11.1",
         "apexcharts": "^4.7.0",
         "dayjs": "^1.11.13",
+        "file-saver": "^2.0.5",
         "install": "^0.13.0",
         "laravel-echo": "^2.2.0",
         "lodash.debounce": "^4.0.8",
