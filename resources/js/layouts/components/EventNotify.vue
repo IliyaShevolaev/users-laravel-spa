@@ -33,12 +33,11 @@ const hasNotifications = computed(() => eventNotifyStore.badge > 0);
                     class="hover:bg-gray-100 rounded-lg mb-1"
                 >
                     <v-list-item-title class="font-medium">
-                        {{ `${t("calendar.yours_new_event")}: ${item.title} ` }}
+                        <v-icon>{{ item.icon }}</v-icon>
+                        {{ item.title }}
                     </v-list-item-title>
                     <v-list-item-subtitle class="text-sm">
-                        {{ `${t("calendar.event_creator")}: ${item.creator} ` }}
-
-                        Создатель: {{ item.creator }}
+                        {{ item.subtitle }}
                     </v-list-item-subtitle>
                 </v-list-item>
 

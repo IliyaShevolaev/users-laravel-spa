@@ -196,7 +196,9 @@
         "edit_button": "Изменить город",
         "was_append": "был успешно добавлен",
         "was_edited": "был успешно изменен",
-        "was_deleted": "был успешно удален"
+        "was_deleted": "был успешно удален",
+        "start_export_download": "Загрузка данных в Excel начата",
+        "end_export_download": "Завершился экспорт Excel документа"
     },
 
     "main": {

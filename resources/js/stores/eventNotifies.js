@@ -7,18 +7,19 @@ export const useEventNotifyStore = defineStore("eventNotify", {
 
     getters: {
         badge(state) {
-            return state.notifyRecords.length
+            return state.notifyRecords.length;
         },
         getNotifyRecords(state) {
             return state.notifyRecords;
-        }
+        },
     },
 
     actions: {
-        pushNewEvent(event) {
+        pushNotify(title, subtitle, icon) {
             this.notifyRecords.push({
-                title: event.title,
-                creator: event.creator.name
+                title: title,
+                subtitle: subtitle,
+                icon: icon,
             });
         },
     },
