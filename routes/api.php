@@ -54,6 +54,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('regions', RegionController::class);
 
     Route::post('/cities/datatable', [CityController::class, 'datatable']);
+    Route::post('/cities/import', [CityController::class, 'import']);
     Route::get('/cities/export', [CityController::class, 'export']);
     Route::resource('cities', CityController::class);
 

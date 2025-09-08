@@ -43,7 +43,8 @@ export const themes = {
       'track-bg': '#F0F2F8',
       'chat-bg': '#F7F6FA',
       'purple': '#915FFF',
-      'dark-green': '#126920'
+      'dark-green': '#126920',
+      'soft-green': '#3e874a'
     },
     variables: {
       'code-color': '#d400ff',
@@ -114,7 +115,8 @@ export const themes = {
       'track-bg': '#474360',
       'chat-bg': '#373452',
       'purple': '#915FFF',
-      'dark-green': '#126920'
+      'dark-green': '#126920',
+      'soft-green': '#3e874a'
     },
     variables: {
       'code-color': '#d400ff',

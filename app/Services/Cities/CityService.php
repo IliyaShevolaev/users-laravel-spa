@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Services\Cities;
 
 use App\DTO\MessageDTO;
+use App\Jobs\ImportCitiesJob;
 use App\DTO\Cities\CreateCityDTO;
+use Illuminate\Http\UploadedFile;
 use App\Repositories\Interfaces\Cities\CityRepositoryInterface;
 
 class CityService
@@ -29,5 +31,12 @@ class CityService
     {
         $city = $this->repository->find($cityId);
         $this->repository->delete($city);
+    }
+
+    public function storeImportFile(UploadedFile $file)
+    {
+        $filePath = $file->store('imports');
+
+        ImportCitiesJob::dispatch($filePath);
     }
 }

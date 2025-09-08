@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers\Cities;
 
+use App\Http\Requests\Cities\ImportCitiesRequest;
 use App\Jobs\ExportCitiesJob;
-use Illuminate\Http\Request;
+use App\Jobs\ImportCitiesJob;
 use App\DTO\Cities\CreateCityDTO;
 use Illuminate\Http\JsonResponse;
 use App\DataTables\CitiesDataTable;
-use App\Exports\Cities\CitiesExport;
 use App\Http\Controllers\Controller;
 use App\Services\Cities\CityService;
 use Illuminate\Support\Facades\Auth;
-use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\Cities\CityRequest;
 use App\DTO\DataTable\DatatableRequestDTO;
 use App\Http\Resources\Cities\CityResource;
@@ -41,7 +40,6 @@ class CityController extends Controller
     public function store(CityRequest $request): JsonResponse
     {
         $this->authorize('check-permission', 'cities-create');
-        debugbar()->info($request->validated());
 
         $dto = CreateCityDTO::from($request->validated());
 
@@ -71,6 +69,13 @@ class CityController extends Controller
         $this->service->delete($cityId);
 
         return response()->json(['message' => 'success']);
+    }
+
+    public function import(ImportCitiesRequest $importCitiesRequest): void
+    {
+        $this->authorize('check-permission', 'cities-read');
+
+        $this->service->storeImportFile($importCitiesRequest->file('file'));
     }
 
     public function export(): void

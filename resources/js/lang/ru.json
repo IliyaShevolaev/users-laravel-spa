@@ -209,6 +209,7 @@
         "delete_button": "Удалить",
         "close_button": "Закрыть",
         "export_button": "Экспорт",
+        "import_button": "Импорт",
         "search": "Поиск",
         "created": "Создан",
         "updated": "Обновлен",
