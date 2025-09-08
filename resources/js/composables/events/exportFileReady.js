@@ -1,15 +1,14 @@
 import { onMounted, onBeforeUnmount, ref, watch } from "vue";
 import { useAuthStore } from "../../stores/auth";
-import { useEventNotifyStore } from "../../stores/eventNotifies";
 import { useJobStatusStore } from "../../stores/jobStatus";
 import { useI18n } from "vue-i18n";
 import { saveAs } from "file-saver";
+import { downloadExportFile, markFileAsDownloaded } from "../api/export/exportRequests";
 import axios from "axios";
 
 export function listenExportFileReady() {
     const authStore = useAuthStore();
     const echoChannel = ref(null);
-    const notifyStore = useEventNotifyStore();
     const jobStatusStore = useJobStatusStore();
     const { t } = useI18n();
 
@@ -23,27 +22,18 @@ export function listenExportFileReady() {
 
         echoChannel.value = window.Echo.private(
             `export.file.ready.${userId}`
-        ).listen(".export.file.ready", (event) => {
+        ).listen(".export.file.ready", async (event) => {
             console.log("Your file ready!!!!");
             console.log(event);
 
-            notifyStore.pushNotify(
-                t("cities.end_export_download"),
-                t("cities.file_name") + event.fileName,
-                "ri-file-excel-2-line"
-            );
-
-            axios
-                .get(`/api/exports/download/${event.fileName}`, {
-                    responseType: "blob",
-                })
-                .then((response) => {
-                    console.log("FILE");
-                    saveAs(response.data, event.fileName);
-                })
-                .finally(() => {
-                    jobStatusStore.endCitiesExport();
-                });
+            try {
+                await downloadExportFile(event.fileName);
+                await markFileAsDownloaded(event.fileName);
+            } catch (error) {
+                console.log(error);
+            } finally {
+                jobStatusStore.endCitiesExport();
+            }
         });
     };
 

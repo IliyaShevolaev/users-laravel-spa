@@ -57,7 +57,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/cities/export', [CityController::class, 'export']);
     Route::resource('cities', CityController::class);
 
-    Route::get('/exports/download/{fileName}', [ExportController::class, 'get']);
+    Route::group(['prefix' => 'exports'], function() {
+        Route::get('/download/{fileName}', [ExportController::class, 'get']);
+        Route::get('/mark-downloaded/{fileName}', [ExportController::class, 'mark']);
+        Route::get('/get-miss-downloaded-files', [ExportController::class, 'getFiles']);
+    });
 });
 
 Route::get('/user', AuthController::class);

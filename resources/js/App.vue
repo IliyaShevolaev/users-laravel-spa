@@ -4,6 +4,7 @@ import { listenRolePermissionChangesEvent } from './composables/events/rolePermi
 import { listenUserRoleChangesEvent } from './composables/events/roleChanges';
 import { listenCalendarNotifications } from './composables/events/calendarEventsChange';
 import { listenExportFileReady } from './composables/events/exportFileReady';
+import { checkMissDownloadedFiles } from './composables/files/exportFilesCheck';
 
 
 const authStore = useAuthStore();
@@ -15,6 +16,7 @@ listenUserRoleChangesEvent();
 listenCalendarNotifications();
 
 listenExportFileReady();
+checkMissDownloadedFiles();
 </script>
 
 <template>
