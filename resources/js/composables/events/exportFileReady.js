@@ -1,6 +1,7 @@
 import { onMounted, onBeforeUnmount, ref, watch } from "vue";
 import { useAuthStore } from "../../stores/auth";
 import { useEventNotifyStore } from "../../stores/eventNotifies";
+import { useJobStatusStore } from "../../stores/jobStatus";
 import { useI18n } from "vue-i18n";
 import { saveAs } from "file-saver";
 import axios from "axios";
@@ -9,6 +10,7 @@ export function listenExportFileReady() {
     const authStore = useAuthStore();
     const echoChannel = ref(null);
     const notifyStore = useEventNotifyStore();
+    const jobStatusStore = useJobStatusStore();
     const { t } = useI18n();
 
     const listenUser = (userId) => {
@@ -36,7 +38,11 @@ export function listenExportFileReady() {
                     responseType: "blob",
                 })
                 .then((response) => {
+                    console.log("FILE");
                     saveAs(response.data, event.fileName);
+                })
+                .finally(() => {
+                    jobStatusStore.endCitiesExport();
                 });
         });
     };

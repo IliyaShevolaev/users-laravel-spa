@@ -10,11 +10,13 @@ import { useI18n } from "vue-i18n";
 import debounce from "lodash/debounce";
 import { useModelChangesStore } from "../stores/modelChanges";
 import { useAuthStore } from "../stores/auth";
+import { useJobStatusStore } from "../stores/jobStatus";
 
 const authStore = useAuthStore();
 const modelChangesStore = useModelChangesStore();
 const { t } = useI18n();
 const { mobile } = useDisplay();
+const jobStatusStore = useJobStatusStore();
 
 const regions = ref([]);
 
@@ -69,7 +71,9 @@ const requestData = function ({ page, itemsPerPage, sortBy }) {
     };
 
     axios
-        .post("/api/regions/datatable", params, { signal: abortController.signal })
+        .post("/api/regions/datatable", params, {
+            signal: abortController.signal,
+        })
         .then((response) => {
             regions.value = response.data.data.original.data;
             currentPage.value = response.data.input.page;
@@ -207,13 +211,67 @@ const alertText = ref("");
 
 const showAlertAcceptDialog = ref(false);
 const alertAcceptText = ref("");
+
+const currentFileIsInRequest = ref(false);
+let excelAbortController = null;
+
+const exportData = function () {
+    if (jobStatusStore.isCitiesExporting) {
+        return;
+    }
+
+    jobStatusStore.startCitiesExport();
+
+    if (excelAbortController) {
+        excelAbortController.abort();
+    }
+    excelAbortController = new AbortController();
+
+    if (!currentFileIsInRequest.value) {
+        currentFileIsInRequest.value = true;
+        showSnackBar(t("cities.start_export_download"), "dark-green");
+    }
+
+    axios
+        .get("/api/cities/export", {
+            signal: excelAbortController.signal,
+        })
+        .then((response) => {
+            console.log(response);
+            currentFileIsInRequest.value = false;
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+};
+
+const disabledExportButton = computed(() => {
+    return jobStatusStore.isCitiesExporting;
+});
 </script>
 
 <template>
-    <div class="mb-5" v-if="authStore.checkPermission('cities-create')">
-        <v-btn @click="openDialog()" prepend-icon="ri-add-line" color="success">
-            {{ $t("main.append_button") }}
-        </v-btn>
+    <div class="flex gap-2">
+        <div class="mb-5" v-if="authStore.checkPermission('cities-create')">
+            <v-btn
+                @click="openDialog()"
+                prepend-icon="ri-add-line"
+                color="success"
+            >
+                {{ $t("main.append_button") }}
+            </v-btn>
+        </div>
+
+        <div class="mb-5" v-if="authStore.checkPermission('cities-read')">
+            <v-btn
+                :disabled="disabledExportButton"
+                @click="exportData()"
+                prepend-icon="ri-file-excel-2-line"
+                color="dark-green"
+            >
+                {{ $t("main.export_button") }}
+            </v-btn>
+        </div>
     </div>
     <RegionDialog
         @close-dialog="closeDialog"

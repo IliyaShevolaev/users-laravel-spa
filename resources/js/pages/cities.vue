@@ -10,14 +10,15 @@ import { useI18n } from "vue-i18n";
 import debounce from "lodash/debounce";
 import { useModelChangesStore } from "../stores/modelChanges";
 import { useAuthStore } from "../stores/auth";
-import { saveAs } from "file-saver";
 import { useEventNotifyStore } from "../stores/eventNotifies";
+import { useJobStatusStore } from "../stores/jobStatus";
 
 const authStore = useAuthStore();
 const modelChangesStore = useModelChangesStore();
 const notifyStore = useEventNotifyStore();
 const { t } = useI18n();
 const { mobile } = useDisplay();
+const jobStatusStore = useJobStatusStore();
 
 const cities = ref([]);
 
@@ -220,6 +221,12 @@ const currentFileIsInRequest = ref(false);
 let excelAbortController = null;
 
 const exportData = function () {
+    if (jobStatusStore.isCitiesExporting) {
+        return;
+    }
+
+    jobStatusStore.startCitiesExport();
+
     if (excelAbortController) {
         excelAbortController.abort();
     }
@@ -237,8 +244,15 @@ const exportData = function () {
         .then((response) => {
             console.log(response);
             currentFileIsInRequest.value = false;
-        });
+        })
+        .catch((error) => {
+            console.log(error);
+        })
 };
+
+const disabledExportButton = computed(() => {
+    return jobStatusStore.isCitiesExporting;
+})
 </script>
 
 <template>
@@ -254,12 +268,14 @@ const exportData = function () {
         </div>
         <div class="mb-5" v-if="authStore.checkPermission('cities-read')">
             <v-btn
+                :disabled="disabledExportButton"
                 @click="exportData()"
                 prepend-icon="ri-file-excel-2-line"
                 color="dark-green"
             >
                 {{ $t("main.export_button") }}
             </v-btn>
+
         </div>
     </div>
 
