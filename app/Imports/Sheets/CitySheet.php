@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace App\Imports\Sheets;
 
 use App\Models\Cities\City;
+use Illuminate\Support\Str;
 use App\Models\Cities\Region;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\ToCollection;
-use Maatwebsite\Excel\Concerns\WithStartRow;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 
-class CitySheet implements ToCollection, WithStartRow, WithChunkReading
+class CitySheet implements ToCollection, WithHeadingRow, WithChunkReading
 {
     private Collection $regions;
 
@@ -20,26 +22,32 @@ class CitySheet implements ToCollection, WithStartRow, WithChunkReading
         $this->regions = Region::all()->keyBy('name');
     }
 
-    public function startRow(): int
-    {
-        return 2;
-    }
-
     public function collection(Collection $rows)
     {
+        $titleNames = [
+            'name' => Str::slug(trans('main.cities.city')),
+            'region' => Str::slug(trans('main.cities.region')),
+            'ip_start' => Str::slug(trans('main.cities.ip_start')),
+            'ip_end' => Str::slug(trans('main.cities.ip_end')),
+        ];
+
         $citiesToInsert = $rows
-            ->map(function ($row) {
-                $regionName = $row->get(2);
+            ->map(function ($row) use ($titleNames) {
+                $regionName = $row->get($titleNames['region']);
                 $region = $this->regions->get($regionName);
 
-                if (!$region) {
-                    return null;
+                $name = $row->get($titleNames['name']);
+                $ipStart = $row->get($titleNames['ip_start']);
+                $ipEnd = $row->get($titleNames['ip_end']);
+
+                if (!$name || !$ipStart || !$ipEnd || !$region) {
+                    return;
                 }
 
                 return [
-                    'name' => $row->get(1),
-                    'ip_start' => $row->get(3),
-                    'ip_end' => $row->get(4),
+                    'name' => $row->get($titleNames['name']),
+                    'ip_start' => $row->get($titleNames['ip_start']),
+                    'ip_end' => $row->get($titleNames['ip_end']),
                     'region_id' => $region->id,
                     'created_at' => now(),
                     'updated_at' => now(),
@@ -51,7 +59,6 @@ class CitySheet implements ToCollection, WithStartRow, WithChunkReading
             });
 
         $citiesToInsert->chunk(1000)->each(function ($chunk) {
-            
             City::upsert(
                 $chunk->toArray(),
                 ['ip_start', 'ip_end'],
@@ -59,7 +66,6 @@ class CitySheet implements ToCollection, WithStartRow, WithChunkReading
             );
         });
     }
-
 
     public function chunkSize(): int
     {
