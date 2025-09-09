@@ -198,6 +198,7 @@
         "was_edited": "был успешно изменен",
         "was_deleted": "был успешно удален",
         "start_export_download": "Загрузка данных в Excel начата",
+        "start_import": "Выгрузка данных из Excel начата",
         "end_export_download": "Завершился экспорт Excel документа",
         "file_name": "Имя файла — "
     },

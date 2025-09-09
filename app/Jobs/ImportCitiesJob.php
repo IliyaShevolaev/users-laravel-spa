@@ -3,6 +3,8 @@
 namespace App\Jobs;
 
 use App\Imports\CitiesExcelImport;
+use App\Imports\CityExcelImport;
+use App\Imports\RegionExcelImport;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
@@ -26,7 +28,8 @@ class ImportCitiesJob implements ShouldQueue
      */
     public function handle(): void
     {
-        Excel::import(new CitiesExcelImport(), $this->filePath, 'local');
+        Excel::import(new RegionExcelImport(), $this->filePath, 'local');
+        Excel::import(new CityExcelImport(), $this->filePath, 'local');
 
         Storage::disk('local')->delete($this->filePath);
     }

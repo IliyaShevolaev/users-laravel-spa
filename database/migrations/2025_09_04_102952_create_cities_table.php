@@ -20,6 +20,8 @@ return new class extends Migration
             $table->foreignId('region_id')->constrained('regions', 'id')->cascadeOnDelete();
 
             $table->timestamps();
+
+            $table->unique(['ip_start', 'ip_end']);
         });
     }
 

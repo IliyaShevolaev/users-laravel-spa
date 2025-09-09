@@ -248,6 +248,35 @@ const exportData = function () {
 const disabledExportButton = computed(() => {
     return jobStatusStore.isCitiesExporting;
 });
+
+const fileInput = ref(null);
+
+function triggerFileSelect() {
+    fileInput.value.click();
+}
+
+function handleFileChange(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    showSnackBar(t("cities.start_import"), "dark-green");
+
+    axios
+        .post("/api/cities/import", formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        })
+        .then((response) => {
+            console.log(response.data);
+        })
+        .catch((error) => {
+            console.error(error.response.data);
+        });
+}
 </script>
 
 <template>
@@ -261,16 +290,34 @@ const disabledExportButton = computed(() => {
                 {{ $t("main.append_button") }}
             </v-btn>
         </div>
-
-        <div class="mb-5" v-if="authStore.checkPermission('cities-read')">
+        <div class="mb-5">
             <v-btn
                 :disabled="disabledExportButton"
                 @click="exportData()"
-                prepend-icon="ri-file-excel-2-line"
+                prepend-icon="ri-corner-up-right-line"
                 color="dark-green"
             >
+                <v-icon class="me-1">ri-file-excel-2-line</v-icon>
                 {{ $t("main.export_button") }}
             </v-btn>
+        </div>
+        <div class="mb-5">
+            <v-btn
+                @click="triggerFileSelect"
+                prepend-icon="ri-corner-left-down-line"
+                color="dark-green"
+            >
+                <v-icon class="me-1">ri-file-excel-2-line</v-icon>
+                {{ $t("main.import_button") }}
+            </v-btn>
+
+            <input
+                type="file"
+                ref="fileInput"
+                style="display: none"
+                accept=".xlsx,.xls"
+                @change="handleFileChange"
+            />
         </div>
     </div>
     <RegionDialog

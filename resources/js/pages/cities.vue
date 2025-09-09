@@ -264,10 +264,10 @@ function handleFileChange(event) {
     const file = event.target.files[0];
     if (!file) return;
 
-    console.log(file.name);
-
     const formData = new FormData();
     formData.append("file", file);
+
+    showSnackBar(t('cities.start_import'), "dark-green");
 
     axios
         .post("/api/cities/import", formData, {
@@ -308,7 +308,6 @@ function handleFileChange(event) {
         </div>
         <div class="mb-5">
             <v-btn
-                :disabled="disabledExportButton"
                 @click="triggerFileSelect"
                 prepend-icon="ri-corner-left-down-line"
                 color="dark-green"
