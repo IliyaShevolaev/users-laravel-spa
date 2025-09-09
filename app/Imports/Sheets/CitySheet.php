@@ -45,13 +45,14 @@ class CitySheet implements ToCollection, WithHeadingRow, WithChunkReading
                 }
 
                 return [
-                    'name' => $row->get($titleNames['name']),
-                    'ip_start' => $row->get($titleNames['ip_start']),
-                    'ip_end' => $row->get($titleNames['ip_end']),
+                    'name' => $name,
+                    'ip_start' => $ipStart,
+                    'ip_end' => $ipEnd,
                     'region_id' => $region->id,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
+
             })
             ->filter()
             ->unique(function ($item) {
