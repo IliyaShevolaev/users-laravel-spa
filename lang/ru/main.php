@@ -135,6 +135,10 @@ return [
         'updated' => 'Обновлен',
     ],
 
+    'file_templates' => [
+        'file_template' => 'файл шаблона'
+    ],
+
     'title' => 'название',
     'title_placeholder' => 'Введите название',
     'add_button' => 'Добавить',

@@ -89,6 +89,16 @@ const permissionGroups = ref([
             update: false,
             delete: false,
         },
+    },
+    {
+    key: "fileTemplates",
+        name: t("users.roles.entities.fileTemplates"),
+        permissions: {
+            read: false,
+            create: false,
+            update: false,
+            delete: false,
+        },
     }
 ]);
 

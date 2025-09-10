@@ -9,6 +9,7 @@ use App\Events\ChatMessage;
 use App\Http\Controllers\Cities\CityController;
 use App\Http\Controllers\Cities\RegionController;
 use App\Http\Controllers\Files\ExportController;
+use App\Http\Controllers\Files\FileTemplateController;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Auth;
@@ -58,10 +59,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/cities/export', [CityController::class, 'export']);
     Route::resource('cities', CityController::class);
 
-    Route::group(['prefix' => 'exports'], function() {
+    Route::group(['prefix' => 'exports'], function () {
         Route::get('/download/{fileName}', [ExportController::class, 'get']);
         Route::get('/mark-downloaded/{fileName}', [ExportController::class, 'mark']);
         Route::get('/get-miss-downloaded-files', [ExportController::class, 'getFiles']);
+    });
+
+    Route::group(['prefix' => 'files'], function () {
+
+        Route::post('/templates/datatable', [FileTemplateController::class, 'datatable']);
+        Route::resource('templates', FileTemplateController::class);
     });
 });
 

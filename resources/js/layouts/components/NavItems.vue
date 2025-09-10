@@ -101,4 +101,18 @@ const { t } = useI18n();
             to: '/regions',
         }"
     />
+    <VerticalNavSectionTitle
+        v-if="authStore.hasOneOfEachPermission('fileTemplates-read')"
+        :item="{
+            heading: t('nav.files'),
+        }"
+    />
+    <VerticalNavLink
+        v-if="authStore.checkPermission('fileTemplates-read')"
+        :item="{
+            title: t('nav.fileTemplates'),
+            icon: 'ri-article-line',
+            to: '/files/templates',
+        }"
+    />
 </template>

@@ -39,6 +39,17 @@
             "was_edited": "была успешно изменена",
             "was_deleted": "была успешно удалена"
         },
+        "file_templates": {
+            "file_template": "Шаблон документа",
+            "delete": "Удалить шаблон",
+            "no_selected": "Шаблон отсутствует",
+            "add_button": "Добавить шаблон",
+            "edit_button": "Изменить шаблон",
+            "was_append": "был успешно добавлен",
+            "was_edited": "был успешно изменен",
+            "was_deleted": "был успешно удален",
+            "upload_file": "Файл шаблона"
+        },
         "roles": {
             "roles": "Роли",
             "create": "Создавать",
@@ -56,7 +67,8 @@
                 "positions": "Должности",
                 "roles": "Роли",
                 "tasks": "Задачи",
-                "cities": "Города"
+                "cities": "Города",
+                "fileTemplates": "Шаблоны файлов"
             },
             "add": "Создать роль",
             "edit": "Редактировать роль",
@@ -81,7 +93,9 @@
         "tasks_schedule": "Расписание",
         "tasks_stats": "Статистика",
         "cities": "Города",
-        "regions": "Регионы"
+        "regions": "Регионы",
+        "files": "Файлы",
+        "fileTemplates": "Шаблоны файлов"
     },
 
     "auth": {

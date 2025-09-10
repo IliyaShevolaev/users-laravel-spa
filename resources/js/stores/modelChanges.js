@@ -44,6 +44,12 @@ export const useModelChangesStore = defineStore("modelChanges", {
             lastEdit: null,
             lastDelete: null
         },
+
+        fileTemplate: {
+            lastAdd: null,
+            lastEdit: null,
+            lastDelete: null
+        },
     }),
     getters: {
         getUser() {
@@ -66,6 +72,9 @@ export const useModelChangesStore = defineStore("modelChanges", {
         },
         getCity() {
             return this.city;
+        },
+        getFileTemplate() {
+            return this.fileTemplate;
         },
     },
     actions: {
@@ -143,6 +152,16 @@ export const useModelChangesStore = defineStore("modelChanges", {
         },
         deleteCity(name) {
             this.city.lastDelete = name;
+        },
+
+        addFileTemplate(name) {
+            this.fileTemplate.lastAdd = name;
+        },
+        editFileTemplate(name) {
+            this.fileTemplate.lastEdit = name;
+        },
+        deleteFileTemplate(name) {
+            this.fileTemplate.lastDelete = name;
         },
     },
 });

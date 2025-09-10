@@ -16,6 +16,7 @@ declare module 'vue' {
     CityDialog: typeof import('./resources/js/components/dialog/CityDialog.vue')['default']
     DepartmentDialog: typeof import('./resources/js/components/dialog/DepartmentDialog.vue')['default']
     ErrorHeader: typeof import('./resources/js/components/ErrorHeader.vue')['default']
+    FileTemplateDialog: typeof import('./resources/js/components/dialog/FileTemplateDialog.vue')['default']
     MenuTimePicker: typeof import('./resources/js/components/inputs/MenuTimePicker.vue')['default']
     MoreBtn: typeof import('./resources/js/@core/components/MoreBtn.vue')['default']
     PositionDialog: typeof import('./resources/js/components/dialog/PositionDialog.vue')['default']

@@ -44,5 +44,12 @@ return [
         'create',
         'update',
         'delete',
+    ],
+
+    'fileTemplates' => [
+        'read',
+        'create',
+        'update',
+        'delete',
     ]
 ];
