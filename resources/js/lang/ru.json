@@ -217,6 +217,11 @@
         "file_name": "Имя файла — "
     },
 
+    "file_template": {
+        "format": "Формат файла",
+        "get_template": "Получить файл"
+    },
+
     "main": {
         "append_button": "Добавить",
         "cancel_button": "Отмена",

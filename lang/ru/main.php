@@ -136,7 +136,9 @@ return [
     ],
 
     'file_templates' => [
-        'file_template' => 'файл шаблона'
+        'file_template' => 'файл шаблона',
+        'format' => 'формат файла',
+        'user_id' => 'пользователь',
     ],
 
     'title' => 'название',

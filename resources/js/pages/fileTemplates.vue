@@ -10,7 +10,8 @@ import { useI18n } from "vue-i18n";
 import debounce from "lodash/debounce";
 import { useModelChangesStore } from "../stores/modelChanges";
 import { useAuthStore } from "../stores/auth";
-import FileTemplateDialog from "../components/dialog/FileTemplateDialog.vue";
+import FileTemplateDialog from "../components/dialog/FileTemplate/FileTemplateDialog.vue";
+import UseFileTemplate from "../components/dialog/FileTemplate/UseFileTemplate.vue";
 
 const authStore = useAuthStore();
 const modelChangesStore = useModelChangesStore();
@@ -152,6 +153,19 @@ const closeDialog = function (dataChanged, method) {
     dialogEditId.value = null;
 };
 
+const isTemplateDialogOpen = ref(false);
+const dialogTemplateId = ref(null);
+
+const openTemplateDialog = function (id = null) {
+    isTemplateDialogOpen.value = true;
+    dialogTemplateId.value = id;
+};
+
+const closeTemplateDialog = function () {
+    isTemplateDialogOpen.value = false;
+    dialogTemplateId.value = null;
+};
+
 const edit = function (id) {
     openDialog(id);
 };
@@ -160,14 +174,14 @@ const idToDelete = ref(0);
 
 const askToDeleteRow = function (id, name) {
     showAlertAcceptDialog.value = true;
-    alertAcceptText.value = `${t("users.fileTemplates.delete")} ${name}?`;
+    alertAcceptText.value = `${t("users.file_templates.delete")} ${name}?`;
     idToDelete.value = id;
-    modelChangesStore.deleteDepartment(name);
+    modelChangesStore.deleteFileTemplate(name);
 };
 
 const deleteRow = function (id) {
     axios
-        .delete(`/api/fileTemplates/${id}`)
+        .delete(`/api/files/templates/${id}`)
         .then(() => {
             requestData({
                 page: currentPage.value,
@@ -175,11 +189,11 @@ const deleteRow = function (id) {
                 sortBy: currentSortBy.value,
             });
             showSnackBar(
-                t("users.department") +
+                t("users.file_templates.file_template") +
                     " " +
-                    modelChangesStore.getDepartment.lastDelete +
+                    modelChangesStore.getFileTemplate.lastDelete +
                     " " +
-                    t("users.fileTemplates.was_deleted"),
+                    t("users.file_templates.was_deleted"),
                 "error"
             );
         })
@@ -187,10 +201,10 @@ const deleteRow = function (id) {
             console.log(error);
             if (error.response.status === 409) {
                 showAlertDialog.value = true;
-                alertText.value = t("users.fileTemplates.unable_to_delete");
+                alertText.value = t("users.file_templates.unable_to_delete");
             } else if (error.response.status === 404) {
                 showAlertDialog.value = true;
-                alertText.value = t("users.fileTemplates.no_selected");
+                alertText.value = t("users.file_templates.no_selected");
             }
         });
     showAlertAcceptDialog.value = false;
@@ -227,6 +241,12 @@ const alertAcceptText = ref("");
         :isOpen="isDialogOpen"
         :edit-id="dialogEditId"
     ></FileTemplateDialog>
+
+    <UseFileTemplate
+        @close-dialog="closeTemplateDialog"
+        :isOpen="isTemplateDialogOpen"
+        :template-id="dialogTemplateId"
+    ></UseFileTemplate>
 
     <AlertDangerDialog
         @close-dialog="showAlertDialog = false"
@@ -273,6 +293,14 @@ const alertAcceptText = ref("");
         </template>
 
         <template v-slot:item.actions="{ item }">
+            <v-btn
+                v-if="authStore.checkPermission('fileTemplates-update')"
+                icon="ri-file-word-2-line"
+                class="me-3"
+                size="small"
+                color="office-word"
+                @click="openTemplateDialog(item.id)"
+            ></v-btn>
             <v-btn
                 v-if="authStore.checkPermission('fileTemplates-update')"
                 icon="ri-edit-line"

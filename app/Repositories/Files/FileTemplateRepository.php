@@ -15,10 +15,10 @@ class FileTemplateRepository implements FileTemplateRepositoryInterface
     //     return FileTemplateDTO::collect(FileTemplate::with(['region'])->all());
     // }
 
-    // public function find(int $FileTemplateId): FileTemplate
-    // {
-    //     return FileTemplate::with('region')->findOrFail($FileTemplateId);
-    // }
+    public function find(int $FileTemplateId): FileTemplate
+    {
+        return FileTemplate::findOrFail($FileTemplateId);
+    }
 
     // public function create(CreateFileTemplateDTO $dto): void
     // {
@@ -31,10 +31,10 @@ class FileTemplateRepository implements FileTemplateRepositoryInterface
     //     $FileTemplate->update($dto->all());
     // }
 
-    // public function delete(FileTemplate $FileTemplate): void
-    // {
-    //     $FileTemplate->delete();
-    // }
+    public function delete(FileTemplate $FileTemplate): void
+    {
+        $FileTemplate->delete();
+    }
 
     // public function count(): int
     // {

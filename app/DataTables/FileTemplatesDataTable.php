@@ -43,7 +43,7 @@ class FileTemplatesDataTable extends DataTable
                 return $file->name;
             })
             ->editColumn('created_at', function (FileTemplate $file) {
-                return $file->created_at->format('H:i d.m.Y ');
+                return $file->created_at->format('H:i d.m.Y');
             })
             ->editColumn('updated_at', function (FileTemplate $file) {
                 return $file->updated_at->format('H:i d.m.Y');

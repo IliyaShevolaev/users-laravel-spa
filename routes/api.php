@@ -66,8 +66,8 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::group(['prefix' => 'files'], function () {
-
         Route::post('/templates/datatable', [FileTemplateController::class, 'datatable']);
+        Route::post('/templates/generate-document', [FileTemplateController::class, 'generateDocument']);
         Route::resource('templates', FileTemplateController::class);
     });
 });

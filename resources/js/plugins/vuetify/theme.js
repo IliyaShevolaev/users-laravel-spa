@@ -44,7 +44,8 @@ export const themes = {
       'chat-bg': '#F7F6FA',
       'purple': '#915FFF',
       'dark-green': '#126920',
-      'soft-green': '#3e874a'
+      'soft-green': '#3e874a',
+      'office-word': '#085c99'
     },
     variables: {
       'code-color': '#d400ff',
@@ -116,7 +117,8 @@ export const themes = {
       'chat-bg': '#373452',
       'purple': '#915FFF',
       'dark-green': '#126920',
-      'soft-green': '#3e874a'
+      'soft-green': '#3e874a',
+      'office-word': '#085c99'
     },
     variables: {
       'code-color': '#d400ff',

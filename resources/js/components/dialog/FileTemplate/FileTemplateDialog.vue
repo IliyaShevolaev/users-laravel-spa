@@ -2,8 +2,8 @@
 import axios from "axios";
 import { reactive, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { useModelChangesStore } from "../../stores/modelChanges";
-import AlertDangerDialog from "../alerts/AlertDangerDialog.vue";
+import { useModelChangesStore } from "../../../stores/modelChanges";
+import AlertDangerDialog from "../../alerts/AlertDangerDialog.vue";
 import { VFileUpload } from "vuetify/labs/VFileUpload";
 
 const modelChangesStore = useModelChangesStore();
@@ -21,7 +21,7 @@ const emit = defineEmits(["closeDialog"]);
 
 const formDataObject = reactive({
     name: null,
-    file: null
+    file: null,
 });
 
 const formDataObjectErrors = reactive({});
