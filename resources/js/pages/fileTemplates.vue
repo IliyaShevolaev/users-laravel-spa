@@ -161,9 +161,13 @@ const openTemplateDialog = function (id = null) {
     dialogTemplateId.value = id;
 };
 
-const closeTemplateDialog = function () {
+const closeTemplateDialog = function (startFileGenerating) {
     isTemplateDialogOpen.value = false;
     dialogTemplateId.value = null;
+
+    if (startFileGenerating) {
+        showSnackBar(t("file_template.generate_start"), "office-word");
+    }
 };
 
 const edit = function (id) {

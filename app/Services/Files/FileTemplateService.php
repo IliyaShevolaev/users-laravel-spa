@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Services\Files;
 
+use App\DTO\User\ExportUserDTO;
 use App\Models\Files\FileTemplate;
+use Illuminate\Support\Facades\Auth;
+use App\Jobs\GenerateTemplateFileJob;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpWord\TemplateProcessor;
 use App\Repositories\User\UserRepository;
@@ -37,37 +40,30 @@ class FileTemplateService
         Storage::delete($pathToFile);
     }
 
-    public function generateDocument(GenerateFileDTO $generateFileDTO)
+    public function generateDocument(GenerateFileDTO $generateFileDTO): void
     {
         $user = $this->userRepository->find($generateFileDTO->userId);
         $template = $this->repository->find($generateFileDTO->templateId);
 
+        $exportDto = ExportUserDTO::from([
+            'name' => $user->name,
+            'email' => $user->email,
+            'gender' => trans('main.users.genders.' . $user->gender->value),
+            'status' => trans('main.users.statuses.' . $user->status->value),
+            'department' => $user->department?->name ?? '-',
+            'position' => $user->position?->name ?? '-',
+            'role' => $user->roleName,
+            'created_at' => $user->created_at->format('H:i d.m.Y'),
+            'updated_at' => $user->updated_at->format('H:i d.m.Y'),
+        ]);
 
-        $templateProcessor = new TemplateProcessor(storage_path('app/private/' . $template->file_path));
+        $nowTimeStamps = now()->timestamp;
 
-        $values = [];
-
-        $values['name'] = $user->name;
-        $values['email'] = $user->email;
-        $values['gender'] = trans('main.users.genders.' . $user->gender->value);
-        $values['status'] = trans('main.users.statuses.' . $user->status->value);
-        $values['department'] = $user->department?->name ?? '-';
-        $values['position'] = $user->position?->name ?? '-';
-        $values['role'] = $user->roleName;
-        $values['created_at'] = $user->created_at->format('H:i d.m.Y');
-        $values['updated_at'] = $user->updated_at->format('H:i d.m.Y');
-
-        debugbar()->info($values);
-
-        $templateProcessor->setValues($values);
-
-        Storage::disk('local')->makeDirectory('generated');
-
-        $outputPath = Storage
-            ::disk('local')
-            ->path("generated/{$template->name}-{$user->name}-" . now()->timestamp . $generateFileDTO->format);
-        $templateProcessor->saveAs($outputPath);
-
-        return $outputPath;
+        GenerateTemplateFileJob::dispatch(
+            $exportDto,
+            $template->file_path,
+            "{$template->name}-{$user->name}-{$nowTimeStamps}.{$generateFileDTO->format}",
+            Auth::id()
+        );
     }
 }

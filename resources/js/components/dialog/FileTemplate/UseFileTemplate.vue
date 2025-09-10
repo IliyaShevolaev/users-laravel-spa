@@ -29,10 +29,10 @@ const formData = reactive({
 
 const formDataErrors = reactive({});
 
-const close = function () {
+const close = function (startFileGenerating = false) {
     clearFields(formData);
     clearFields(formDataErrors);
-    emit("closeDialog");
+    emit("closeDialog", startFileGenerating);
 };
 
 const loadingUsers = ref(false);
@@ -68,7 +68,7 @@ const requestResultFile = function (id) {
         .post("/api/files/templates/generate-document", formData)
         .then((response) => {
             console.log(response);
-            close();
+            close(true);
         });
 };
 

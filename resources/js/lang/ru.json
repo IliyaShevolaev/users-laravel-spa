@@ -218,8 +218,10 @@
     },
 
     "file_template": {
+        "file": "Файл",
         "format": "Формат файла",
-        "get_template": "Получить файл"
+        "get_template": "Получить файл",
+        "generate_start": "Генерация файла по шаблону начата"
     },
 
     "main": {
