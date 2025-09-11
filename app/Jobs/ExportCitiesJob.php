@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\Events\ReadyExportFileEvent;
-use App\Models\Export\UserCityExport;
+use App\Models\Export\UserExport;
 use App\Models\User;
 use App\Exports\Cities\CitiesExport;
 use Illuminate\Support\Facades\Auth;
@@ -30,7 +30,7 @@ class ExportCitiesJob implements ShouldQueue
 
         Excel::store(new CitiesExport, $path, 'local');
 
-        UserCityExport::create([
+        UserExport::create([
             'user_id' => $this->user->id,
             'file_name' => $fileName,
             'is_user_downloaded' => false

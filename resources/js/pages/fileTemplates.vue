@@ -12,6 +12,7 @@ import { useModelChangesStore } from "../stores/modelChanges";
 import { useAuthStore } from "../stores/auth";
 import FileTemplateDialog from "../components/dialog/FileTemplate/FileTemplateDialog.vue";
 import UseFileTemplate from "../components/dialog/FileTemplate/UseFileTemplate.vue";
+import { saveAs } from "file-saver";
 
 const authStore = useAuthStore();
 const modelChangesStore = useModelChangesStore();
@@ -26,19 +27,13 @@ const headers = computed(() => {
         { title: t("main.title"), key: "name" },
         { title: t("main.created"), key: "created_at" },
         { title: t("main.updated"), key: "updated_at" },
-    ];
-
-    if (
-        authStore.checkPermission("fileTemplates-update") ||
-        authStore.checkPermission("fileTemplates-delete")
-    ) {
-        baseHeaders.push({
+        {
             title: t("main.actions"),
             key: "actions",
             sortable: false,
             align: "center",
-        });
-    }
+        },
+    ];
 
     return baseHeaders;
 });
@@ -232,6 +227,16 @@ const alertText = ref("");
 
 const showAlertAcceptDialog = ref(false);
 const alertAcceptText = ref("");
+
+const downloadTemplate = function (id, fileName) {
+    axios
+        .get(`/api/files/templates/${id}`, {
+            responseType: "blob",
+        })
+        .then((response) => {
+            saveAs(response.data, fileName);
+        });
+};
 </script>
 
 <template>
@@ -298,12 +303,18 @@ const alertAcceptText = ref("");
 
         <template v-slot:item.actions="{ item }">
             <v-btn
-                v-if="authStore.checkPermission('fileTemplates-update')"
                 icon="ri-file-word-2-line"
                 class="me-3"
                 size="small"
                 color="office-word"
                 @click="openTemplateDialog(item.id)"
+            ></v-btn>
+            <v-btn
+                icon="ri-download-line"
+                class="me-3"
+                size="small"
+                color="blue"
+                @click="downloadTemplate(item.id, item.name)"
             ></v-btn>
             <v-btn
                 v-if="authStore.checkPermission('fileTemplates-update')"

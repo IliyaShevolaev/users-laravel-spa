@@ -6,7 +6,7 @@ namespace App\Services\Export;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Export\UserCityExport;
+use App\Models\Export\UserExport;
 use Illuminate\Support\Facades\Storage;
 
 class ExportService
@@ -38,7 +38,7 @@ class ExportService
     {
         $userId = Auth::id();
 
-        $downloadedMark = UserCityExport
+        $downloadedMark = UserExport
             ::where('user_id', $userId)
             ->where('file_name', $fileName)
             ->firstOrFail();
@@ -58,10 +58,10 @@ class ExportService
      */
     public function getUserMissDownloadedUserFiles(): Collection
     {
-        $fileNames = UserCityExport
+        $fileNames = UserExport
             ::where('user_id', Auth::id())
             ->where('is_user_downloaded', false)
-            ->pluck('file_name');
+            ->get(['file_name', 'file_type']);
 
         return $fileNames;
     }

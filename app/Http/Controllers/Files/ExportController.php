@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Files;
 
+use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Services\Export\ExportService;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -36,7 +37,7 @@ class ExportController extends Controller
         $this->service->markFileAsDownloaded($fileName);
     }
 
-    public function getFiles()
+    public function getFiles(): JsonResponse
     {
         $files = $this->service->getUserMissDownloadedUserFiles();
 

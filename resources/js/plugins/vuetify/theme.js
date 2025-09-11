@@ -45,7 +45,8 @@ export const themes = {
       'purple': '#915FFF',
       'dark-green': '#126920',
       'soft-green': '#3e874a',
-      'office-word': '#085c99'
+      'office-word': '#085c99',
+      'blue': '#437dd9'
     },
     variables: {
       'code-color': '#d400ff',
@@ -118,7 +119,8 @@ export const themes = {
       'purple': '#915FFF',
       'dark-green': '#126920',
       'soft-green': '#3e874a',
-      'office-word': '#085c99'
+      'office-word': '#085c99',
+      'blue': '#437dd9'
     },
     variables: {
       'code-color': '#d400ff',

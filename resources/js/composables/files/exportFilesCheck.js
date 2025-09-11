@@ -8,17 +8,30 @@ export function checkMissDownloadedFiles() {
     const exportStore = useExportNotifyStore();
     const { t } = useI18n();
 
+    const getIconByFileType = function (type) {
+        switch (type) {
+            case "xlsx":
+                return "ri-file-excel-2-line";
+            case "docx":
+                return "ri-file-word-2-line";
+            case "pdf":
+                return "ri-file-pdf-2-line";
+            default:
+                return "ri-file-2-line";
+        }
+    };
+
     const filesCheck = function () {
         axios.get(`/api/exports/get-miss-downloaded-files`).then((response) => {
             console.log("miss files:");
             console.log(response);
 
-            response.data.forEach((fileName) => {
+            response.data.forEach((file) => {
                 exportStore.pushNotify(
                     t("cities.end_export_download"),
-                    `${t("cities.file_name")} ${fileName}`,
-                    "ri-file-excel-2-line",
-                    fileName
+                    `${t("cities.file_name")} ${file.file_name}`,
+                    getIconByFileType(file.file_type),
+                    file.file_name
                 );
             });
         });

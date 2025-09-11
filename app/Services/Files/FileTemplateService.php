@@ -62,8 +62,21 @@ class FileTemplateService
         GenerateTemplateFileJob::dispatch(
             $exportDto,
             $template->file_path,
-            "{$template->name}-{$user->name}-{$nowTimeStamps}.{$generateFileDTO->format}",
-            Auth::id()
+            "{$template->name}-{$user->name}-{$nowTimeStamps}",
+            Auth::id(),
+            $generateFileDTO->format
         );
+    }
+
+    public function getTemplatePath(string $fileName): string
+    {
+        $path = storage_path("app/private/{$fileName}");
+
+        if (!file_exists($path)) {
+            abort(404);
+        }
+
+
+        return $path;
     }
 }

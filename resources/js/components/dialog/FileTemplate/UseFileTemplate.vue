@@ -19,7 +19,7 @@ const props = defineProps({
 });
 const emit = defineEmits(["closeDialog"]);
 
-const fileFormats = ref([".docx", ".pdf"]);
+const fileFormats = ref(["docx", "pdf"]);
 
 const formData = reactive({
     template_id: null,

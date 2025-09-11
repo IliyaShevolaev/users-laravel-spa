@@ -3,8 +3,9 @@
 namespace App\Jobs;
 
 use App\DTO\User\ExportUserDTO;
+use App\Models\Export\UserExport;
+use Illuminate\Support\Facades\Log;
 use App\Events\ReadyExportFileEvent;
-use App\Models\Export\UserCityExport;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Illuminate\Foundation\Queue\Queueable;
@@ -21,7 +22,8 @@ class GenerateTemplateFileJob implements ShouldQueue
         private ExportUserDTO $exportUserDTO,
         private string $templatePath,
         private string $fileName,
-        private int $userId
+        private int $userId,
+        private string $fileFormat
     ) {
     }
 
@@ -37,15 +39,19 @@ class GenerateTemplateFileJob implements ShouldQueue
 
         $outputPath = Storage
             ::disk('local')
-            ->path("exports/" . $this->fileName);
+            //->path("exports/" . $this->fileName . '.docx');
+            ->path("exports/{$this->fileName}.{$this->fileFormat}");
         $templateProcessor->saveAs($outputPath);
 
-        UserCityExport::create([
+        Log::info($this->fileFormat);
+
+        UserExport::create([
             'user_id' => $this->userId,
             'file_name' => $this->fileName,
+            'file_type' =>  $this->fileFormat,
             'is_user_downloaded' => false,
         ]);
 
-        broadcast(new ReadyExportFileEvent($this->userId, $this->fileName));
+        broadcast(new ReadyExportFileEvent($this->userId, "{$this->fileName}.{$this->fileFormat}"));
     }
 }
