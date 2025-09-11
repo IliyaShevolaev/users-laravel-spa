@@ -11,7 +11,7 @@ const modelChangesStore = useModelChangesStore();
 const { t } = useI18n();
 
 const props = defineProps({
-    templateId: {
+    userId: {
         Number,
         default: null,
     },
@@ -36,15 +36,15 @@ const close = function (startFileGenerating = false) {
 };
 
 const loadingUsers = ref(false);
-const users = ref([]);
+const templates = ref([]);
 
 const requestStartData = function () {
     loadingUsers.value = true;
     axios
-        .get(`/api/users`)
+        .get(`/api/files/templates`)
         .then((response) => {
             console.log(response);
-            users.value = response.data.data;
+            templates.value = response.data.data;
         })
         .finally(() => {
             loadingUsers.value = false;
@@ -62,7 +62,7 @@ watch(
 );
 
 const requestResultFile = function (id) {
-    formData.template_id = id;
+    formData.user_id = id;
 
     axios
         .post("/api/files/templates/generate-document", formData)
@@ -92,11 +92,7 @@ const alertText = ref("");
         <v-card>
             <v-card-title>
                 <span class="headline flex justify-between">
-                    {{
-                        props.editId
-                            ? t("users.file_templates.edit_button")
-                            : t("users.file_templates.add_button")
-                    }}
+                    {{ t("users.file_templates.generate") }}
                     <v-btn
                         icon
                         variant="text"
@@ -117,9 +113,9 @@ const alertText = ref("");
                     ></v-skeleton-loader>
                     <v-select
                         v-else
-                        :label="t('users.user')"
-                        v-model="formData.user_id"
-                        :items="users"
+                        :label="t('file_template.template')"
+                        v-model="formData.template_id"
+                        :items="templates"
                         item-title="name"
                         variant="underlined"
                         item-value="id"
@@ -143,7 +139,7 @@ const alertText = ref("");
                     variant="elevated"
                     text
                     color="office-word"
-                    @click="requestResultFile(props.templateId)"
+                    @click="requestResultFile(props.userId)"
                     style="text-transform: none"
                 >
                     {{ t("file_template.get_template") }}

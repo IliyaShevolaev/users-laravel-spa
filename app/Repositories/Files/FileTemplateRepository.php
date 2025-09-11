@@ -6,14 +6,15 @@ namespace App\Repositories\Files;
 
 use App\Models\Files\FileTemplate;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use App\Repositories\Interfaces\Files\FileTemplateRepositoryInterface;
 
 class FileTemplateRepository implements FileTemplateRepositoryInterface
 {
-    // public function all(): Collection
-    // {
-    //     return FileTemplateDTO::collect(FileTemplate::with(['region'])->all());
-    // }
+    public function all(): Collection
+    {
+        return FileTemplate::all();
+    }
 
     public function find(int $FileTemplateId): FileTemplate
     {

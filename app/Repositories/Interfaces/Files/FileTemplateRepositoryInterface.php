@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Collection;
 
 interface FileTemplateRepositoryInterface
 {
-    // public function all(): Collection;
+    public function all(): Collection;
 
     public function find(int $FileTemplateId): FileTemplate;
 
@@ -19,8 +19,6 @@ interface FileTemplateRepositoryInterface
     // public function update(int $FileTemplateId, CreateFileTemplateDTO $dto): void;
 
     public function delete(FileTemplate $FileTemplate): void;
-
-    // public function count(): int;
 
     public function getQuery(): Builder;
 }

@@ -29,6 +29,7 @@ declare module 'vue' {
     UpgradeToPro: typeof import('./resources/js/components/UpgradeToPro.vue')['default']
     UseFileTemplate: typeof import('./resources/js/components/dialog/FileTemplate/UseFileTemplate.vue')['default']
     UserDialog: typeof import('./resources/js/components/dialog/UserDialog.vue')['default']
+    UserFileStorageDialog: typeof import('./resources/js/components/dialog/FileTemplate/UserFileStorageDialog.vue')['default']
     ViewCalendarEvent: typeof import('./resources/js/components/dialog/Calendar/ViewCalendarEvent.vue')['default']
     ViewCalendarEventDialog: typeof import('./resources/js/components/dialog/Calendar/ViewCalendarEventDialog.vue')['default']
     VueApexCharts: typeof import('vue3-apexcharts')['default']

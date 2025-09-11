@@ -59,6 +59,7 @@ class FileTemplateService
         $template = $this->repository->find($generateFileDTO->templateId);
 
         $exportDto = ExportUserDTO::from([
+            'id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
             'gender' => trans('main.users.genders.' . $user->gender->value),
@@ -88,7 +89,6 @@ class FileTemplateService
         if (!file_exists($path)) {
             abort(404);
         }
-
 
         return $path;
     }

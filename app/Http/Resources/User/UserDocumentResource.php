@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Resources\Files;
+namespace App\Http\Resources\User;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class FileTemplateResource extends JsonResource
+class UserDocumentResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,7 +16,8 @@ class FileTemplateResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name
+            'fileName' => $this->file_name,
+            'userId' => $this->user_id,
         ];
     }
 }

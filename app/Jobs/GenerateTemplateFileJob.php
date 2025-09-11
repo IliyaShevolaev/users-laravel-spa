@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\DTO\User\ExportUserDTO;
 use App\Models\Export\UserExport;
+use App\Models\User\UserDocument;
 use Illuminate\Support\Facades\Log;
 use App\Events\ReadyExportFileEvent;
 use Illuminate\Support\Facades\Storage;
@@ -36,20 +37,28 @@ class GenerateTemplateFileJob implements ShouldQueue
         $templateProcessor->setValues($this->exportUserDTO->all());
 
         $fullFileName = "{$this->fileName}.{$this->fileFormat}";
-        Log::info($fullFileName);
 
         Storage::disk('local')->makeDirectory('exports');
 
-        $outputPath = Storage
+        $exportPath = Storage
             ::disk('local')
             ->path("exports/{$fullFileName}");
-        $templateProcessor->saveAs($outputPath);
+        $templateProcessor->saveAs($exportPath);
+
+        Storage::disk('local')->makeDirectory('documents');
+
+        Storage::disk('local')->copy("exports/{$fullFileName}", "documents/{$fullFileName}");
 
         UserExport::create([
             'user_id' => $this->userId,
             'file_name' => $fullFileName,
-            'file_type' =>  $this->fileFormat,
+            'file_type' => $this->fileFormat,
             'is_user_downloaded' => false,
+        ]);
+
+        UserDocument::create([
+            'user_id' => $this->exportUserDTO->id,
+            'file_name' => $fullFileName,
         ]);
 
         broadcast(new ReadyExportFileEvent($this->userId, $fullFileName));

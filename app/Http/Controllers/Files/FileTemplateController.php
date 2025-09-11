@@ -11,6 +11,7 @@ use App\Services\Files\FileTemplateService;
 use App\DTO\Files\Templates\GenerateFileDTO;
 use App\DTO\Files\Templates\CreateFileTemplateDTO;
 use App\Http\Requests\DataTables\DataTableRequest;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Http\Requests\Files\Templates\CreateFileTemplateRequest;
@@ -27,6 +28,13 @@ class FileTemplateController extends Controller
     ) {
     }
 
+    public function index(): AnonymousResourceCollection
+    {
+        $this->authorize('check-permission', 'fileTemplates-read');
+
+        return FileTemplateResource::collection($this->repository->all());
+    }
+
     public function datatable(DataTableRequest $dataTableRequest, FileTemplatesDataTable $datatble): JsonResponse
     {
         $this->authorize('check-permission', 'fileTemplates-read');
@@ -38,6 +46,8 @@ class FileTemplateController extends Controller
 
     public function store(CreateFileTemplateRequest $createFileTemplateRequest): void
     {
+        $this->authorize('check-permission', 'fileTemplates-create');
+
         $dto = CreateFileTemplateDTO::from($createFileTemplateRequest->validated());
 
         $this->service->create($dto);
@@ -45,6 +55,8 @@ class FileTemplateController extends Controller
 
     public function show(int $templateId): BinaryFileResponse
     {
+        $this->authorize('check-permission', 'fileTemplates-read');
+
         $template = $this->repository->find($templateId);
 
         $path = $this->service->getTemplatePath($template->file_path);
@@ -54,6 +66,8 @@ class FileTemplateController extends Controller
 
     public function edit(int $templateId)
     {
+        $this->authorize('check-permission', 'fileTemplates-update');
+
         $template = $this->repository->find($templateId);
 
         return new FileTemplateResource($template);
@@ -61,6 +75,8 @@ class FileTemplateController extends Controller
 
     public function update(CreateFileTemplateRequest $request, int $id): void
     {
+        $this->authorize('check-permission', 'fileTemplates-update');
+
         $dto = CreateFileTemplateDTO::from($request->validated());
 
         $fileTemplate = $this->repository->find($id);
@@ -78,6 +94,8 @@ class FileTemplateController extends Controller
 
     public function generateDocument(GenereteFileWithTemplateRequest $genereteFileWithTemplateRequest): void
     {
+        $this->authorize('check-permission', 'fileTemplates-read');
+
         $dto = GenerateFileDTO::from($genereteFileWithTemplateRequest->validated());
 
         $this->service->generateDocument($dto);

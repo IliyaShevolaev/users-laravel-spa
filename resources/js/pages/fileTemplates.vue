@@ -10,9 +10,8 @@ import { useI18n } from "vue-i18n";
 import debounce from "lodash/debounce";
 import { useModelChangesStore } from "../stores/modelChanges";
 import { useAuthStore } from "../stores/auth";
-import FileTemplateDialog from "../components/dialog/FileTemplate/FileTemplateDialog.vue";
-import UseFileTemplate from "../components/dialog/FileTemplate/UseFileTemplate.vue";
 import { saveAs } from "file-saver";
+import FileTemplateDialog from "../components/dialog/FileTemplate/FileTemplateDialog.vue";
 
 const authStore = useAuthStore();
 const modelChangesStore = useModelChangesStore();
@@ -146,23 +145,6 @@ const closeDialog = function (dataChanged, method) {
 
     isDialogOpen.value = false;
     dialogEditId.value = null;
-};
-
-const isTemplateDialogOpen = ref(false);
-const dialogTemplateId = ref(null);
-
-const openTemplateDialog = function (id = null) {
-    isTemplateDialogOpen.value = true;
-    dialogTemplateId.value = id;
-};
-
-const closeTemplateDialog = function (startFileGenerating) {
-    isTemplateDialogOpen.value = false;
-    dialogTemplateId.value = null;
-
-    if (startFileGenerating) {
-        showSnackBar(t("file_template.generate_start"), "office-word");
-    }
 };
 
 const edit = function (id) {
@@ -302,13 +284,6 @@ const downloadTemplate = function (id, fileName) {
         </template>
 
         <template v-slot:item.actions="{ item }">
-            <v-btn
-                icon="ri-file-word-2-line"
-                class="me-3"
-                size="small"
-                color="office-word"
-                @click="openTemplateDialog(item.id)"
-            ></v-btn>
             <v-btn
                 icon="ri-download-line"
                 class="me-3"

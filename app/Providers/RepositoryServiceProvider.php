@@ -6,6 +6,8 @@ use App\Repositories\Cities\CityRepository;
 use App\Repositories\Files\FileTemplateRepository;
 use App\Repositories\Interfaces\Cities\CityRepositoryInterface;
 use App\Repositories\Interfaces\Files\FileTemplateRepositoryInterface;
+use App\Repositories\Interfaces\User\UserDocumentRepositoryInterface;
+use App\Repositories\User\UserDocumentRepository;
 use Illuminate\Support\ServiceProvider;
 use App\Repositories\User\UserRepository;
 use App\Repositories\Roles\RoleRepository;
@@ -39,7 +41,8 @@ class RepositoryServiceProvider extends ServiceProvider
         ActivityLogRepositoryInterface::class => ActivityLogRepository::class,
         RegionRepositoryInterface::class => RegionRepository::class,
         CityRepositoryInterface::class => CityRepository::class,
-        FileTemplateRepositoryInterface::class => FileTemplateRepository::class
+        FileTemplateRepositoryInterface::class => FileTemplateRepository::class,
+        UserDocumentRepositoryInterface::class => UserDocumentRepository::class
     ];
 
     /**

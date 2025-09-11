@@ -11,6 +11,8 @@ import { useModelChangesStore } from "../stores/modelChanges";
 import { useAuthStore } from "../stores/auth";
 import AlertDangerDialog from "../components/alerts/AlertDangerDialog.vue";
 import { useRouter } from "vue-router";
+import UseFileTemplate from "../components/dialog/FileTemplate/UseFileTemplate.vue";
+import UserFileStorageDialog from "../components/dialog/FileTemplate/UserFileStorageDialog.vue";
 
 const authStore = useAuthStore();
 const modelChangesStore = useModelChangesStore();
@@ -241,6 +243,36 @@ const viewLog = function (id) {
         path: `/activity-logs/${id}`,
     });
 };
+
+const isTemplateDialogOpen = ref(false);
+const dialogUserId = ref(null);
+
+const openTemplateDialog = function (id = null) {
+    isTemplateDialogOpen.value = true;
+    dialogUserId.value = id;
+};
+
+const closeTemplateDialog = function (startFileGenerating) {
+    isTemplateDialogOpen.value = false;
+    dialogUserId.value = null;
+
+    if (startFileGenerating) {
+        showSnackBar(t("file_template.generate_start"), "office-word");
+    }
+};
+
+const isFileStorageDialogOpen = ref(false);
+const storageDialogUserId = ref(null);
+
+const openStorageDialog = function (id = null) {
+    isFileStorageDialogOpen.value = true;
+    storageDialogUserId.value = id;
+};
+
+const closeStorageDialog = function () {
+    isFileStorageDialogOpen.value = false;
+    storageDialogUserId.value = null;
+};
 </script>
 
 <template>
@@ -280,6 +312,18 @@ const viewLog = function (id) {
         @close-snackbar="isSnackbarOpen = false"
     ></Snackbar>
 
+    <UseFileTemplate
+        @close-dialog="closeTemplateDialog"
+        :isOpen="isTemplateDialogOpen"
+        :user-id="dialogUserId"
+    ></UseFileTemplate>
+
+    <UserFileStorageDialog
+        @close-dialog="closeStorageDialog"
+        :isOpen="isFileStorageDialogOpen"
+        :user-id="storageDialogUserId"
+    ></UserFileStorageDialog>
+
     <v-data-table-server
         v-model:items-per-page="itemsPerPage"
         v-model:page="currentPage"
@@ -308,6 +352,22 @@ const viewLog = function (id) {
         </template>
 
         <template v-slot:item.actions="{ item }">
+            <v-btn
+                v-if="authStore.checkPermission('fileTemplates-read')"
+                icon="ri-file-word-2-line"
+                class="me-3"
+                size="small"
+                color="office-word"
+                @click="openTemplateDialog(item.id)"
+            ></v-btn>
+            <v-btn
+                v-if="authStore.checkPermission('fileTemplates-read')"
+                icon="ri-folders-line"
+                class="me-3"
+                size="small"
+                color="office-word"
+                @click="openStorageDialog(item.id)"
+            ></v-btn>
             <v-btn
                 v-if="authStore.checkPermission('users-logs')"
                 icon="ri-news-line"

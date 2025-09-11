@@ -11,6 +11,7 @@ use App\Enums\User\GenderEnum;
 use App\Enums\User\StatusEnum;
 use App\Models\Tasks\EventUser;
 use App\Models\User\Department;
+use App\Models\User\UserDocument;
 use Illuminate\Support\Collection;
 use Spatie\Activitylog\LogOptions;
 use Database\Factories\UserFactory;
@@ -26,6 +27,7 @@ use Laratrust\Traits\HasRolesAndPermissions;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -169,6 +171,15 @@ class User extends Authenticatable implements LaratrustUser
     public function position(): HasOne
     {
         return $this->hasOne(Position::class, 'id', 'position_id');
+    }
+
+    /**
+     * Получить документы о пользователе
+     * @return HasMany<UserDocument, $this>
+     */
+    public function documents(): HasMany
+    {
+        return $this->hasMany(UserDocument::class, 'user_id', 'id');
     }
 
     /**

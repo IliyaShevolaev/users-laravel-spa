@@ -96,8 +96,8 @@ const edit = function () {
 
 const update = function (id) {
     const formData = prepareFormData();
-    formData.append('_method', 'PATCH');
-    formData.append('id', id);
+    formData.append("_method", "PATCH");
+    formData.append("id", id);
 
     axios
         .post(`/api/files/templates/${id}`, formData, {
@@ -154,11 +154,36 @@ const alertText = ref("");
         <v-card>
             <v-card-title>
                 <span class="headline flex justify-between">
-                    {{
-                        props.editId
-                            ? t("users.file_templates.edit_button")
-                            : t("users.file_templates.add_button")
-                    }}
+                    <span>
+                        {{
+                            props.editId
+                                ? t("users.file_templates.edit_button")
+                                : t("users.file_templates.add_button")
+                        }}
+                        <v-tooltip :text="t('file_template.info')">
+                            <template v-slot:activator="{ props }">
+                                <v-btn
+                                    icon
+                                    size="large"
+                                    variant="text"
+                                    v-bind="props"
+                                >
+                                    <v-icon size="25" class="text-gray-900">
+                                        ri-information-line
+                                    </v-icon>
+                                </v-btn>
+                            </template>
+                            <template #default="{ tooltip }">
+                                <div
+                                    style="
+                                        white-space: pre-wrap;
+                                    "
+                                >
+                                    {{ t("file_template.info") }}
+                                </div>
+                            </template>
+                        </v-tooltip>
+                    </span>
                     <v-btn
                         icon
                         variant="text"
@@ -191,7 +216,7 @@ const alertText = ref("");
                         v-model="formDataObject.file"
                         :error="!!formDataObjectErrors.file_template"
                         :error-messages="formDataObjectErrors.file_template"
-                        accept=".doc,.docx,.pdf"
+                        accept=".docx,.pdf"
                         :label="t('users.file_templates.upload_file')"
                         prepend-icon=""
                         density="default"

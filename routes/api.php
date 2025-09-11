@@ -6,10 +6,6 @@ declare(strict_types=1);
 // php vendor/bin/phpcs
 
 use App\Events\ChatMessage;
-use App\Http\Controllers\Cities\CityController;
-use App\Http\Controllers\Cities\RegionController;
-use App\Http\Controllers\Files\ExportController;
-use App\Http\Controllers\Files\FileTemplateController;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Auth;
@@ -18,9 +14,14 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Role\RoleController;
 use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\Cities\CityController;
 use App\Http\Controllers\Tasks\EventController;
+use App\Http\Controllers\Files\ExportController;
+use App\Http\Controllers\Cities\RegionController;
 use App\Http\Controllers\User\PositionController;
 use App\Http\Controllers\User\DepartmentController;
+use App\Http\Controllers\Files\FileTemplateController;
+use App\Http\Controllers\User\UserDocumentsController;
 use App\Http\Controllers\ActivityLogs\ActivityLogsController;
 
 Route::get('/auth/create', '\App\Http\Controllers\Auth\RegisterController@create');
@@ -69,6 +70,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/templates/datatable', [FileTemplateController::class, 'datatable']);
         Route::post('/templates/generate-document', [FileTemplateController::class, 'generateDocument']);
         Route::resource('templates', FileTemplateController::class);
+
+        Route::get('user/documents/by-user/{user}', [UserDocumentsController::class, 'getByUser']);
+        Route::resource('user/documents', UserDocumentsController::class);
     });
 });
 
