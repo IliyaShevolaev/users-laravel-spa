@@ -33,6 +33,7 @@ class ExportCitiesJob implements ShouldQueue
         UserExport::create([
             'user_id' => $this->user->id,
             'file_name' => $fileName,
+            'file_type' => 'xlsx',
             'is_user_downloaded' => false
         ]);
 

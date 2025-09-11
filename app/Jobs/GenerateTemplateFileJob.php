@@ -35,23 +35,23 @@ class GenerateTemplateFileJob implements ShouldQueue
         $templateProcessor = new TemplateProcessor(storage_path('app/private/' . $this->templatePath));
         $templateProcessor->setValues($this->exportUserDTO->all());
 
+        $fullFileName = "{$this->fileName}.{$this->fileFormat}";
+        Log::info($fullFileName);
+
         Storage::disk('local')->makeDirectory('exports');
 
         $outputPath = Storage
             ::disk('local')
-            //->path("exports/" . $this->fileName . '.docx');
-            ->path("exports/{$this->fileName}.{$this->fileFormat}");
+            ->path("exports/{$fullFileName}");
         $templateProcessor->saveAs($outputPath);
-
-        Log::info($this->fileFormat);
 
         UserExport::create([
             'user_id' => $this->userId,
-            'file_name' => $this->fileName,
+            'file_name' => $fullFileName,
             'file_type' =>  $this->fileFormat,
             'is_user_downloaded' => false,
         ]);
 
-        broadcast(new ReadyExportFileEvent($this->userId, "{$this->fileName}.{$this->fileFormat}"));
+        broadcast(new ReadyExportFileEvent($this->userId, $fullFileName));
     }
 }

@@ -31,6 +31,19 @@ class FileTemplateService
         FileTemplate::create($dto->all());
     }
 
+    public function update(FileTemplate $fileTemplate, CreateFileTemplateDTO $dto): void
+    {
+        if ($dto->fileTemplate) {
+            Storage::delete($fileTemplate->file_path);
+
+            $filePath = $dto->fileTemplate->store('templates');
+            $dto->setFilePath($filePath);
+        }
+
+        $fileTemplate->update($dto->all());
+    }
+
+
     public function delete(FileTemplate $fileTemplate)
     {
         $pathToFile = $fileTemplate->file_path;

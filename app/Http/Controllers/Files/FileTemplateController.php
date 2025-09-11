@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Files;
 
+use App\Http\Resources\Files\FileTemplateResource;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\DataTables\FileTemplatesDataTable;
@@ -51,12 +52,28 @@ class FileTemplateController extends Controller
         return response()->download($path);
     }
 
+    public function edit(int $templateId)
+    {
+        $template = $this->repository->find($templateId);
+
+        return new FileTemplateResource($template);
+    }
+
+    public function update(CreateFileTemplateRequest $request, int $id): void
+    {
+        $dto = CreateFileTemplateDTO::from($request->validated());
+
+        $fileTemplate = $this->repository->find($id);
+
+        $this->service->update($fileTemplate, $dto);
+    }
+
     public function destroy(int $id): void
     {
         $this->authorize('check-permission', 'fileTemplates-delete');
 
-        $fiteTemplate = $this->repository->find($id);
-        $this->service->delete($fiteTemplate);
+        $fileTemplate = $this->repository->find($id);
+        $this->service->delete($fileTemplate);
     }
 
     public function generateDocument(GenereteFileWithTemplateRequest $genereteFileWithTemplateRequest): void

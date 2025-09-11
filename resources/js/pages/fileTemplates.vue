@@ -135,11 +135,11 @@ const closeDialog = function (dataChanged, method) {
         );
     } else if (method === "edit") {
         showSnackBar(
-            t("users.department") +
+            t("users.file_templates.file_template") +
                 " " +
-                modelChangesStore.getDepartment.lastEdit +
+                modelChangesStore.getFileTemplate.lastEdit +
                 " " +
-                t("users.fileTemplates.was_edited"),
+                t("users.file_templates.was_edited"),
             "warning"
         );
     }

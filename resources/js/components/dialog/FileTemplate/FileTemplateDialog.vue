@@ -32,13 +32,26 @@ const close = function (dataChanged, method) {
     emit("closeDialog", dataChanged, method);
 };
 
-const add = function () {
-    const formData = new FormData();
-    formData.append("name", formDataObject.name ?? "");
-    formData.append("file_template", formDataObject.file);
+const prepareFormData = function () {
+    const resultFormData = new FormData();
+    resultFormData.append("name", formDataObject.name ?? "");
 
+    if (formDataObject.file) {
+        resultFormData.append("file_template", formDataObject.file);
+    }
+
+    console.log(resultFormData);
+
+    for (let [key, val] of resultFormData.entries()) {
+        console.log(key, val);
+    }
+
+    return resultFormData;
+};
+
+const add = function () {
     axios
-        .post("/api/files/templates", formData, {
+        .post("/api/files/templates", prepareFormData(), {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
@@ -63,46 +76,51 @@ const add = function () {
         });
 };
 
-// const edit = function () {
-//     clearFields(formDataObject);
-//     axios
-//         .get(`/api/file_templates/${props.editId}/edit`, formDataObject)
-//         .then((response) => {
-//             Object.keys(response.data.data).forEach((key) => {
-//                 formDataObject[key] = response.data.data[key];
-//             });
-//         })
-//         .catch((error) => {
-//             if (error.status === 404) {
-//                 showAlertDialog.value = true;
-//                 alertText.value = t("users.file_templates.no_selected");
-//                 close(false);
-//             }
-//             console.log(error);
-//         });
-// };
+const edit = function () {
+    axios
+        .get(`/api/files/templates/${props.editId}/edit`, formDataObject)
+        .then((response) => {
+            Object.keys(response.data.data).forEach((key) => {
+                formDataObject[key] = response.data.data[key];
+            });
+        })
+        .catch((error) => {
+            if (error.status === 404) {
+                showAlertDialog.value = true;
+                alertText.value = t("users.file_templates.no_selected");
+                close(false);
+            }
+            console.log(error);
+        });
+};
 
-// const update = function (id) {
-//     axios
-//         .patch(`/api/file_templates/${id}`, formDataObject)
-//         .then((response) => {
-//             modelChangesStore.editDepartment(formDataObject.name);
-//             close(true, "edit");
-//         })
-//         .catch((error) => {
-//             clearFields(formDataObjectErrors);
-//             if (error.response.status === 422) {
-//                 const errors = error.response.data.errors;
-//                 console.log(errors);
-//                 for (error in errors) {
-//                     formDataObjectErrors[error] = errors[error][0];
-//                 }
-//                 console.log(formDataObjectErrors);
-//             } else {
-//                 console.log(error);
-//             }
-//         });
-// };
+const update = function (id) {
+    const formData = prepareFormData();
+    formData.append('_method', 'PATCH');
+    formData.append('id', id);
+
+    axios
+        .post(`/api/files/templates/${id}`, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+        })
+        .then((response) => {
+            modelChangesStore.editFileTemplate(formDataObject.name);
+            close(true, "edit");
+        })
+        .catch((error) => {
+            clearFields(formDataObjectErrors);
+            if (error.response.status === 422) {
+                const errors = error.response.data.errors;
+                console.log(errors);
+                for (error in errors) {
+                    formDataObjectErrors[error] = errors[error][0];
+                }
+                console.log(formDataObjectErrors);
+            } else {
+                console.log(error);
+            }
+        });
+};
 
 watch(
     () => props.isOpen,

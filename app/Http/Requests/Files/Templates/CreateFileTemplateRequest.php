@@ -31,9 +31,9 @@ class CreateFileTemplateRequest extends FormRequest
             ],
 
             'file_template' => [
-                'required',
+                $this->isMethod('POST') ? 'required' : 'nullable',
                 'file',
-                'mimes:doc,docx,pdf',
+                'mimes:docx,pdf',
                 'max:1000000',
             ],
         ];
