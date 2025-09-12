@@ -115,4 +115,19 @@ const { t } = useI18n();
             to: '/files/templates',
         }"
     />
+
+    <VerticalNavSectionTitle
+        v-if="authStore.hasOneOfEachPermission('fileTemplates-read')"
+        :item="{
+            heading: t('nav.images'),
+        }"
+    />
+    <VerticalNavLink
+        v-if="authStore.checkPermission('gallery-read')"
+        :item="{
+            title: t('nav.gallery'),
+            icon: 'ri-multi-image-line',
+            to: '/gallery',
+        }"
+    />
 </template>

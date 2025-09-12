@@ -92,7 +92,7 @@ const permissionGroups = ref([
     },
     {
     key: "fileTemplates",
-        name: t("users.roles.entities.fileTemplates"),
+        name: t("users.roles.entities.gallery"),
         permissions: {
             read: false,
             create: false,

@@ -12,7 +12,6 @@ import { useAuthStore } from "../stores/auth";
 import AlertDangerDialog from "../components/alerts/AlertDangerDialog.vue";
 import { useRouter } from "vue-router";
 import UseFileTemplate from "../components/dialog/FileTemplate/UseFileTemplate.vue";
-import UserFileStorageDialog from "../components/dialog/FileTemplate/UserFileStorageDialog.vue";
 
 const authStore = useAuthStore();
 const modelChangesStore = useModelChangesStore();
@@ -261,18 +260,10 @@ const closeTemplateDialog = function (startFileGenerating) {
     }
 };
 
-const isFileStorageDialogOpen = ref(false);
-const storageDialogUserId = ref(null);
-
 const openStorage = function (id = null) {
     router.push({
         path: `/files/user/storage/${id}`,
     });
-};
-
-const closeStorageDialog = function () {
-    isFileStorageDialogOpen.value = false;
-    storageDialogUserId.value = null;
 };
 </script>
 
@@ -318,12 +309,6 @@ const closeStorageDialog = function () {
         :isOpen="isTemplateDialogOpen"
         :user-id="dialogUserId"
     ></UseFileTemplate>
-
-    <UserFileStorageDialog
-        @close-dialog="closeStorageDialog"
-        :isOpen="isFileStorageDialogOpen"
-        :user-id="storageDialogUserId"
-    ></UserFileStorageDialog>
 
     <v-data-table-server
         v-model:items-per-page="itemsPerPage"

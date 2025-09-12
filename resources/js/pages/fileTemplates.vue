@@ -1,7 +1,6 @@
 <script setup>
 import axios from "axios";
 import { onMounted, ref } from "vue";
-import DepartmentDialog from "../components/dialog/DepartmentDialog.vue";
 import AcceptDialog from "../components/alerts/AcceptDialog.vue";
 import AlertDangerDialog from "../components/alerts/AlertDangerDialog.vue";
 import Snackbar from "../components/toaster/Snackbar.vue";
@@ -232,12 +231,6 @@ const downloadTemplate = function (id, fileName) {
         :isOpen="isDialogOpen"
         :edit-id="dialogEditId"
     ></FileTemplateDialog>
-
-    <UseFileTemplate
-        @close-dialog="closeTemplateDialog"
-        :isOpen="isTemplateDialogOpen"
-        :template-id="dialogTemplateId"
-    ></UseFileTemplate>
 
     <AlertDangerDialog
         @close-dialog="showAlertDialog = false"

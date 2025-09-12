@@ -51,5 +51,12 @@ return [
         'create',
         'update',
         'delete',
+    ],
+
+    'gallery' => [
+        'read',
+        'create',
+        'update',
+        'delete',
     ]
 ];

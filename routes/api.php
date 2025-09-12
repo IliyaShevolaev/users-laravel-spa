@@ -18,6 +18,7 @@ use App\Http\Controllers\Cities\CityController;
 use App\Http\Controllers\Tasks\EventController;
 use App\Http\Controllers\Files\ExportController;
 use App\Http\Controllers\Cities\RegionController;
+use App\Http\Controllers\Gallery\ImageController;
 use App\Http\Controllers\User\PositionController;
 use App\Http\Controllers\User\DepartmentController;
 use App\Http\Controllers\Files\FileTemplateController;
@@ -75,6 +76,8 @@ Route::middleware('auth')->group(function () {
         Route::post('user/documents/datatable/{user}', [UserDocumentsController::class, 'datatable']);
         Route::resource('user/documents', UserDocumentsController::class);
     });
+
+    Route::resource('images', ImageController::class);
 });
 
 Route::get('/user', AuthController::class);
