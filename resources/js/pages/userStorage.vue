@@ -164,6 +164,8 @@ const handleFileChange = (event) => {
                 itemsPerPage: itemsPerPage.value,
                 sortBy: currentSortBy.value,
             });
+
+            showSnackBar(`${t("file_template.uploaded")}`, "success");
         })
         .catch((error) => {
             console.error(error);
@@ -254,7 +256,7 @@ const showSnackBar = function (message, color) {
                 class="me-3"
                 size="small"
                 color="error"
-                @click="askToDeleteRow(item.id, item.file_name)"
+                @click="askToDeleteRow(item.id, item.name)"
             />
         </template>
     </v-data-table-server>

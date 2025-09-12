@@ -17,9 +17,14 @@ class ReadyExportFileEvent implements ShouldBroadcast
     /**
      * Create a new event instance.
      */
-    public function __construct(public int $userId, public string $fileName)
+    public function __construct(
+        public int $userId,
+        public string $fileName,
+        public ?string $downloadName = null)
     {
-        //
+        if (!$this->downloadName) {
+            $this->downloadName = $this->fileName;
+        }
     }
 
     /**
@@ -44,6 +49,7 @@ class ReadyExportFileEvent implements ShouldBroadcast
         return [
             'userId' => $this->userId,
             'fileName' => $this->fileName,
+            'downloadName' => $this->downloadName
         ];
     }
 }

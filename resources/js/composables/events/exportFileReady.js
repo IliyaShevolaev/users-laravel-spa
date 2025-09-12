@@ -27,7 +27,7 @@ export function listenExportFileReady() {
             console.log(event);
 
             try {
-                await downloadExportFile(event.fileName);
+                await downloadExportFile(event.fileName, event.downloadName);
                 await markFileAsDownloaded(event.fileName);
             } catch (error) {
                 console.log(error);

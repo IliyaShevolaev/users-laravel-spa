@@ -64,6 +64,6 @@ class GenerateTemplateFileJob implements ShouldQueue
             'file_name' => $uniqueFileName
         ]);
 
-        broadcast(new ReadyExportFileEvent($this->userId, $uniqueFileName));
+        broadcast(new ReadyExportFileEvent($this->userId, $uniqueFileName, $fullFileName));
     }
 }
