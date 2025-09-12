@@ -264,9 +264,10 @@ const closeTemplateDialog = function (startFileGenerating) {
 const isFileStorageDialogOpen = ref(false);
 const storageDialogUserId = ref(null);
 
-const openStorageDialog = function (id = null) {
-    isFileStorageDialogOpen.value = true;
-    storageDialogUserId.value = id;
+const openStorage = function (id = null) {
+    router.push({
+        path: `/files/user/storage/${id}`,
+    });
 };
 
 const closeStorageDialog = function () {
@@ -366,7 +367,7 @@ const closeStorageDialog = function () {
                 class="me-3"
                 size="small"
                 color="office-word"
-                @click="openStorageDialog(item.id)"
+                @click="openStorage(item.id)"
             ></v-btn>
             <v-btn
                 v-if="authStore.checkPermission('users-logs')"

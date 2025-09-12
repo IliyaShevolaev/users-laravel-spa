@@ -13,6 +13,7 @@ return new class extends Migration {
         Schema::create('user_documents', function (Blueprint $table) {
             $table->id();
 
+            $table->string('name');
             $table->string('file_name');
             $table->foreignId('user_id')->constrained('users', 'id')->cascadeOnDelete();
 

@@ -6,6 +6,7 @@ namespace App\Repositories\User;
 
 use App\Models\User\UserDocument;
 use App\Models\Files\FileTemplate;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use App\DTO\User\Documents\CreateUserDocumentDTO;
 use App\Repositories\Interfaces\User\UserDocumentRepositoryInterface;
@@ -30,5 +31,11 @@ class UserDocumentRepository implements UserDocumentRepositoryInterface
     public function delete(UserDocument $userDocument): void
     {
         $userDocument->delete();
+    }
+
+
+    public function getQuery(): Builder
+    {
+        return UserDocument::query();
     }
 }

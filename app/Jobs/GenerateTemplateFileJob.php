@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use Illuminate\Support\Str;
 use App\DTO\User\ExportUserDTO;
 use App\Models\Export\UserExport;
 use App\Models\User\UserDocument;
@@ -37,30 +38,32 @@ class GenerateTemplateFileJob implements ShouldQueue
         $templateProcessor->setValues($this->exportUserDTO->all());
 
         $fullFileName = "{$this->fileName}.{$this->fileFormat}";
+        $uniqueFileName = Str::uuid() . '.' . $this->fileFormat;
 
         Storage::disk('local')->makeDirectory('exports');
 
         $exportPath = Storage
             ::disk('local')
-            ->path("exports/{$fullFileName}");
+            ->path("exports/{$uniqueFileName}");
         $templateProcessor->saveAs($exportPath);
 
         Storage::disk('local')->makeDirectory('documents');
 
-        Storage::disk('local')->copy("exports/{$fullFileName}", "documents/{$fullFileName}");
+        Storage::disk('local')->copy("exports/{$uniqueFileName}", "documents/{$uniqueFileName}");
 
         UserExport::create([
             'user_id' => $this->userId,
-            'file_name' => $fullFileName,
+            'file_name' => $uniqueFileName,
             'file_type' => $this->fileFormat,
             'is_user_downloaded' => false,
         ]);
 
         UserDocument::create([
             'user_id' => $this->exportUserDTO->id,
-            'file_name' => $fullFileName,
+            'name' => $fullFileName,
+            'file_name' => $uniqueFileName
         ]);
 
-        broadcast(new ReadyExportFileEvent($this->userId, $fullFileName));
+        broadcast(new ReadyExportFileEvent($this->userId, $uniqueFileName));
     }
 }

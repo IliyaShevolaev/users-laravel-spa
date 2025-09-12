@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\User;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UserDocumentRequest extends FormRequest
@@ -23,7 +24,12 @@ class UserDocumentRequest extends FormRequest
     {
         return [
             'user_id' => ['required', 'int'],
-            'file' => ['required', 'file', 'mimes:pdf,docx', 'max:1000000'],
+            'file' => [
+                'required',
+                'file',
+                'mimes:pdf,docx',
+                'max:1000000',
+            ],
         ];
     }
 }

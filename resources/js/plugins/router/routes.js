@@ -72,6 +72,12 @@ export const routes = [
                 meta: { permission: 'tasks-stats' },
             },
             {
+                path: "files/user/storage/:id",
+                component: () => import("@/pages/userStorage.vue"),
+                meta: { permission: 'fileTemplates-read' },
+                props: route => ({ id: Number(route.params.id) }),
+            },
+            {
                 path: "/:pathMatch(.*)*",
                 component: () => import("@/pages/[...error].vue"),
             },

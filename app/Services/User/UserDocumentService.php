@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\User;
 
+use Illuminate\Support\Str;
 use App\Models\User\UserDocument;
 use Illuminate\Support\Facades\Storage;
 use App\DTO\User\Documents\CreateUserDocumentDTO;
@@ -28,11 +29,14 @@ class UserDocumentService
 
     public function create(CreateUserDocumentDTO $dto): void
     {
-        $dto->setFileName();
+        $extension = $dto->file->getClientOriginalExtension();
+        $uniqueName = Str::uuid() . '.' . $extension;
+
+        $dto->setFileName($uniqueName);
 
         $dto->file->storeAs(
             'documents',
-            $dto->fileName
+            $uniqueName
         );
 
         $this->repository->create($dto);

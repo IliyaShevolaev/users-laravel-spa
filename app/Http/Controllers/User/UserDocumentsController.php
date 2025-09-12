@@ -5,10 +5,13 @@ namespace App\Http\Controllers\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use App\DataTables\UserDocumentsDataTable;
+use App\DTO\DataTable\DatatableRequestDTO;
 use App\Services\User\UserDocumentService;
 use App\Http\Requests\User\UserDocumentRequest;
 use App\DTO\User\Documents\CreateUserDocumentDTO;
 use App\Http\Resources\User\UserDocumentResource;
+use App\Http\Requests\DataTables\DataTableRequest;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Repositories\Interfaces\User\UserRepositoryInterface;
@@ -30,6 +33,19 @@ class UserDocumentsController extends Controller
     {
         return UserDocumentResource::collection($this->repository->all());
     }
+
+    public function datatable(
+        int $userId,
+        DataTableRequest $dataTableRequest,
+        UserDocumentsDataTable $datatable
+    ): JsonResponse {
+        $this->authorize('check-permission', 'users-read');
+
+        $dto = DatatableRequestDTO::from($dataTableRequest->validated());
+
+        return $datatable->json($dto, $userId);
+    }
+
 
     public function show(int $documentId): BinaryFileResponse
     {

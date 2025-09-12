@@ -9,6 +9,7 @@ use Illuminate\Http\UploadedFile;
 
 class CreateUserDocumentDTO extends Data
 {
+    public string $name;
     public string $fileName;
 
     public function __construct(
@@ -17,8 +18,9 @@ class CreateUserDocumentDTO extends Data
     ) {
     }
 
-    public function setFileName(): void
+    public function setFileName($uniqueName): void
     {
-        $this->fileName = $this->file->getClientOriginalName();
+        $this->name = $this->file->getClientOriginalName();
+        $this->fileName = $uniqueName;
     }
 }

@@ -72,6 +72,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('templates', FileTemplateController::class);
 
         Route::get('user/documents/by-user/{user}', [UserDocumentsController::class, 'getByUser']);
+        Route::post('user/documents/datatable/{user}', [UserDocumentsController::class, 'datatable']);
         Route::resource('user/documents', UserDocumentsController::class);
     });
 });
