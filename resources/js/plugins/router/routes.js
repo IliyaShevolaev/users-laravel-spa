@@ -1,5 +1,16 @@
 export const routes = [
-    { path: "/", redirect: "/users" },
+    { path: "/", redirect: "/gallery" },
+    {
+        path: "/",
+        component: () => import("@/layouts/default.vue"),
+        meta: { requiresAuth: false },
+        children: [
+            {
+                path: "gallery",
+                component: () => import("@/pages/gallery.vue"),
+            },
+        ],
+    },
     {
         path: "/",
         component: () => import("@/layouts/default.vue"),
@@ -76,11 +87,6 @@ export const routes = [
                 component: () => import("@/pages/userStorage.vue"),
                 meta: { permission: "fileTemplates-read" },
                 props: (route) => ({ id: Number(route.params.id) }),
-            },
-            {
-                path: "gallery",
-                component: () => import("@/pages/gallery.vue"),
-                meta: { permission: "gallery-read" },
             },
             {
                 path: "/:pathMatch(.*)*",

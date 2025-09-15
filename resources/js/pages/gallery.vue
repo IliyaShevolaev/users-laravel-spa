@@ -31,25 +31,6 @@ const requestStartData = function () {
 };
 requestStartData();
 
-const visibleIndicators = computed(() => {
-    const total = images.value.length;
-    const current = currentSlide.value;
-    const indicators = new Set();
-
-    if (total > 0) {
-        indicators.add(0);
-        indicators.add(total - 1);
-    }
-
-    for (let i = current - 2; i <= current + 2; i++) {
-        if (i > 0 && i < total - 1) {
-            indicators.add(i);
-        }
-    }
-
-    return Array.from(indicators).sort((a, b) => a - b);
-});
-
 const isDialogOpen = ref(false);
 const dialogEditId = ref(null);
 
@@ -88,9 +69,11 @@ const closeDialog = function (dataChanged, method) {
 };
 
 const isImageDialogOpen = ref(false);
+const choisenShowImage = ref(null);
 
-const showImage = function () {
+const showImage = function (id) {
     isImageDialogOpen.value = true;
+    choisenShowImage.value = id;
 };
 
 const closeImage = function (id) {
@@ -167,12 +150,8 @@ const showSnackBar = function (message, color) {
     <ViewImage
         @close-dialog="closeImage"
         :isOpen="isImageDialogOpen"
-        :image-url="
-            currentImage
-                ? currentImage.imageUrl[Object.keys(currentImage.imageUrl)[0]]
-                      .original_url
-                : ''
-        "
+        :images="images"
+        :current-image="choisenShowImage"
     ></ViewImage>
 
     <AcceptDialog
@@ -189,7 +168,114 @@ const showSnackBar = function (message, color) {
         @close-snackbar="isSnackbarOpen = false"
     ></Snackbar>
 
-    <div class="max-w-sm mx-auto">
+    <div v-if="authStore.checkPermission('gallery-create')">
+        <v-btn
+            @click="openDialog()"
+            prepend-icon="ri-add-line"
+            variant="flat"
+            color="success"
+        >
+            {{ $t("main.append_button") }}
+        </v-btn>
+    </div>
+
+    <v-row class="ma-0" dense>
+        <v-col
+            v-for="(image, index) in images"
+            :key="image.id"
+            cols="12"
+            md="4"
+            class="d-flex"
+        >
+
+            <v-card class="rounded-lg px-4 pt-4 w-100" height="370">
+                <v-img
+                    :src="
+                        image.imageUrl[Object.keys(image.imageUrl)[0]]
+                            .preview_url
+                    "
+                    @click="showImage(index)"
+                    cover
+                    height="300"
+                    class="rounded"
+                >
+                    <div class="d-flex justify-end pa-2 text-sky-50">
+                        <v-menu location="bottom end">
+                            <template #activator="{ props }">
+                                <v-btn
+                                    v-bind="props"
+                                    icon="ri-information-2-line"
+                                    variant="text"
+                                    size="small"
+                                    color="white"
+                                />
+                            </template>
+
+                            <v-list>
+                                <v-list-item
+                                    @click="
+                                        downloadImage(
+                                            image.imageUrl[
+                                                Object.keys(image.imageUrl)[0]
+                                            ].original_url,
+                                            image.name
+                                        )
+                                    "
+                                >
+                                    <template #prepend>
+                                        <v-icon icon="ri-download-line" />
+                                    </template>
+                                    <v-list-item-title>
+                                        {{ t("gallery.save") }}
+                                    </v-list-item-title>
+                                </v-list-item>
+
+                                <v-list-item
+                                    v-if="
+                                        authStore.checkPermission(
+                                            'gallery-update'
+                                        )
+                                    "
+                                    @click="openDialog(image.id)"
+                                >
+                                    <template #prepend>
+                                        <v-icon icon="ri-edit-line" />
+                                    </template>
+                                    <v-list-item-title>
+                                        {{ t("gallery.edit") }}
+                                    </v-list-item-title>
+                                </v-list-item>
+
+                                <v-list-item
+                                    v-if="
+                                        authStore.checkPermission(
+                                            'gallery-delete'
+                                        )
+                                    "
+                                    @click="
+                                        askToDeleteRow(image.id, image.name)
+                                    "
+                                >
+                                    <template #prepend>
+                                        <v-icon icon="ri-delete-bin-line" />
+                                    </template>
+                                    <v-list-item-title>
+                                        {{ t("gallery.delete") }}
+                                    </v-list-item-title>
+                                </v-list-item>
+                            </v-list>
+                        </v-menu>
+                    </div>
+                </v-img>
+
+                <v-card-title class="text-xl mt-2">
+                    {{ image.name }}
+                </v-card-title>
+            </v-card>
+        </v-col>
+    </v-row>
+
+    <!-- <div class="max-w-sm mx-auto">
         <v-skeleton-loader
             v-if="imagesLoading"
             max-width="350"
@@ -278,7 +364,9 @@ const showSnackBar = function (message, color) {
                                                 'gallery-delete'
                                             )
                                         "
-                                        @click="askToDeleteRow(image.id, image.name)"
+                                        @click="
+                                            askToDeleteRow(image.id, image.name)
+                                        "
                                     >
                                         <template #prepend>
                                             <v-icon
@@ -318,23 +406,6 @@ const showSnackBar = function (message, color) {
             <v-card-title class="text-xl">
                 {{ currentImage?.name }}
             </v-card-title>
-
-            <v-card-actions>
-                <div
-                    class="w-full"
-                    v-if="authStore.checkPermission('gallery-create')"
-                >
-                    <v-btn
-                        class="w-full"
-                        @click="openDialog()"
-                        prepend-icon="ri-add-line"
-                        variant="flat"
-                        color="success"
-                    >
-                        {{ $t("main.append_button") }}
-                    </v-btn>
-                </div>
-            </v-card-actions>
         </v-card>
-    </div>
+    </div> -->
 </template>

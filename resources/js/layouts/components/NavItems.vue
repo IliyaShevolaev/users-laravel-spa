@@ -117,13 +117,11 @@ const { t } = useI18n();
     />
 
     <VerticalNavSectionTitle
-        v-if="authStore.hasOneOfEachPermission('gallery-read')"
         :item="{
             heading: t('nav.images'),
         }"
     />
     <VerticalNavLink
-        v-if="authStore.checkPermission('gallery-read')"
         :item="{
             title: t('nav.gallery'),
             icon: 'ri-multi-image-line',

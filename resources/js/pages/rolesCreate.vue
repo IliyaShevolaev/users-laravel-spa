@@ -104,7 +104,6 @@ const permissionGroups = ref([
     key: "gallery",
         name: t("users.roles.entities.gallery"),
         permissions: {
-            read: false,
             create: false,
             update: false,
             delete: false,

@@ -7,6 +7,10 @@ import VerticalNavLayout from '@layouts/components/VerticalNavLayout.vue'
 import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue'
 import UserProfile from '@/layouts/components/UserProfile.vue'
 import EventNotify from './EventNotify.vue'
+import { useAuthStore } from '../../stores/auth'
+import LoginBtn from './LoginBtn.vue'
+
+const authStore = useAuthStore();
 </script>
 
 <template>
@@ -28,7 +32,8 @@ import EventNotify from './EventNotify.vue'
 
         <NavbarThemeSwitcher class="me-4" />
 
-        <UserProfile />
+        <UserProfile v-if="authStore.isAuth"/>
+        <LoginBtn v-else />
       </div>
     </template>
 

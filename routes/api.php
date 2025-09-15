@@ -77,7 +77,8 @@ Route::middleware('auth')->group(function () {
         Route::resource('user/documents', UserDocumentsController::class);
     });
 
-    Route::resource('images', ImageController::class);
 });
+
+Route::resource('images', ImageController::class);
 
 Route::get('/user', AuthController::class);

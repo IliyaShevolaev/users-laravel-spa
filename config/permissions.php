@@ -54,7 +54,6 @@ return [
     ],
 
     'gallery' => [
-        'read',
         'create',
         'update',
         'delete',
