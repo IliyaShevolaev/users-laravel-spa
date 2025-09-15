@@ -1,9 +1,12 @@
 <script setup>
 import { useAuthStore } from "../stores/auth";
 import { useModelChangesStore } from "../stores/modelChanges";
+import Snackbar from "../components/toaster/Snackbar.vue";
+import { useI18n } from "vue-i18n";
 
 const authStore = useAuthStore();
 const modelChangesStore = useModelChangesStore();
+const { t } = useI18n();
 
 import ImageDialog from "../components/dialog/Gallery/ImageDialog.vue";
 import { ref } from "vue";
@@ -26,6 +29,25 @@ const requestStartData = function () {
 };
 requestStartData();
 
+const visibleIndicators = computed(() => {
+    const total = images.value.length;
+    const current = currentSlide.value;
+    const indicators = new Set();
+
+    if (total > 0) {
+        indicators.add(0);
+        indicators.add(total - 1);
+    }
+
+    for (let i = current - 2; i <= current + 2; i++) {
+        if (i > 0 && i < total - 1) {
+            indicators.add(i);
+        }
+    }
+
+    return Array.from(indicators).sort((a, b) => a - b);
+});
+
 const isDialogOpen = ref(false);
 const dialogEditId = ref(null);
 
@@ -36,29 +58,25 @@ const openDialog = function (id = null) {
 
 const closeDialog = function (dataChanged, method) {
     if (dataChanged) {
-        requestData({
-            page: currentPage.value,
-            itemsPerPage: itemsPerPage.value,
-            sortBy: currentSortBy.value,
-        });
+        requestStartData();
     }
 
     if (method === "add") {
         showSnackBar(
-            t("users.file_templates.file_template") +
+            t("gallery.image") +
                 " " +
-                modelChangesStore.getFileTemplate.lastAdd +
+                modelChangesStore.getImage.lastAdd +
                 " " +
-                t("users.file_templates.was_append"),
+                t("gallery.was_append"),
             "success"
         );
     } else if (method === "edit") {
         showSnackBar(
-            t("users.file_templates.file_template") +
+            t("gallery.image") +
                 " " +
-                modelChangesStore.getFileTemplate.lastEdit +
+                modelChangesStore.getImage.lastEdit +
                 " " +
-                t("users.file_templates.was_edited"),
+                t("gallery.was_edited"),
             "warning"
         );
     }
@@ -84,6 +102,19 @@ const editImage = function (id) {
 const deleteImage = function (id) {
     console.log(id);
 };
+
+const isSnackbarOpen = ref(false);
+const snackbarMessage = ref("");
+const snackbarColor = ref("");
+
+const showSnackBar = function (message, color) {
+    isSnackbarOpen.value = false;
+    setTimeout(() => {
+        snackbarMessage.value = message;
+        snackbarColor.value = color;
+        isSnackbarOpen.value = true;
+    }, 10);
+};
 </script>
 
 <template>
@@ -104,20 +135,25 @@ const deleteImage = function (id) {
         "
     ></ViewImage>
 
-    <div class="mb-5" v-if="authStore.checkPermission('gallery-create')">
-        <v-btn @click="openDialog()" prepend-icon="ri-add-line" color="success">
-            {{ $t("main.append_button") }}
-        </v-btn>
-    </div>
+    <Snackbar
+        :color="snackbarColor"
+        :message="snackbarMessage"
+        :is-open="isSnackbarOpen"
+        @close-snackbar="isSnackbarOpen = false"
+    ></Snackbar>
 
-    <div>
-        <v-skeleton-loader v-if="imagesLoading" type="card"></v-skeleton-loader>
+    <div class="max-w-sm mx-auto">
+        <v-skeleton-loader
+            v-if="imagesLoading"
+            max-width="350"
+            type="card"
+        ></v-skeleton-loader>
 
         <v-card v-else max-width="350" class="rounded-lg px-4 pt-4">
             <v-carousel
                 v-model="currentSlide"
                 show-arrows="hover"
-                hide-delimiter-background
+                hide-delimiters
                 height="300"
             >
                 <v-carousel-item v-for="image in images" :key="image.id">
@@ -149,9 +185,9 @@ const deleteImage = function (id) {
                                                 icon="ri-edit-line"
                                             ></v-icon>
                                         </template>
-                                        <v-list-item-title
-                                            >Редактировать</v-list-item-title
-                                        >
+                                        <v-list-item-title>
+                                            Редактировать
+                                        </v-list-item-title>
                                     </v-list-item>
 
                                     <v-list-item @click="deleteImage(image.id)">
@@ -171,18 +207,44 @@ const deleteImage = function (id) {
                 </v-carousel-item>
             </v-carousel>
 
+            <div class="d-flex justify-center mt-2">
+                <span
+                    v-for="i in visibleIndicators"
+                    :key="i"
+                    class="mx-1 rounded-full"
+                    :class="{
+                        'bg-primary': currentSlide === i,
+                        'bg-gray-300': currentSlide !== i,
+                    }"
+                    style="
+                        width: 10px;
+                        height: 10px;
+                        display: inline-block;
+                        cursor: pointer;
+                    "
+                    @click="currentSlide = i"
+                ></span>
+            </div>
+
             <v-card-title class="text-h6 font-weight-medium">
-                {{ currentImage.name }}
+                {{ currentImage?.name }}
             </v-card-title>
 
             <v-card-actions>
-                <v-btn variant="tonal" color="primary" @click="addImage">
-                    Добавить
-                </v-btn>
-                <v-spacer />
-                <v-btn variant="outlined" color="error" @click="clearAll">
-                    Очистить
-                </v-btn>
+                <div
+                    class="w-full"
+                    v-if="authStore.checkPermission('gallery-create')"
+                >
+                    <v-btn
+                        class="w-full"
+                        @click="openDialog()"
+                        prepend-icon="ri-add-line"
+                        variant="flat"
+                        color="success"
+                    >
+                        {{ $t("main.append_button") }}
+                    </v-btn>
+                </div>
             </v-card-actions>
         </v-card>
     </div>

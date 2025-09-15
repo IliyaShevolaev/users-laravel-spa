@@ -117,7 +117,7 @@ const { t } = useI18n();
     />
 
     <VerticalNavSectionTitle
-        v-if="authStore.hasOneOfEachPermission('fileTemplates-read')"
+        v-if="authStore.hasOneOfEachPermission('gallery-read')"
         :item="{
             heading: t('nav.images'),
         }"

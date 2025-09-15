@@ -51,7 +51,7 @@ const add = function () {
             },
         })
         .then((response) => {
-            //modelChangesStore.addFileTemplate(formDataObject.name);
+            modelChangesStore.addImage(formDataObject.name);
             close(true, "add");
         })
         .catch((error) => {
@@ -151,8 +151,8 @@ const alertText = ref("");
                     <span>
                         {{
                             props.editId
-                                ? t("users.file_templates.edit_button")
-                                : t("users.file_templates.add_button")
+                                ? t("gallery.edit_button")
+                                : t("gallery.add_button")
                         }}
                     </span>
                     <v-btn
