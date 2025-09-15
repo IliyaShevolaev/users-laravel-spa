@@ -3,6 +3,8 @@ import { useAuthStore } from "../stores/auth";
 import { useModelChangesStore } from "../stores/modelChanges";
 import Snackbar from "../components/toaster/Snackbar.vue";
 import { useI18n } from "vue-i18n";
+import { saveAs } from "file-saver";
+import AcceptDialog from "../components/alerts/AcceptDialog.vue";
 
 const authStore = useAuthStore();
 const modelChangesStore = useModelChangesStore();
@@ -95,12 +97,50 @@ const closeImage = function (id) {
     isImageDialogOpen.value = false;
 };
 
-const editImage = function (id) {
-    console.log(id);
+const downloadImage = function (url, name) {
+    axios
+        .get(url, {
+            responseType: "blob",
+        })
+        .then((response) => {
+            saveAs(response.data, name);
+        });
 };
 
-const deleteImage = function (id) {
-    console.log(id);
+const idToDelete = ref(0);
+
+const showAlertAcceptDialog = ref(false);
+const alertAcceptText = ref("");
+
+const askToDeleteRow = function (id, name) {
+    showAlertAcceptDialog.value = true;
+    alertAcceptText.value = `${t("gallery.delete")} ${name}?`;
+    idToDelete.value = id;
+    modelChangesStore.deleteImage(name);
+};
+
+const deleteRow = function (id) {
+    axios
+        .delete(`/api/images/${id}`)
+        .then(() => {
+            requestStartData();
+            showSnackBar(
+                t("gallery.image") +
+                    " " +
+                    modelChangesStore.getImage.lastDelete +
+                    " " +
+                    t("gallery.was_deleted"),
+                "error"
+            );
+        })
+        .catch((error) => {
+            console.log(error);
+            if (error.response.status === 404) {
+                showAlertDialog.value = true;
+                alertText.value = t("gallery.no_selected");
+            }
+        });
+    showAlertAcceptDialog.value = false;
 };
 
 const isSnackbarOpen = ref(false);
@@ -135,6 +175,13 @@ const showSnackBar = function (message, color) {
         "
     ></ViewImage>
 
+    <AcceptDialog
+        @close-dialog="showAlertAcceptDialog = false"
+        @accept-action="deleteRow(idToDelete)"
+        :is-open="showAlertAcceptDialog"
+        :message="alertAcceptText"
+    ></AcceptDialog>
+
     <Snackbar
         :color="snackbarColor"
         :message="snackbarMessage"
@@ -166,7 +213,13 @@ const showSnackBar = function (message, color) {
                         cover
                         class="fill-height rounded"
                     >
-                        <div class="d-flex justify-end pa-2">
+                        <div class="d-flex justify-between pa-2 text-sky-50">
+                            <span
+                                >{{ currentSlide + 1 }}/{{
+                                    images.length
+                                }}</span
+                            >
+
                             <v-menu location="bottom end">
                                 <template #activator="{ props }">
                                     <v-btn
@@ -179,25 +232,61 @@ const showSnackBar = function (message, color) {
                                 </template>
 
                                 <v-list>
-                                    <v-list-item @click="editImage(image.id)">
+                                    <v-list-item
+                                        @click="
+                                            downloadImage(
+                                                image.imageUrl[
+                                                    Object.keys(
+                                                        image.imageUrl
+                                                    )[0]
+                                                ].original_url,
+                                                image.name
+                                            )
+                                        "
+                                    >
+                                        <template #prepend>
+                                            <v-icon
+                                                icon="ri-download-line"
+                                            ></v-icon>
+                                        </template>
+                                        <v-list-item-title>
+                                            {{ t("gallery.save") }}
+                                        </v-list-item-title>
+                                    </v-list-item>
+
+                                    <v-list-item
+                                        v-if="
+                                            authStore.checkPermission(
+                                                'gallery-update'
+                                            )
+                                        "
+                                        @click="openDialog(image.id)"
+                                    >
                                         <template #prepend>
                                             <v-icon
                                                 icon="ri-edit-line"
                                             ></v-icon>
                                         </template>
                                         <v-list-item-title>
-                                            Редактировать
+                                            {{ t("gallery.edit") }}
                                         </v-list-item-title>
                                     </v-list-item>
 
-                                    <v-list-item @click="deleteImage(image.id)">
+                                    <v-list-item
+                                        v-if="
+                                            authStore.checkPermission(
+                                                'gallery-delete'
+                                            )
+                                        "
+                                        @click="askToDeleteRow(image.id, image.name)"
+                                    >
                                         <template #prepend>
                                             <v-icon
                                                 icon="ri-delete-bin-line"
                                             ></v-icon>
                                         </template>
                                         <v-list-item-title>
-                                            Удалить
+                                            {{ t("gallery.delete") }}
                                         </v-list-item-title>
                                     </v-list-item>
                                 </v-list>
@@ -226,7 +315,7 @@ const showSnackBar = function (message, color) {
                 ></span>
             </div>
 
-            <v-card-title class="text-h6 font-weight-medium">
+            <v-card-title class="text-xl">
                 {{ currentImage?.name }}
             </v-card-title>
 

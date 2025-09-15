@@ -38,4 +38,11 @@ class CreateImageRequest extends FormRequest
             ],
         ];
     }
+
+    public function attributes()
+    {
+        return [
+            'image_file' => trans('main.gallery.image_file')
+        ];
+    }
 }

@@ -141,6 +141,10 @@ return [
         'user_id' => 'пользователь',
     ],
 
+    "gallery" => [
+        "image_file" => "файл изображения"
+    ],
+
     'title' => 'название',
     'title_placeholder' => 'Введите название',
     'add_button' => 'Добавить',

@@ -92,6 +92,16 @@ const permissionGroups = ref([
     },
     {
     key: "fileTemplates",
+        name: t("users.roles.entities.fileTemplates"),
+        permissions: {
+            read: false,
+            create: false,
+            update: false,
+            delete: false,
+        },
+    },
+    {
+    key: "gallery",
         name: t("users.roles.entities.gallery"),
         permissions: {
             read: false,
@@ -264,30 +274,30 @@ const selectAll = function () {
                 />
 
                 <div
-                v-for="group in permissionGroups"
-                :key="group.key"
-                class="border rounded-lg pa-2 mb-4"
-            >
-                <h3 class="text-lg font-semibold mb-2">
-                    {{ group.name }}
-                </h3>
+                    v-for="group in permissionGroups"
+                    :key="group.key"
+                    class="border rounded-lg pa-2 mb-4"
+                >
+                    <h3 class="text-lg font-semibold mb-2">
+                        {{ group.name }}
+                    </h3>
 
-                <v-row>
-                    <v-col
-                        v-for="(value, permissionKey) in group.permissions"
-                        :key="permissionKey"
-                        cols="6"
-                        lg="3"
-                    >
-                        <v-checkbox
-                            v-model="group.permissions[permissionKey]"
-                            :label="t(`users.roles.${permissionKey}`)"
-                            density="compact"
-                            hide-details
-                        />
-                    </v-col>
-                </v-row>
-            </div>
+                    <v-row>
+                        <v-col
+                            v-for="(value, permissionKey) in group.permissions"
+                            :key="permissionKey"
+                            cols="6"
+                            lg="3"
+                        >
+                            <v-checkbox
+                                v-model="group.permissions[permissionKey]"
+                                :label="t(`users.roles.${permissionKey}`)"
+                                density="compact"
+                                hide-details
+                            />
+                        </v-col>
+                    </v-row>
+                </div>
 
                 <div>
                     <span

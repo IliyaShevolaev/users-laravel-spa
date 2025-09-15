@@ -12,9 +12,15 @@ use App\Repositories\Interfaces\Images\ImageRepositoryInterface;
 
 class ImageRepository implements ImageRepositoryInterface
 {
-    //public function all(): Collection;
+    public function all(): Collection
+    {
+        return Image::orderBy('id', 'asc')->get();
+    }
 
-    //public function find(int $FileTemplateId): FileTemplate;
+    public function find(int $id): Image
+    {
+        return Image::find($id);
+    }
 
     public function create(CreateImageDTO $dto): Image
     {
@@ -23,7 +29,13 @@ class ImageRepository implements ImageRepositoryInterface
         return $image;
     }
 
-    // public function update(int $FileTemplateId, CreateFileTemplateDTO $dto): void;
+    public function update(Image $image, CreateImageDTO $dto): void
+    {
+        $image->update($dto->all());
+    }
 
-    //public function delete(FileTemplate $FileTemplate): void;
+    public function delete(Image $image): void
+    {
+        $image->delete();
+    }
 }

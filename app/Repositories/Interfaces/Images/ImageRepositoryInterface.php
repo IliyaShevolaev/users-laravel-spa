@@ -11,13 +11,13 @@ use Illuminate\Database\Eloquent\Collection;
 
 interface ImageRepositoryInterface
 {
-    //public function all(): Collection;
+    public function all(): Collection;
 
-    //public function find(int $FileTemplateId): FileTemplate;
+    public function find(int $FileTemplateId): Image;
 
     public function create(CreateImageDTO $dto): Image;
 
-    // public function update(int $FileTemplateId, CreateFileTemplateDTO $dto): void;
+    public function update(Image $image, CreateImageDTO $dto): void;
 
-    //public function delete(FileTemplate $FileTemplate): void;
+    public function delete(Image $image): void;
 }

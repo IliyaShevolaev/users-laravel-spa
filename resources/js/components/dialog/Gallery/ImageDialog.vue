@@ -72,7 +72,7 @@ const add = function () {
 
 const edit = function () {
     axios
-        .get(`/api/files/templates/${props.editId}/edit`, formDataObject)
+        .get(`/api/images/${props.editId}/edit`, formDataObject)
         .then((response) => {
             Object.keys(response.data.data).forEach((key) => {
                 formDataObject[key] = response.data.data[key];
@@ -94,11 +94,11 @@ const update = function (id) {
     formData.append("id", id);
 
     axios
-        .post(`/api/files/templates/${id}`, formData, {
+        .post(`/api/images/${id}`, formData, {
             headers: { "Content-Type": "multipart/form-data" },
         })
         .then((response) => {
-            modelChangesStore.editFileTemplate(formDataObject.name);
+            modelChangesStore.editImage(formDataObject.name);
             close(true, "edit");
         })
         .catch((error) => {
@@ -185,10 +185,10 @@ const alertText = ref("");
                     <v-file-input
                         class="mt-2"
                         v-model="formDataObject.file"
-                        :error="!!formDataObjectErrors.file_template"
-                        :error-messages="formDataObjectErrors.file_template"
+                        :error="!!formDataObjectErrors.image_file"
+                        :error-messages="formDataObjectErrors.image_file"
                         accept=".png,.jpg,.jpeg"
-                        :label="t('users.file_templates.upload_file')"
+                        :label="t('gallery.file_image')"
                         prepend-icon=""
                         density="default"
                         variant="underlined"
