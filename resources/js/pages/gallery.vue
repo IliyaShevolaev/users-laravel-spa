@@ -8,9 +8,13 @@ const modelChangesStore = useModelChangesStore();
 import ImageDialog from "../components/dialog/Gallery/ImageDialog.vue";
 import { ref } from "vue";
 import axios from "axios";
+import ViewImage from "../components/dialog/Gallery/ViewImage.vue";
 
 const images = ref([]);
 const imagesLoading = ref(false);
+
+const currentSlide = ref(0);
+const currentImage = computed(() => images.value[currentSlide.value]);
 
 const requestStartData = function () {
     imagesLoading.value = true;
@@ -63,9 +67,23 @@ const closeDialog = function (dataChanged, method) {
     dialogEditId.value = null;
 };
 
-const deleteImage = function(id) {
-    console.log(id)
-}
+const isImageDialogOpen = ref(false);
+
+const showImage = function () {
+    isImageDialogOpen.value = true;
+};
+
+const closeImage = function (id) {
+    isImageDialogOpen.value = false;
+};
+
+const editImage = function (id) {
+    console.log(id);
+};
+
+const deleteImage = function (id) {
+    console.log(id);
+};
 </script>
 
 <template>
@@ -75,6 +93,17 @@ const deleteImage = function(id) {
         :edit-id="dialogEditId"
     ></ImageDialog>
 
+    <ViewImage
+        @close-dialog="closeImage"
+        :isOpen="isImageDialogOpen"
+        :image-url="
+            currentImage
+                ? currentImage.imageUrl[Object.keys(currentImage.imageUrl)[0]]
+                      .original_url
+                : ''
+        "
+    ></ViewImage>
+
     <div class="mb-5" v-if="authStore.checkPermission('gallery-create')">
         <v-btn @click="openDialog()" prepend-icon="ri-add-line" color="success">
             {{ $t("main.append_button") }}
@@ -82,45 +111,79 @@ const deleteImage = function(id) {
     </div>
 
     <div>
-        <v-skeleton-loader
-            v-if="imagesLoading"
-            type="image"
-        ></v-skeleton-loader>
-        <v-carousel v-else height="400">
-            <v-carousel-item v-for="image in images" :key="image.id">
-                <v-card class="fill-height">
+        <v-skeleton-loader v-if="imagesLoading" type="card"></v-skeleton-loader>
+
+        <v-card v-else max-width="350" class="rounded-lg px-4 pt-4">
+            <v-carousel
+                v-model="currentSlide"
+                show-arrows="hover"
+                hide-delimiter-background
+                height="300"
+            >
+                <v-carousel-item v-for="image in images" :key="image.id">
                     <v-img
                         :src="
                             image.imageUrl[Object.keys(image.imageUrl)[0]]
-                                .original_url
+                                .preview_url
                         "
-                        class="fill-height"
+                        @click="showImage()"
                         cover
+                        class="fill-height rounded"
                     >
-                        <div
-                            class="d-flex flex-column justify-end fill-height"
-                        >
-                            <v-card-title class="!text-sky-50">
-                                {{ image.name }}
-                            </v-card-title>
+                        <div class="d-flex justify-end pa-2">
+                            <v-menu location="bottom end">
+                                <template #activator="{ props }">
+                                    <v-btn
+                                        v-bind="props"
+                                        icon="ri-information-2-line"
+                                        variant="text"
+                                        size="small"
+                                        color="white"
+                                    />
+                                </template>
 
-                            <v-card-actions>
-                                <v-btn
-                                    color="primary"
-                                    @click="editImage(image.id)"
-                                    >Редактировать</v-btn
-                                >
-                                <v-btn
-                                    color="error"
-                                    @click="deleteImage(image.id)"
-                                    variant="outlined"
-                                    >Удалить</v-btn
-                                >
-                            </v-card-actions>
+                                <v-list>
+                                    <v-list-item @click="editImage(image.id)">
+                                        <template #prepend>
+                                            <v-icon
+                                                icon="ri-edit-line"
+                                            ></v-icon>
+                                        </template>
+                                        <v-list-item-title
+                                            >Редактировать</v-list-item-title
+                                        >
+                                    </v-list-item>
+
+                                    <v-list-item @click="deleteImage(image.id)">
+                                        <template #prepend>
+                                            <v-icon
+                                                icon="ri-delete-bin-line"
+                                            ></v-icon>
+                                        </template>
+                                        <v-list-item-title>
+                                            Удалить
+                                        </v-list-item-title>
+                                    </v-list-item>
+                                </v-list>
+                            </v-menu>
                         </div>
                     </v-img>
-                </v-card>
-            </v-carousel-item>
-        </v-carousel>
+                </v-carousel-item>
+            </v-carousel>
+
+            <v-card-title class="text-h6 font-weight-medium">
+                {{ currentImage.name }}
+            </v-card-title>
+
+            <v-card-actions>
+                <v-btn variant="tonal" color="primary" @click="addImage">
+                    Добавить
+                </v-btn>
+                <v-spacer />
+                <v-btn variant="outlined" color="error" @click="clearAll">
+                    Очистить
+                </v-btn>
+            </v-card-actions>
+        </v-card>
     </div>
 </template>

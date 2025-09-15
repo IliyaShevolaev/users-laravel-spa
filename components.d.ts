@@ -33,6 +33,7 @@ declare module 'vue' {
     UserFileStorageDialog: typeof import('./resources/js/components/dialog/FileTemplate/UserFileStorageDialog.vue')['default']
     ViewCalendarEvent: typeof import('./resources/js/components/dialog/Calendar/ViewCalendarEvent.vue')['default']
     ViewCalendarEventDialog: typeof import('./resources/js/components/dialog/Calendar/ViewCalendarEventDialog.vue')['default']
+    ViewImage: typeof import('./resources/js/components/dialog/Gallery/ViewImage.vue')['default']
     VueApexCharts: typeof import('vue3-apexcharts')['default']
   }
 }
