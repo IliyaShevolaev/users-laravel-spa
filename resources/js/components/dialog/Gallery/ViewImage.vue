@@ -35,6 +35,8 @@ const loadImage = (index) => {
     };
 };
 
+const currentImage = computed(() => props.images[currentSlide.value]);
+
 watch(
     () => props.isOpen,
     (newValue) => {

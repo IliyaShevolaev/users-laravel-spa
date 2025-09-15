@@ -19,7 +19,6 @@ const images = ref([]);
 const imagesLoading = ref(false);
 
 const currentSlide = ref(0);
-const currentImage = computed(() => images.value[currentSlide.value]);
 
 const requestStartData = function () {
     imagesLoading.value = true;
@@ -97,7 +96,7 @@ const alertAcceptText = ref("");
 
 const askToDeleteRow = function (id, name) {
     showAlertAcceptDialog.value = true;
-    alertAcceptText.value = `${t("gallery.delete")} ${name}?`;
+    alertAcceptText.value = `${t("gallery.ask_to_delete")} ${name}?`;
     idToDelete.value = id;
     modelChangesStore.deleteImage(name);
 };
