@@ -1,0 +1,6 @@
+{
+    "root": "docs",
+    "title": "Документация учебного проекта laravel-vue",
+    "language": "ru",
+    "plugins": ["-lunr", "-search"]
+  }
