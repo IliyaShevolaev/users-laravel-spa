@@ -42,15 +42,13 @@ class RegionController extends Controller
         return RegionResource::collection($this->repository->all());
     }
 
-    public function store(RegionRequest $regionRequest): JsonResponse
+    public function store(RegionRequest $regionRequest): void
     {
         $this->authorize('check-permission', 'cities-create');
 
         $dto = CreateRegionDTO::from($regionRequest->validated());
 
         $this->service->create($dto);
-
-        return response()->json(['data' => 'success']);
     }
 
     public function edit(int $regionId): RegionResource
@@ -62,15 +60,13 @@ class RegionController extends Controller
         return new RegionResource($regionToEdit);
     }
 
-    public function update(RegionRequest $regionRequest, int $regionId): JsonResponse
+    public function update(RegionRequest $regionRequest, int $regionId): void
     {
         $this->authorize('check-permission', 'cities-update');
 
         $dto = CreateRegionDTO::from($regionRequest->validated());
 
         $this->service->update($regionId, $dto);
-
-        return response()->json(['message' => 'success']);
     }
 
     public function destroy(int $regionId): JsonResponse

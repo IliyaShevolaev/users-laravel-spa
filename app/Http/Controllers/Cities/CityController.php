@@ -37,38 +37,33 @@ class CityController extends Controller
         return $datatble->json($dto);
     }
 
-    public function store(CityRequest $request): JsonResponse
+    public function store(CityRequest $request): void
     {
         $this->authorize('check-permission', 'cities-create');
 
         $dto = CreateCityDTO::from($request->validated());
 
         $this->service->create($dto);
-
-        return response()->json(['message' => 'success']);
     }
 
     public function edit(int $cityId): CityResource
     {
         $this->authorize('check-permission', 'cities-update');
+
         return new CityResource($this->repository->find($cityId));
     }
 
-    public function update(CityRequest $request, int $cityId): JsonResponse
+    public function update(CityRequest $request, int $cityId): void
     {
         $this->authorize('check-permission', 'cities-update');
         $dto = CreateCityDTO::from($request->validated());
         $this->service->update($cityId, $dto);
-
-        return response()->json(['message' => 'success']);
     }
 
-    public function destroy(int $cityId): JsonResponse
+    public function destroy(int $cityId): void
     {
         $this->authorize('check-permission', 'cities-delete');
         $this->service->delete($cityId);
-
-        return response()->json(['message' => 'success']);
     }
 
     public function import(ImportCitiesRequest $importCitiesRequest): void
