@@ -19,6 +19,7 @@ class UserDocumentsDataTable extends DataTable
      */
     public function __construct(private UserDocumentRepositoryInterface $repository)
     {
+        
     }
 
     /**

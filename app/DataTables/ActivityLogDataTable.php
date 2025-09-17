@@ -10,7 +10,7 @@ use App\Utilities\LogResolvers\LogResolver;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use App\Repositories\Interfaces\ActivityLogs\ActivityLogRepositoryInterface;
 
-class ActivityLogDataTable extends DataTable
+class ActivityLogDataTable extends AbstractDataTable
 {
     /**
      * Репозиторий для работы с данными
@@ -22,6 +22,8 @@ class ActivityLogDataTable extends DataTable
     public function __construct(ActivityLogRepositoryInterface $activityLogRepository)
     {
         $this->repository = $activityLogRepository;
+
+        $this->setBuilder($this->repository->getQuery());
     }
 
     public function dataTable(QueryBuilder $query): EloquentDataTable
@@ -40,45 +42,5 @@ class ActivityLogDataTable extends DataTable
                 return $log->causer?->name ?? 'Система';
             })
             ->setRowId('id');
-    }
-
-    public function json(DatatableRequestDTO $dto, int $userId): \Illuminate\Http\JsonResponse
-    {
-        $query = $this->query($dto, $userId);
-
-        $filteredRecords = $query->count();
-        $paginateQuery = $query;
-
-        if (isset($dto->page) && isset($dto->perPage)) {
-            $perPage = $dto->perPage;
-            $offset = ($dto->page - 1) * $perPage;
-            $paginateQuery = $query->skip($offset)->take($perPage);
-        }
-
-        return response()->json([
-            'data' => $this->dataTable($paginateQuery)->toJson(),
-            'recordsFiltered' => $filteredRecords,
-            'draw' => $dto->draw ?? 0,
-            'input' => $dto->all()
-        ]);
-    }
-
-
-    public function query(DatatableRequestDTO $dto, int $userId): QueryBuilder
-    {
-        $query = $this->repository->getQuery();
-
-        $query->with('causer');
-        $query->where('subject_id', $userId);
-
-        if (isset($dto->sortBy) && isset($dto->sortOrder)) {
-            $query->orderBy($dto->sortBy, $dto->sortOrder);
-        }
-
-        if (isset($dto->search)) {
-            $query->where('name', 'like', '%' . $dto->search . '%');
-        }
-
-        return $query;
     }
 }

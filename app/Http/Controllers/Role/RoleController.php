@@ -41,7 +41,7 @@ class RoleController extends Controller
 
         $dto = DatatableRequestDTO::from($dataTableRequest->validated());
 
-        return $rolesDataTable->json($dto);
+        return $rolesDataTable->json($dto, 'display_name');
     }
 
     /**

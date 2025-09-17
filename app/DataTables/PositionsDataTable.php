@@ -14,9 +14,8 @@ use App\Repositories\Interfaces\User\Position\PositionRepositoryInterface;
 /**
  * Таблица должностей пользователей
  */
-class PositionsDataTable extends DataTable
+class PositionsDataTable extends AbstractDataTable
 {
-
     /**
      * Репозиторий для работы с данными
      *
@@ -27,6 +26,8 @@ class PositionsDataTable extends DataTable
     public function __construct(PositionRepositoryInterface $positionRepository)
     {
         $this->repository = $positionRepository;
+
+        $this->setBuilder($this->repository->getQuery());
     }
 
     /**
@@ -44,46 +45,5 @@ class PositionsDataTable extends DataTable
                 return $position->updated_at->format('d.m.Y H:i');
             })
             ->setRowId('id');
-    }
-
-    public function json(DatatableRequestDTO $dto): \Illuminate\Http\JsonResponse
-    {
-        $query = $this->query($dto);
-
-        $filteredRecords = $query->count();
-        $paginateQuery = $query;
-
-        if (isset($dto->page) && isset($dto->perPage)) {
-            $perPage = $dto->perPage;
-            $offset = ($dto->page - 1) * $perPage;
-            $paginateQuery = $query->skip($offset)->take($perPage);
-        }
-
-        return response()->json([
-            'data' => $this->dataTable($paginateQuery)->toJson(),
-            'recordsFiltered' => $filteredRecords,
-            'draw' => $dto->draw ?? 0,
-            'input' => $dto->all()
-        ]);
-    }
-
-    /**
-     * Get the query source of dataTable.
-     *
-     * @return QueryBuilder<Position>
-     */
-    public function query(DatatableRequestDTO $dto): QueryBuilder
-    {
-        $query = $this->repository->getQuery();
-
-        if (isset($dto->sortBy) && isset($dto->sortOrder)) {
-            $query->orderBy($dto->sortBy, $dto->sortOrder);
-        }
-
-        if (isset($dto->search)) {
-            $query->where('name', 'like', '%' . $dto->search . '%');
-        }
-
-        return $query;
     }
 }

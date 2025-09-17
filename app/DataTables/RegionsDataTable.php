@@ -14,7 +14,7 @@ use App\Repositories\Interfaces\Cities\RegionRepositoryInterface;
 /**
  * Таблиа отделов пользователей
  */
-class RegionsDataTable extends DataTable
+class RegionsDataTable extends AbstractDataTable
 {
 
     /**
@@ -27,6 +27,8 @@ class RegionsDataTable extends DataTable
     public function __construct(RegionRepositoryInterface $repository)
     {
         $this->repository = $repository;
+
+        $this->setBuilder($this->repository->getQuery());
     }
 
     /**
@@ -37,9 +39,6 @@ class RegionsDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->editColumn('name', function (Region $region) {
-                return $region->name;
-            })
             ->editColumn('created_at', function (Region $region) {
                 return $region->created_at->format('H:i d.m.Y ');
             })
@@ -47,47 +46,5 @@ class RegionsDataTable extends DataTable
                 return $region->updated_at->format('H:i d.m.Y');
             })
             ->setRowId('id');
-    }
-
-
-    /**
-     * Get the query source of dataTable.
-     *
-     * @return QueryBuilder<Region>
-     */
-    public function query(DatatableRequestDTO $dto): QueryBuilder
-    {
-        $query = $this->repository->getQuery();
-
-        if (isset($dto->sortBy) && isset($dto->sortOrder)) {
-            $query->orderBy($dto->sortBy, $dto->sortOrder);
-        }
-
-        if (isset($dto->search)) {
-            $query->where('name', 'like', '%' . $dto->search . '%');
-        }
-
-        return $query;
-    }
-
-    public function json(DatatableRequestDTO $dto): \Illuminate\Http\JsonResponse
-    {
-        $query = $this->query($dto);
-
-        $filteredRecords = $query->count();
-        $paginateQuery = $query;
-
-        if (isset($dto->page) && isset($dto->perPage)) {
-            $perPage = $dto->perPage;
-            $offset = ($dto->page - 1) * $perPage;
-            $paginateQuery = $query->skip($offset)->take($perPage);
-        }
-
-        return response()->json([
-            'data' => $this->dataTable($paginateQuery)->toJson(),
-            'recordsFiltered' => $filteredRecords,
-            'draw' => $dto->draw ?? 0,
-            'input' => $dto->all()
-        ]);
     }
 }

@@ -9,7 +9,7 @@ use App\DTO\DataTable\DatatableRequestDTO;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use App\Repositories\Interfaces\Roles\RoleRepositoryInterface;
 
-class RolesDataTable extends DataTable
+class RolesDataTable extends AbstractDataTable
 {
     /**
      * Репозиторий для работы с данными
@@ -18,6 +18,7 @@ class RolesDataTable extends DataTable
      */
     public function __construct(private RoleRepositoryInterface $repository)
     {
+        $this->setBuilder($this->repository->getQuery());
     }
 
     /**
@@ -37,44 +38,8 @@ class RolesDataTable extends DataTable
             ->setRowId('id');
     }
 
-    /**
-     * Get the query source of dataTable.
-     *
-     * @return QueryBuilder<Role>
-     */
-    public function query(DatatableRequestDTO $dto): QueryBuilder
+    public function json(DatatableRequestDTO $dto, string $findField = 'name'): \Illuminate\Http\JsonResponse
     {
-        $query = $this->repository->getQuery();
-
-        if (isset($dto->sortBy) && isset($dto->sortOrder)) {
-            $query->orderBy($dto->sortBy, $dto->sortOrder);
-        }
-
-        if (isset($dto->search)) {
-            $query->where('name', 'ILIKE', '%' . $dto->search . '%')->orWhere('display_name', 'ILIKE', '%' . $dto->search . '%');
-        }
-
-        return $query;
-    }
-
-    public function json(DatatableRequestDTO $dto): \Illuminate\Http\JsonResponse
-    {
-        $query = $this->query($dto);
-
-        $filteredRecords = $query->count();
-        $paginateQuery = $query;
-
-        if (isset($dto->page) && isset($dto->perPage)) {
-            $perPage = $dto->perPage;
-            $offset = ($dto->page - 1) * $perPage;
-            $paginateQuery = $query->skip($offset)->take($perPage);
-        }
-
-        return response()->json([
-            'data' => $this->dataTable($paginateQuery)->toJson(),
-            'recordsFiltered' => $filteredRecords,
-            'draw' => $dto->draw ?? 0,
-            'input' => $dto->all()
-        ]);
+        return $this->json($dto, $findField);
     }
 }
