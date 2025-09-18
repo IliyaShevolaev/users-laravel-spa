@@ -54,4 +54,9 @@ public function json(DatatableRequestDTO $dto, string $findField = 'name'): \Ill
 
 Вход: `DatatableRequestDTO` DTO с данными о поиске и сортировке и пагинации, `findField` поле по которому выполняется поиск
 
-Выход: `QueryBuilder`
+Выход: JSON с полями:
+
+* `data` — данные таблицы в формате DataTable.
+* `recordsFiltered` — количество найденных записей после фильтрации.
+* `draw` — счетчик запросов DataTable.
+* `input` — исходные данные DTO.
