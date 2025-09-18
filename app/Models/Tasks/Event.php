@@ -5,13 +5,8 @@ namespace App\Models\Tasks;
 use App\Models\User;
 use App\Policies\EventPolicy;
 use App\Models\Tasks\EventUser;
-use App\Models\User\Department;
-use Spatie\Activitylog\LogOptions;
 use App\Enums\Role\SystemRolesEnum;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
-use Spatie\Activitylog\Traits\LogsActivity;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
@@ -19,16 +14,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Event extends Model
 {
     protected $fillable = ['title', 'description', 'start', 'end', 'creator_id'];
-
-    /**
-     * Получить отдел соыбтия
-     *
-     * @return HasOne<Department, $this>
-     */
-    public function department(): HasOne
-    {
-        return $this->hasOne(Department::class, 'id', 'department_id');
-    }
 
     /**
      * Получить пользователей с этой задачей
