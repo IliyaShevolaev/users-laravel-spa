@@ -156,6 +156,9 @@
       * [EventUser](/app/Models/Tasks/EventUser.md)
     * [User](app/Models/User/user.md)
       * [UserDocument](app/Models/User/UserDocument.md)
+
+  * [Policies](app/Policies/policies.md)
+    * [EventPolicy](app/Policies/EventPolicy.md)
   
   * [Repositories](app/Repositories/repositories.md)
     * [FileTemplateRepository](app/Repositories/Files/FileTemplateRepository.md)
