@@ -51,16 +51,6 @@ public function dataTable(DataTableRequest $dataTableRequest, PositionsDataTable
 
 Выход: JSON-ответ с данными таблицы
 
-* status code — 200
-
-```json
-{
-  "data": [...]
-}
-```
-
----
-
 ##### store
 
 ```php

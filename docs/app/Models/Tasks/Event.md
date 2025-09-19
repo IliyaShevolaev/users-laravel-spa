@@ -22,6 +22,11 @@
 
 * `int $creator_id` — идентификатор создателя события.
 
+* `string $created_at` — дата создания записи.
+
+* `string $updated_at` — дата обновления записи.
+
+
 #### Связи
 
 * `users()` — связь `belongsToMany` с моделью [User](/app/Models/User/User.md) через таблицу `event_user` (используется Pivot-модель [EventUser](/app/Models/Tasks/EventUser.md)).
